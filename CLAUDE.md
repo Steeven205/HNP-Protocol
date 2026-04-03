@@ -439,10 +439,11 @@ npm run build                  # Build production
 3. Audit trail consultable
 4. Design propre pour la démo prospects
 
-### Semaine 5 — SiteMinderProvider + Multi-Hotel
-1. Créer `SiteMinderProvider` (implémente `HotelDataProvider`)
-   - Stub d'abord (données réalistes multi-hôtel)
-   - API réelle après inscription developer.siteminder.com
+### Semaine 5 — D-EDGE Provider + Multi-Hotel
+1. Créer `DEdgeProvider` (implémente `HotelDataProvider`)
+   - Stub d'abord (données réalistes multi-hôtel — fait)
+   - API réelle après inscription partenaire D-EDGE
+   - D-EDGE = 17 000 hôtels francophones (France + Belgique)
 2. Mode multi-hotel dans l'orchestrateur
    - Corporate Agent broadcast vers N hôtels en parallèle
    - Collecte des offres + ranking selon politique
@@ -649,48 +650,61 @@ Investir du temps dans l'UX de cette page.
 
 ---
 
-## Roadmap — Lancement simultané EU + US
+## Roadmap — Expansion par connecteurs
 
-### Principe : asymétrique mais simultané
+### Stratégie connecteurs : du local au global
 
-Les corporates EU qui voyagent aux US génèrent des données shadow
-sur les hôtels américains *sans effort supplémentaire*.
-SiteMinder est global (150 pays). Un connecteur = EU + US + reste du monde.
-Le shadow mode n'a aucune contrainte géographique (pas de booking réel).
+```
+PHASE 1 — MVP France/Belgique
+  └── D-EDGE connecteur (17 000 hôtels francophones)
+  └── D-EDGE est basé à Paris, forte présence FR/BE
+  └── Programme partenaire + API REST documentée
+
+PHASE 2 — Scale Europe  
+  └── SiteMinder connecteur (40 000+ hôtels Europe/monde)
+  └── SiteMinder est global, 150 pays
+  └── developer.siteminder.com pour sandbox
+
+PHASE 3 — US Market
+  └── Amadeus / Sabre / TravelClick connecteurs
+  └── Nécessaire pour les chaînes US (Marriott, Hilton, Hyatt)
+```
+
+Chaque connecteur implémente la même interface `HotelDataProvider`.
+Ajouter un connecteur = un fichier, zéro changement dans le protocole.
 
 ### Timeline
 
 ```
-           EUROPE (prouver)                 US (préparer)
+           FR/BE (prouver)                  EU + US (scale)
            ─────────────────                ─────────────────
 
 M0 (now)   POC fonctionnel                  —
            Dashboard live
            Démo IA-à-IA complète
 
-M2-M4      SiteMinderProvider               Shadow mode capte
+M2-M4      D-EDGE Provider                  Shadow mode capte
            Shadow mode activé               automatiquement les
-           3 corporates EU                  réservations US des
-           Rapports d'économies             mêmes corporates EU
-                                            → données US "gratuites"
+           3 corporates FR/BE               voyages hors FR/BE
+           Rapports d'économies             → données EU "gratuites"
 
-M4-M6      Conversion LIVE                  2-3 corporates US-natifs
-           1-2 corporates EU               en shadow mode
-           → premières transactions         → premiers rapports USD
+M4-M6      Conversion LIVE                  SiteMinder Provider
+           1-2 corporates FR/BE            → 40 000 hôtels EU
+           → premières transactions         2-3 corporates EU shadow
            → métriques de traction
 
-M6-M9      Scale EU : 10 corporates         Résultats shadow US
+M6-M9      Scale FR/BE : 10 corporates      Résultats shadow multi-pays
            Hotel Agent IA (Claude)          → deck investisseur
-           Dashboard revenue manager        → "data-proven US readiness"
+           Dashboard revenue manager        → "data-proven EU+US"
 
-M9-M12     Lever Seed $1-2M                 Lancer LIVE aux US
-           avec data EU + shadow US         avec l'argent du Seed
+M9-M12     Lever Seed $1-2M                 Connecteurs Amadeus/Sabre
+           avec data FR/BE + shadow EU      Lancer LIVE US
            Pitch : "données shadow sur      NYC + SF first
            3 marchés, 22% savings moyen"
 
 M12-M18    Scale EU : 50+ corporates        Scale US : 10+ corporates
-           Hotel Agent IA mature            Connecteurs Sabre/Amadeus
-           Multi-hotel bidding              Compliance SOC2
+           Hotel Agent IA mature            Compliance SOC2
+           Multi-hotel bidding
 
 M18+       Series A avec traction           Scale mondial
            bimarché EU+US                   Asie, Moyen-Orient
@@ -704,7 +718,7 @@ Composant           Adaptation                      Effort
 Messages HNP        Ajouter currency (EUR/USD/GBP)  Trivial
 Travel Policy       max_rate par ville (déjà fait)  0
 Yield Engine        Par hôtel (déjà agnostique)     0
-SiteMinderProvider  Même API, filtre par pays        0
+D-EDGE/SiteMinder   Même interface HotelDataProvider 0
 Dashboard           i18n (FR/EN) + devise affichée  Moyen
 Audit Trail         Multi-devise dans les rapports  Faible
 Rapports Shadow     Agrégation par marché/devise    Moyen
