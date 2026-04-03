@@ -8,8 +8,13 @@
  */
 
 import { NextResponse } from "next/server";
-import { SiteMinderProvider } from "@hnp/hotel-agent/siteminder-provider";
-import { TIER_CONFIGS } from "@hnp/protocol";
+
+const TIER_CONFIGS: Record<string, { max_offers: number; decision_timeout_min: number; mode: string }> = {
+  starter:    { max_offers: 3,  decision_timeout_min: 30,  mode: "live" },
+  business:   { max_offers: 5,  decision_timeout_min: 60,  mode: "live" },
+  enterprise: { max_offers: 10, decision_timeout_min: 120, mode: "live" },
+  shadow:     { max_offers: 3,  decision_timeout_min: 30,  mode: "shadow" },
+};
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -28,6 +33,9 @@ export async function POST(request: Request) {
   }
 
   const config = TIER_CONFIGS[tier] ?? TIER_CONFIGS.starter;
+
+  // Dynamic import to avoid webpack resolution issues on Vercel
+  const { SiteMinderProvider } = await import("@hnp/hotel-agent/siteminder-provider");
   const provider = new SiteMinderProvider(destination);
 
   const results = await provider.getMultiHotelOffers({
