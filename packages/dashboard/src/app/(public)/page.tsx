@@ -9,10 +9,10 @@ export default function WelcomePage() {
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center text-white font-bold text-sm">
-                H
+                R
               </div>
               <span className="text-xl font-bold tracking-tight text-navy-800">
-                HNP Protocol
+                Rateflow
               </span>
             </Link>
             <nav className="hidden items-center gap-1 md:flex">
@@ -51,7 +51,7 @@ export default function WelcomePage() {
           </h1>
 
           <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed mb-10">
-            HNP Protocol replaces months of manual negotiation with autonomous AI agents that
+            Rateflow replaces months of manual negotiation with autonomous AI agents that
             secure optimal hotel rates in seconds &mdash; transaction by transaction, in real time,
             with full policy compliance on both sides.
           </p>
@@ -143,7 +143,7 @@ export default function WelcomePage() {
           <p className="text-lg text-slate-600 leading-relaxed max-w-3xl mx-auto mb-12">
             Visa is neither the buyer&apos;s bank nor the seller&apos;s bank.
             Visa created the <strong>protocol</strong> that both banks use to transact.
-            HNP Protocol does the same thing &mdash; it&apos;s the standard
+            Rateflow does the same thing &mdash; it&apos;s the standard
             that corporate AI agents and hotel AI agents use to negotiate.
           </p>
 
@@ -163,7 +163,7 @@ export default function WelcomePage() {
               <div className="w-12 h-12 rounded-xl bg-navy-800 text-white flex items-center justify-center text-lg mx-auto mb-4">
                 <i className="fa-solid fa-handshake" />
               </div>
-              <p className="text-sm font-semibold text-slate-900 mb-1">HNP Protocol</p>
+              <p className="text-sm font-semibold text-slate-900 mb-1">Rateflow</p>
               <p className="text-xs text-slate-500">The standard both agents speak</p>
             </div>
 
@@ -185,7 +185,7 @@ export default function WelcomePage() {
             Both Sides Win
           </h2>
           <p className="text-lg text-slate-500 text-center max-w-2xl mx-auto mb-14">
-            HNP Protocol creates value for corporates <em>and</em> hotels simultaneously.
+            Rateflow creates value for corporates <em>and</em> hotels simultaneously.
           </p>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -463,7 +463,7 @@ export default function WelcomePage() {
                 <div className="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center text-white font-bold text-sm">
                   H
                 </div>
-                <span className="font-bold text-xl text-slate-900">HNP Protocol</span>
+                <span className="font-bold text-xl text-slate-900">Rateflow</span>
               </div>
               <p className="text-slate-500 max-w-sm text-sm leading-relaxed">
                 The intelligent layer for corporate hotel procurement.
@@ -489,7 +489,7 @@ export default function WelcomePage() {
             </div>
           </div>
           <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-slate-400">&copy; 2026 Kairion &middot; HNP Protocol. All rights reserved.</p>
+            <p className="text-sm text-slate-400">&copy; 2026 Kairion &middot; Rateflow. All rights reserved.</p>
             <div className="flex gap-3">
               <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer">
                 <i className="fa-brands fa-linkedin-in text-sm" />

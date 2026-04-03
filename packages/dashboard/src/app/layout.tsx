@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HNP Protocol — Hotel Negotiation Protocol",
-  description: "AI-to-AI hotel negotiation platform",
+  title: "Rateflow — AI-Powered Hotel Negotiation",
+  description: "Rateflow negotiates hotel rates with AI so you don't have to",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

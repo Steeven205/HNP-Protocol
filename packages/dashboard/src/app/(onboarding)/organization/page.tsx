@@ -81,7 +81,7 @@ export default function OrganizationPage() {
           Organization Setup
         </h1>
         <p className="text-sm text-slate-500 mb-8">
-          Tell us about your company to configure HNP Protocol for your team.
+          Tell us about your company to configure Rateflow for your team.
         </p>
 
         {/* Organization Name */}

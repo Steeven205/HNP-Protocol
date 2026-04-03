@@ -38,11 +38,11 @@ export function Sidebar() {
       <div className="border-t border-white/10 pt-4 mt-4">
         <div className="flex items-center gap-3 px-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-xs font-bold">
-            H
+            R
           </div>
           <div>
-            <p className="text-sm font-semibold">HNP Protocol</p>
-            <p className="text-xs text-white/50">AI-to-AI Negotiation</p>
+            <p className="text-sm font-semibold">Rateflow</p>
+            <p className="text-xs text-white/50">AI Hotel Negotiation</p>
           </div>
         </div>
       </div>

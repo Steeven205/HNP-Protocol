@@ -1,5 +1,5 @@
 /**
- * Mock data for the HNP Dashboard.
+ * Mock data for the Rateflow Dashboard.
  * Sources: data/mock/hotel.json + data/mock/corporate.json
  */
 

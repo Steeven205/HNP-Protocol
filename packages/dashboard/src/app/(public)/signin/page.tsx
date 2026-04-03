@@ -7,7 +7,7 @@ export default function SignInPage() {
       <div className="hidden w-1/2 flex-col items-center justify-center bg-gradient-to-br from-navy-800 to-navy-900 px-12 lg:flex">
         <div className="max-w-md text-center">
           <h1 className="text-3xl font-bold text-white">
-            Welcome to HNP Protocol
+            Welcome to Rateflow
           </h1>
           <p className="mt-4 text-base leading-relaxed text-white/70">
             The AI-to-AI negotiation platform that replaces the annual hotel RFP
