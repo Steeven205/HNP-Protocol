@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build -w packages/hnp-protocol && npm run build -w packages/hotel-agent && npm run build -w packages/corporate-agent && npm run build -w packages/dashboard",
     "dev": "npm run dev --workspace=packages/dashboard",
     "dev:hotel-agent": "npm run dev --workspace=packages/hotel-agent",
     "dev:corporate-agent": "npm run dev --workspace=packages/corporate-agent",

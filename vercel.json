@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
   "installCommand": "npm install",
-  "buildCommand": "npm run build --workspace=packages/hnp-protocol && npm run build --workspace=packages/hotel-agent && npm run build --workspace=packages/corporate-agent && npm run build --workspace=packages/dashboard",
+  "buildCommand": "npm run build",
   "outputDirectory": "packages/dashboard/.next"
 }
