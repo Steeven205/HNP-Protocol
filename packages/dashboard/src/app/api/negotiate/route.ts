@@ -50,10 +50,12 @@ async function launchNegotiation(
   });
 
   try {
-    // Dynamic import — only works locally (MCP subprocess + Claude API)
-    // On Vercel serverless, this will fail gracefully
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { runNegotiation } = await import(/* webpackIgnore: true */ "@hnp/corporate-agent/agent");
+    // Dynamic import — only works locally (MCP subprocess + Claude API).
+    // On Vercel serverless this module doesn't exist, caught by try/catch.
+    const mod = await (new Function('p', 'return import(p)'))("@hnp/corporate-agent/agent") as {
+      runNegotiation: (trigger: { traveler: string; destination: string; check_in: string; check_out: string; purpose?: string }, opts: Record<string, unknown>) => Promise<{ status: string; final_rate_eur?: number; savings_pct?: number }>;
+    };
+    const { runNegotiation } = mod;
 
     store.update(id, { status: "in_progress" });
 
@@ -73,7 +75,7 @@ async function launchNegotiation(
       },
       {
         verbose: false,
-        onEvent: (event) => {
+        onEvent: (event: { type: string; data: Record<string, unknown> }) => {
           switch (event.type) {
             case "mcp_connected":
               store.addMessage(id, makeMsg(
