@@ -439,16 +439,15 @@ npm run build                  # Build production
 3. Audit trail consultable
 4. Design propre pour la démo prospects
 
-### Semaine 5 — D-EDGE Provider + Multi-Hotel
-1. Créer `DEdgeProvider` (implémente `HotelDataProvider`)
-   - Stub d'abord (données réalistes multi-hôtel — fait)
-   - API réelle après inscription partenaire D-EDGE
-   - D-EDGE = 17 000 hôtels francophones (France + Belgique)
-2. Mode multi-hotel dans l'orchestrateur
-   - Corporate Agent broadcast vers N hôtels en parallèle
-   - Collecte des offres + ranking selon politique
-   - Top 3 présentées au collaborateur
-3. Page `/negotiations/[id]/choose` connectée au multi-hotel
+### Semaine 5 — Mews Provider + Multi-Hotel (FAIT)
+1. `MewsProvider` implémente `HotelDataProvider` ✅
+   - Connecté à la sandbox Mews (api.mews-demo.com)
+   - Configuration, disponibilité, tarifs, booking
+   - Testé avec succès sur l'hôtel de test Mews
+2. `SiteMinderProvider` (stub 5 hôtels parisiens) ✅
+3. Mode multi-hotel dans l'orchestrateur ✅
+4. Page `/negotiations/[id]/choose` avec comparaison ✅
+5. OTA Commission Offset dans le yield engine ✅
 
 ### Semaine 6 — Shadow Mode + Rapports
 1. Flag `shadow_mode` dans l'orchestrateur

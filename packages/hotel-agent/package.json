@@ -12,6 +12,10 @@
     "./siteminder-provider": {
       "types": "./dist/siteminder-provider.d.ts",
       "import": "./dist/siteminder-provider.js"
+    },
+    "./mews-provider": {
+      "types": "./dist/mews-provider.d.ts",
+      "import": "./dist/mews-provider.js"
     }
   },
   "bin": {
