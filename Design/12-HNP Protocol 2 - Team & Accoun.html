@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team & Account - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.plot.ly/plotly-3.1.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                        'offer-glow': '0 0 20px -5px rgba(135, 206, 250, 0.6)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #3b82f6;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #3b82f6;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .toggle-label:after {
+            content: '';
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #3b82f6;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        input[type=range]:focus::-webkit-slider-runnable-track {
+            background: #cbd5e1;
+        }
+        
+        /* Toast Animation */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
+
+        /* Input specific styles to match reference */
+        .ref-input {
+            background-color: #f8fafc;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+        .ref-input:focus {
+            background-color: #ffffff;
+            border-color: #e2e8f0;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col m-0 p-0">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Negotiations List</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Audit Trail</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Team & Account</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col w-full max-w-[1440px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Breadcrumb & Header -->
+        <div class="mb-8" id="page-header">
+            <div class="flex items-center gap-2 text-sm text-slate-500 mb-4">
+                <a href="#" class="hover:text-navy transition-colors"><i class="fa-solid fa-house text-[10px]"></i></a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span class="text-slate-900 font-medium">Team & Account</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 mb-2">Account Settings</h1>
+                    <p class="text-sm text-slate-500 max-w-xl">Manage your preferences, security, team members, and connected tools all in one place.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-xl hover:bg-brand-700 transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Sidebar Navigation -->
+            <div class="lg:col-span-3 space-y-1">
+                <a href="#org-profile" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-50 text-brand-600 font-medium transition-colors">
+                    <i class="fa-solid fa-building w-5 text-center"></i> Organization Profile
+                </a>
+                <a href="#team-members" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors">
+                    <i class="fa-solid fa-users w-5 text-center"></i> Team Members
+                </a>
+                <a href="#roles-permissions" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors">
+                    <i class="fa-solid fa-shield-halved w-5 text-center"></i> Roles & Permissions
+                </a>
+                <a href="#api-keys" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors">
+                    <i class="fa-solid fa-key w-5 text-center"></i> API Keys & Webhooks
+                </a>
+                <a href="#notifications" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium transition-colors">
+                    <i class="fa-solid fa-bell w-5 text-center"></i> Notification Logic
+                </a>
+            </div>
+
+            <!-- Right Content Area -->
+            <div class="lg:col-span-9 space-y-8">
+                
+                <!-- Organization Profile Section -->
+                <section id="org-profile" class="bg-white rounded-[16px] border border-slate-200 shadow-soft p-8">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-bold text-slate-900">Organization Profile</h2>
+                        <p class="text-sm text-slate-500 mt-1">Edit your company's basic information and branding.</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8 pb-8 border-b border-slate-100">
+                        <div class="relative group">
+                            <div class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                <div class="w-full h-full bg-navy flex items-center justify-center text-white font-bold text-3xl">
+                                    A
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="px-4 py-2 bg-brand-50 text-brand-600 text-sm font-medium rounded-xl hover:bg-brand-100 transition-colors">
+                                Upload Logo
+                            </button>
+                            <button class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Company Name <span class="text-red-500">*</span></label>
+                            <input type="text" value="Acme Corp Travel" class="w-full px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Registration Number</label>
+                            <input type="text" value="RC-9482710" class="w-full px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Primary Email <span class="text-red-500">*</span></label>
+                            <input type="email" value="admin@acmetravel.com" class="w-full px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Contact Phone <span class="text-red-500">*</span></label>
+                            <div class="flex gap-2">
+                                <select class="w-24 px-3 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 0.7rem top 50%; background-size: 0.65rem auto;">
+                                    <option>+1</option>
+                                    <option>+44</option>
+                                </select>
+                                <input type="text" value="555-0198" class="flex-1 px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Default Currency <span class="text-red-500">*</span></label>
+                            <select class="w-full px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem top 50%; background-size: 0.65rem auto;">
+                                <option>EUR (€)</option>
+                                <option>USD ($)</option>
+                                <option>GBP (£)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Time Zone <span class="text-red-500">*</span></label>
+                            <select class="w-full px-4 py-3 rounded-xl ref-input text-sm text-slate-900 font-medium appearance-none bg-no-repeat" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-position: right 1rem top 50%; background-size: 0.65rem auto;">
+                                <option>UTC +00:00 - London</option>
+                                <option>UTC +01:00 - Paris, Berlin</option>
+                                <option>UTC -05:00 - Eastern Time</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Team Members Section -->
+                <section id="team-members" class="bg-white rounded-[16px] border border-slate-200 shadow-soft overflow-hidden">
+                    <div class="p-8 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Team Members</h2>
+                            <p class="text-sm text-slate-500 mt-1">Manage who has access to this workspace.</p>
+                        </div>
+                        <button class="px-4 py-2 bg-navy text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors shadow-sm flex items-center gap-2 w-fit">
+                            <i class="fa-solid fa-plus"></i> Invite User
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                                    <th class="px-6 py-4">User</th>
+                                    <th class="px-6 py-4">Role</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200">
+                                                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Sarah Jenkins" class="w-full h-full object-cover">
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-slate-900">Sarah Jenkins</p>
+                                                <p class="text-xs text-slate-500">sarah.j@acmetravel.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm text-slate-700 font-medium">Admin</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-600 transition-colors p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center text-slate-500 font-medium text-xs">
+                                                MR
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-slate-900">Michael Ross</p>
+                                                <p class="text-xs text-slate-500">m.ross@acmetravel.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm text-slate-700 font-medium">Manager</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-orange-50 text-orange-700 border border-orange-100">
+                                            <i class="fa-regular fa-clock text-[10px]"></i> Pending
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-brand-600 transition-colors p-1"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- API Keys Section -->
+                <section id="api-keys" class="bg-white rounded-[16px] border border-slate-200 shadow-soft p-8">
+                    <div class="mb-8 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">API Keys & Webhooks</h2>
+                            <p class="text-sm text-slate-500 mt-1">Manage credentials for travel system integrations.</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors shadow-sm">
+                            Generate New Key
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- Key 1 -->
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-sm font-semibold text-slate-900 mb-1">Production API Key</h3>
+                                <p class="text-xs text-slate-500">Created on Oct 12, 2026 • Last used 2 hours ago</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="relative">
+                                    <input type="password" value="sk_live_982734982734982734" class="w-48 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-mono text-slate-600 focus:outline-none" readonly>
+                                </div>
+                                <button class="p-1.5 text-slate-400 hover:text-slate-700 transition-colors" title="Copy">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                                <button class="p-1.5 text-slate-400 hover:text-red-500 transition-colors" title="Revoke">
+                                    <i class="fa-solid fa-ban"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors text-brand-600 font-medium">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

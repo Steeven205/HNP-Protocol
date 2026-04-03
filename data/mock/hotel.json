@@ -1,0 +1,84 @@
+{
+  "hotel_id": "LMBH-PARIS-001",
+  "name": "Le Marais Boutique Hotel",
+  "category": "4_star",
+  "esg_tier": "A",
+  "pms": "mock",
+  "location": {
+    "city": "Paris",
+    "arrondissement": "3ème",
+    "address": "12 rue des Archives, 75003 Paris",
+    "metro": "Arts et Métiers (L3/L11)",
+    "lat": 48.8603,
+    "lng": 2.3522
+  },
+  "rooms": {
+    "standard": {
+      "count": 45,
+      "base_rate_eur": 145,
+      "description": "Chambre standard 22m², lit double ou twin",
+      "amenities": ["wifi", "minibar", "safe", "air_conditioning"]
+    },
+    "superior": {
+      "count": 20,
+      "base_rate_eur": 185,
+      "description": "Chambre supérieure 28m², vue cour intérieure",
+      "amenities": ["wifi", "minibar", "safe", "air_conditioning", "bathtub"]
+    },
+    "suite": {
+      "count": 5,
+      "base_rate_eur": 320,
+      "description": "Suite 45m², salon séparé",
+      "amenities": ["wifi", "minibar", "safe", "air_conditioning", "bathtub", "lounge_access"]
+    }
+  },
+  "hotel_amenities": ["wifi_free", "breakfast_buffet", "gym", "bar", "concierge", "dry_cleaning"],
+  "breakfast_price_eur": 22,
+  "parking_price_eur": 35,
+  "corporate_accounts": [
+    {
+      "corporate_id": "TC-2026-001",
+      "company": "TechCorp SAS",
+      "tier": "gold",
+      "negotiated_discount_pct": 12,
+      "nights_ytd": 47
+    },
+    {
+      "corporate_id": "CONSULT-FR-042",
+      "company": "Cabinet Conseil Lyon",
+      "tier": "silver",
+      "negotiated_discount_pct": 8,
+      "nights_ytd": 18
+    }
+  ],
+  "yield_rules": {
+    "high_season_months": [7, 8, 12],
+    "high_season_surcharge_pct": 20,
+    "low_season_months": [1, 2, 11],
+    "low_season_discount_pct": 15,
+    "occupation_tiers": [
+      { "above_pct": 80, "surcharge_pct": 15 },
+      { "above_pct": 60, "surcharge_pct": 5 },
+      { "below_pct": 40, "discount_pct": 10 }
+    ],
+    "length_of_stay_discounts": [
+      { "min_nights": 3, "discount_pct": 8 },
+      { "min_nights": 7, "discount_pct": 15 }
+    ],
+    "last_minute_surcharge": {
+      "hours_before": 48,
+      "surcharge_pct": 10
+    },
+    "floor_rate_eur": 110,
+    "max_discount_total_pct": 25
+  },
+  "cancellation_policies": {
+    "flexible": "Annulation gratuite jusqu'à 24h avant arrivée",
+    "semi_flexible": "Annulation gratuite jusqu'à 48h avant arrivée",
+    "non_refundable": "Non remboursable — tarif réduit de 15%"
+  },
+  "auto_inclusions_for_corporate": {
+    "condition": "nights_gte_2",
+    "inclusions": ["wifi", "late_checkout_12h"]
+  }
+}

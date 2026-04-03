@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigger New Negotiation - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Form specific styles mimicking the reference image's soft UI */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background-color: #ffffff;
+            color: #1e293b;
+            font-size: 0.875rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #000080;
+            box-shadow: 0 0 0 3px rgba(0, 0, 128, 0.1);
+        }
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col m-0 p-0">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Negotiations List</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col w-full max-w-[1440px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Breadcrumb & Header -->
+        <div class="mb-8">
+            <nav class="flex text-sm text-slate-500 mb-4" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="#" class="hover:text-navy transition-colors">Negotiations List</a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+                            <span class="text-slate-900 font-medium">Trigger New</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Trigger New Negotiation</h1>
+                    <p class="text-sm text-slate-500 mt-1">Configure parameters for the AI agent to negotiate a new hotel booking.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors shadow-soft">
+                        Cancel
+                    </button>
+                    <button id="startNegotiationBtnTop" class="px-6 py-2 bg-navy hover:bg-blue-900 text-white text-sm font-medium rounded-xl shadow-soft transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-robot"></i>
+                        Start Negotiation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Form Area (Left 2 Columns) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Section 1: Traveler & Trip Details -->
+                <section id="traveler-details" class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-brand-600">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        Traveler & Trip Details
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Traveler Name -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-700">Traveler Name *</label>
+                            <div class="relative">
+                                <i class="fa-regular fa-user form-icon"></i>
+                                <input type="text" class="form-input" placeholder="e.g. Jane Doe" required>
+                            </div>
+                        </div>
+
+                        <!-- Destination City -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-700">Destination City *</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-location-dot form-icon"></i>
+                                <input type="text" class="form-input" placeholder="e.g. London, UK" required>
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">Check-in / Check-out Dates *</label>
+                            <div class="flex items-center gap-4">
+                                <div class="relative w-full">
+                                    <i class="fa-regular fa-calendar form-icon"></i>
+                                    <input type="date" class="form-input" required>
+                                </div>
+                                <span class="text-slate-400"><i class="fa-solid fa-arrow-right"></i></span>
+                                <div class="relative w-full">
+                                    <i class="fa-regular fa-calendar form-icon"></i>
+                                    <input type="date" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Hotel Preferences -->
+                <section id="hotel-preferences" class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-brand-600">
+                            <i class="fa-solid fa-bed"></i>
+                        </div>
+                        Hotel Preferences
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Preferred Hotel -->
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">Preferred Hotel (Optional)</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-building form-icon"></i>
+                                <input type="text" class="form-input" placeholder="e.g. The Savoy">
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">If left blank, AI will negotiate with top matches in the area.</p>
+                        </div>
+
+                        <!-- Room Type -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-700">Room Type *</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-door-open form-icon"></i>
+                                <select class="form-input appearance-none bg-white">
+                                    <option>Standard Room</option>
+                                    <option>Deluxe Room</option>
+                                    <option>Executive Suite</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Max Budget -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-slate-700">Max Budget (per night) *</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-euro-sign form-icon"></i>
+                                <input type="number" class="form-input" placeholder="e.g. 250" required>
+                            </div>
+                        </div>
+                        
+                         <!-- Special Requests -->
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700">Special Requests</label>
+                            <textarea class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent resize-none h-24" placeholder="e.g. Late check-in, high floor preferred..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Policy & Escalation Rules -->
+                <section id="policy-escalation" class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-6 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-brand-600">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        Policy & Escalation Rules
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Policy Overrides -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-medium text-slate-700">Corporate Policy Overrides</label>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div>
+                                        <span class="text-sm font-medium text-slate-900">Allow Out-of-Policy Booking</span>
+                                        <p class="text-xs text-slate-500">Permit agent to book up to 15% above max budget if required.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" value="" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-navy"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Escalation Rules -->
+                        <div class="space-y-3">
+                            <label class="block text-sm font-medium text-slate-700">Escalation Trigger</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <label class="flex items-start gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors relative">
+                                    <input type="radio" name="escalation" class="mt-1 text-navy focus:ring-navy" checked>
+                                    <div>
+                                        <span class="block text-sm font-medium text-slate-900">After 5 Rounds</span>
+                                        <span class="block text-xs text-slate-500 mt-1">Escalate to human if no agreement reached.</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-start gap-3 p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors relative">
+                                    <input type="radio" name="escalation" class="mt-1 text-navy focus:ring-navy">
+                                    <div>
+                                        <span class="block text-sm font-medium text-slate-900">Timeout (5 mins)</span>
+                                        <span class="block text-xs text-slate-500 mt-1">Escalate if negotiation exceeds time limit.</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Bottom CTA -->
+                 <div class="flex justify-end pt-4">
+                    <button id="startNegotiationBtnBottom" class="px-8 py-3 bg-navy hover:bg-blue-900 text-white text-base font-medium rounded-xl shadow-soft transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-robot"></i>
+                        Start AI Negotiation
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Sidebar: Summary & Info -->
+            <div class="space-y-6">
+                <!-- Summary Card -->
+                <div class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft sticky top-24">
+                    <h3 class="text-base font-semibold text-slate-900 mb-4">Negotiation Summary</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                            <span class="text-sm text-slate-500">Agent Mode</span>
+                            <span class="text-sm font-medium text-brand-600 flex items-center gap-1">
+                                <i class="fa-solid fa-bolt text-xs"></i> Aggressive
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                            <span class="text-sm text-slate-500">Target Savings</span>
+                            <span class="text-sm font-medium text-slate-900">15-20%</span>
+                        </div>
+                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                            <span class="text-sm text-slate-500">Est. Duration</span>
+                            <span class="text-sm font-medium text-slate-900">~2 minutes</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bg-slate-50 rounded-xl p-4 border border-slate-100">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-info text-brand-500 mt-0.5"></i>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Once initiated, the Corporate AI Agent will immediately begin contacting available Hotel Agents based on your parameters. You can monitor the live negotiation on the next screen.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple script for button interaction simulation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btns = [document.getElementById('startNegotiationBtnTop'), document.getElementById('startNegotiationBtnBottom')];
+            
+            btns.forEach(btn => {
+                if(btn) {
+                    btn.addEventListener('click', function() {
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Initiating...';
+                        this.classList.add('opacity-80');
+                        
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="fa-solid fa-check"></i> Handshake Started';
+                            this.classList.remove('bg-navy', 'hover:bg-blue-900');
+                            this.classList.add('bg-green-600', 'hover:bg-green-700');
+                            
+                            // Reset after a moment (in real app, would redirect)
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.classList.remove('opacity-80', 'bg-green-600', 'hover:bg-green-700');
+                                this.classList.add('bg-navy', 'hover:bg-blue-900');
+                            }, 2000);
+                        }, 1500);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

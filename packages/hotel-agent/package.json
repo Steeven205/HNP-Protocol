@@ -1,0 +1,32 @@
+{
+  "name": "@hnp/hotel-agent",
+  "version": "0.1.0",
+  "description": "HNP Hotel Agent — MCP Server exposant l'inventaire hôtelier",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./siteminder-provider": {
+      "types": "./dist/siteminder-provider.d.ts",
+      "import": "./dist/siteminder-provider.js"
+    }
+  },
+  "bin": {
+    "hotel-agent": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@hnp/protocol": "0.1.0",
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
+  }
+}

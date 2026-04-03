@@ -1,0 +1,35 @@
+{
+  "name": "@hnp/corporate-agent",
+  "version": "0.1.0",
+  "description": "HNP Corporate Agent — Travel manager IA (Claude API + MCP Client)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./agent": {
+      "types": "./dist/agent.d.ts",
+      "import": "./dist/agent.js"
+    },
+    "./policy-engine": {
+      "types": "./dist/policy-engine.d.ts",
+      "import": "./dist/policy-engine.js"
+    }
+  },
+  "bin": {
+    "corporate-agent": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@hnp/protocol": "0.1.0",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "dotenv": "^17.4.0"
+  }
+}

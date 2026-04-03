@@ -1,0 +1,27 @@
+{
+  "name": "hnp-platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "HNP Platform — Hotel Negotiation Protocol",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspace=packages/dashboard",
+    "dev:hotel-agent": "npm run dev --workspace=packages/hotel-agent",
+    "dev:corporate-agent": "npm run dev --workspace=packages/corporate-agent",
+    "demo": "tsx --conditions import scripts/demo.ts",
+    "demo:verbose": "tsx --conditions import scripts/demo.ts --verbose",
+    "test": "npm run test --workspaces --if-present",
+    "test:protocol": "npm run test --workspace=packages/hnp-protocol"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}

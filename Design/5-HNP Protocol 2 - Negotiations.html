@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negotiations List - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Badge Styles */
+        .badge-confirmed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-progress { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+        .badge-escalated { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge-timeout { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        
+        /* Table Row Hover */
+        .table-row-hover:hover { background-color: #f8fafc; cursor: pointer; transition: background-color 0.2s; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col m-0 p-0">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Negotiations List</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col w-full max-w-[1440px] mx-auto py-8 px-4 sm:px-6">
+        
+        <!-- Page Header & CTA -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Active Negotiations</h1>
+                <p class="text-sm text-slate-500 mt-1">Manage and monitor all AI-driven hotel bookings.</p>
+            </div>
+            <button class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-navy hover:bg-blue-900 text-white text-sm font-medium rounded-xl shadow-soft transition-all">
+                <i class="fa-solid fa-plus"></i>
+                Trigger new negotiation
+            </button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+            <div class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-slate-500">In Progress</span>
+                    <div class="w-8 h-8 rounded-full bg-yellow-50 flex items-center justify-center text-yellow-600">
+                        <i class="fa-solid fa-spinner fa-spin-pulse"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900">24</div>
+                <div class="text-xs text-slate-500 mt-2">Active AI conversations</div>
+            </div>
+            
+            <div class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-slate-500">Confirmed Today</span>
+                    <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900">142</div>
+                <div class="text-xs text-green-600 mt-2 flex items-center gap-1 font-medium">
+                    <i class="fa-solid fa-arrow-trend-up"></i> +12% vs yesterday
+                </div>
+            </div>
+
+            <div class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-slate-500">Escalated</span>
+                    <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900">3</div>
+                <div class="text-xs text-red-600 mt-2 font-medium">Requires human intervention</div>
+            </div>
+
+            <div class="bg-white rounded-[16px] p-6 border border-slate-200 shadow-soft">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-sm font-medium text-slate-500">Avg. Savings</span>
+                    <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                        <i class="fa-solid fa-piggy-bank"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900">18.4%</div>
+                <div class="text-xs text-slate-500 mt-2">Versus public rate</div>
+            </div>
+        </div>
+
+        <!-- Filters & Search -->
+        <div class="bg-white rounded-t-[16px] border border-slate-200 border-b-0 p-4 sm:p-6 shadow-soft">
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                
+                <!-- Search -->
+                <div class="w-full lg:w-96 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-slate-400"></i>
+                    </div>
+                    <input type="text" class="block w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent" placeholder="Search by Traveler or ID...">
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <div class="relative min-w-[140px]">
+                        <select class="block w-full pl-4 pr-10 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy appearance-none bg-white">
+                            <option>All Statuses</option>
+                            <option>In Progress</option>
+                            <option>Confirmed</option>
+                            <option>Escalated</option>
+                            <option>Timeout</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div class="relative min-w-[160px]">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-regular fa-calendar text-slate-400"></i>
+                        </div>
+                        <input type="text" class="block w-full pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy" placeholder="Date Range" value="Last 7 Days">
+                    </div>
+
+                    <div class="relative min-w-[140px]">
+                        <select class="block w-full pl-4 pr-10 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-navy appearance-none bg-white">
+                            <option>All Destinations</option>
+                            <option>London</option>
+                            <option>Paris</option>
+                            <option>New York</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-slate-500">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    
+                    <button class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200">
+                        <i class="fa-solid fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="bg-white border border-slate-200 rounded-b-[16px] shadow-soft overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                            <th class="px-6 py-4">ID</th>
+                            <th class="px-6 py-4">Traveler</th>
+                            <th class="px-6 py-4">Destination</th>
+                            <th class="px-6 py-4">Dates</th>
+                            <th class="px-6 py-4">Hotel</th>
+                            <th class="px-6 py-4 text-center">Rounds</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4 text-right">Final Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-sm">
+                        <!-- Row 1: IN PROGRESS -->
+                        <tr class="table-row-hover bg-white">
+                            <td class="px-6 py-4 font-medium text-slate-900">#NEG-8924</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" alt="Traveler" class="w-full h-full object-cover">
+                                    </div>
+                                    <span class="font-medium text-slate-700">James Wilson</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">London, UK</td>
+                            <td class="px-6 py-4 text-slate-600">Oct 12 - Oct 15</td>
+                            <td class="px-6 py-4 text-slate-600">The Savoy (Pending)</td>
+                            <td class="px-6 py-4 text-center text-slate-600">3</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium badge-progress">
+                                    <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-1.5 animate-pulse"></span>
+                                    In Progress
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-medium text-slate-400">Negotiating...</td>
+                        </tr>
+
+                        <!-- Row 2: CONFIRMED -->
+                        <tr class="table-row-hover bg-white">
+                            <td class="px-6 py-4 font-medium text-slate-900">#NEG-8923</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Traveler" class="w-full h-full object-cover">
+                                    </div>
+                                    <span class="font-medium text-slate-700">Sarah Connor</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">Paris, FR</td>
+                            <td class="px-6 py-4 text-slate-600">Oct 14 - Oct 18</td>
+                            <td class="px-6 py-4 text-slate-600 font-medium">Le Meurice</td>
+                            <td class="px-6 py-4 text-center text-slate-600">5</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium badge-confirmed">
+                                    Confirmed
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-900">€ 420.00</td>
+                        </tr>
+
+                        <!-- Row 3: ESCALATED -->
+                        <tr class="table-row-hover bg-white">
+                            <td class="px-6 py-4 font-medium text-slate-900">#NEG-8922</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg" alt="Traveler" class="w-full h-full object-cover">
+                                    </div>
+                                    <span class="font-medium text-slate-700">Michael Chen</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">New York, USA</td>
+                            <td class="px-6 py-4 text-slate-600">Nov 02 - Nov 05</td>
+                            <td class="px-6 py-4 text-slate-600">Four Seasons Downtown</td>
+                            <td class="px-6 py-4 text-center text-slate-600">8</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium badge-escalated">
+                                    <i class="fa-solid fa-circle-exclamation mr-1.5 text-[10px]"></i> Escalated
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-medium text-slate-400">Pending Review</td>
+                        </tr>
+
+                        <!-- Row 4: TIMEOUT -->
+                        <tr class="table-row-hover bg-white">
+                            <td class="px-6 py-4 font-medium text-slate-900">#NEG-8921</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg" alt="Traveler" class="w-full h-full object-cover">
+                                    </div>
+                                    <span class="font-medium text-slate-700">Emma Watson</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">Berlin, DE</td>
+                            <td class="px-6 py-4 text-slate-600">Oct 20 - Oct 22</td>
+                            <td class="px-6 py-4 text-slate-600">Hotel Adlon Kempinski</td>
+                            <td class="px-6 py-4 text-center text-slate-600">12</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium badge-timeout">
+                                    Timeout
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-medium text-slate-400">Failed</td>
+                        </tr>
+                         <!-- Row 5: CONFIRMED -->
+                        <tr class="table-row-hover bg-white">
+                            <td class="px-6 py-4 font-medium text-slate-900">#NEG-8920</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="Traveler" class="w-full h-full object-cover">
+                                    </div>
+                                    <span class="font-medium text-slate-700">David Miller</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">Rome, IT</td>
+                            <td class="px-6 py-4 text-slate-600">Oct 25 - Oct 28</td>
+                            <td class="px-6 py-4 text-slate-600 font-medium">Hotel Eden</td>
+                            <td class="px-6 py-4 text-center text-slate-600">2</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium badge-confirmed">
+                                    Confirmed
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-900">€ 380.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination & Export -->
+            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-slate-500">
+                    Showing <span class="font-medium text-slate-900">1</span> to <span class="font-medium text-slate-900">5</span> of <span class="font-medium text-slate-900">124</span> results
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed bg-white" disabled>Previous</button>
+                    <button class="px-3 py-1.5 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 bg-white">Next</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .gradient-text {
+            background: linear-gradient(135deg, #000080 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(135, 206, 250, 0.15) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <button class="px-5 py-2.5 bg-navy hover:bg-blue-900 text-white text-sm font-medium rounded-lg shadow-sm transition-all">
+                    Sign In to Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col w-full max-w-[1440px] mx-auto">
+        
+        <!-- Hero Section -->
+        <section id="hero" class="relative pt-24 pb-32 px-6 overflow-hidden hero-bg">
+            <div class="max-w-5xl mx-auto text-center relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-sm font-medium mb-8">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    Next-Gen AI Hotel Negotiation
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-[1.1]">
+                    Automate Corporate Travel with <br/>
+                    <span class="gradient-text">AI-to-AI Negotiation</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed">
+                    HNP Protocol deploys autonomous AI agents to negotiate hotel rates in real-time. Your Corporate Agent secures the best deals while ensuring policy compliance, directly with the Hotel's AI.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button class="w-full sm:w-auto px-8 py-4 bg-navy hover:bg-blue-900 text-white text-base font-medium rounded-xl shadow-glow transition-all flex items-center justify-center gap-2">
+                        Sign In to Dashboard
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </button>
+                    <button class="w-full sm:w-auto px-8 py-4 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-base font-medium rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+                        View Demo
+                        <i class="fa-regular fa-circle-play text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Preview Mockup -->
+            <div class="mt-20 max-w-6xl mx-auto relative z-10">
+                <div class="rounded-2xl border border-slate-200/60 shadow-2xl bg-white overflow-hidden">
+                    <div class="h-12 bg-slate-50 border-b border-slate-100 flex items-center px-4 gap-2">
+                        <div class="flex gap-1.5">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="mx-auto px-20 py-1 bg-white rounded-md text-xs text-slate-400 border border-slate-100">app.hnpprotocol.com/dashboard</div>
+                    </div>
+                    <div class="p-2">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/default-placeholder.png" alt="Dashboard Preview" class="w-full h-auto rounded-lg border border-slate-100 object-cover" style="aspect-ratio: 16/9; opacity: 0.8;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Value Proposition Grid -->
+        <section id="features" class="py-24 px-6 bg-white">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">The Future of Procurement</h2>
+                    <p class="text-slate-600 max-w-2xl mx-auto text-lg">Replace manual email threads with millisecond-speed AI negotiation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-soft transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 mb-3">Real-Time Negotiation</h3>
+                        <p class="text-slate-600 leading-relaxed">Agents process thousands of variables—rates, amenities, cancellation policies—in milliseconds to secure the optimal contract.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-soft transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 mb-3">Policy Compliance</h3>
+                        <p class="text-slate-600 leading-relaxed">Configure strict ESG requirements, maximum rates, and loyalty preferences. The AI never deviates from your corporate guidelines.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-soft transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-900 mb-3">Complete Audit Trail</h3>
+                        <p class="text-slate-600 leading-relaxed">Every counter-offer, concession, and final agreement is immutably logged for transparent financial reporting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works / Workflow -->
+        <section id="workflow" class="py-24 px-6 bg-slate-50 border-y border-slate-200">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col lg:flex-row items-center gap-16">
+                    <div class="flex-1">
+                        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Agent vs. Agent Architecture</h2>
+                        <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                            Watch as your Corporate Agent establishes travel intent and negotiates directly with the Hotel Agent's yield management system. 
+                        </p>
+                        
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 rounded-full bg-navy text-white flex items-center justify-center font-bold shrink-0">1</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-slate-900">Travel Intent Broadcast</h4>
+                                    <p class="text-slate-600 mt-1">Corporate agent signals dates, location, and baseline requirements.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 rounded-full bg-sky text-slate-900 flex items-center justify-center font-bold shrink-0">2</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-slate-900">Yield Optimization</h4>
+                                    <p class="text-slate-600 mt-1">Hotel agent counters based on current occupancy and floor rates.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold shrink-0">3</div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-slate-900">Instant Confirmation</h4>
+                                    <p class="text-slate-600 mt-1">Agreement is reached and confirmed via secure API integration.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 w-full">
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl p-6">
+                            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded bg-navy text-white flex items-center justify-center text-xs"><i class="fa-solid fa-building"></i></div>
+                                    <span class="font-semibold text-sm">Corp Agent</span>
+                                </div>
+                                <span class="text-xs font-medium px-2 py-1 bg-amber-100 text-amber-700 rounded-full">Negotiating</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="font-semibold text-sm">Hotel Agent</span>
+                                    <div class="w-8 h-8 rounded bg-sky text-slate-800 flex items-center justify-center text-xs"><i class="fa-solid fa-hotel"></i></div>
+                                </div>
+                            </div>
+                            
+                            <div class="space-y-4 text-sm font-mono">
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 w-3/4">
+                                    <span class="text-navy font-bold text-xs block mb-1">REQ_QUOTE</span>
+                                    2 Nights | Paris | Max €250/nt | ESG: Tier 1
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 w-3/4 ml-auto text-right">
+                                    <span class="text-blue-700 font-bold text-xs block mb-1">OFFER_01</span>
+                                    €280/nt | Standard Room | Breakfast Inc.
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 w-3/4">
+                                    <span class="text-navy font-bold text-xs block mb-1">COUNTER_01</span>
+                                    €240/nt | Standard Room | No Breakfast
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg border border-green-100 w-3/4 ml-auto text-right">
+                                    <span class="text-green-700 font-bold text-xs block mb-1">AGREED</span>
+                                    €245/nt | Standard | Late Checkout Inc.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

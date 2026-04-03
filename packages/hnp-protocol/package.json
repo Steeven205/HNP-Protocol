@@ -1,0 +1,25 @@
+{
+  "name": "@hnp/protocol",
+  "version": "0.1.0",
+  "description": "HNP Protocol — Types partagés et orchestrateur",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.5.0"
+  }
+}

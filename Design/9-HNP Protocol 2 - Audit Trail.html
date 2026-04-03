@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Trail - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                        'offer-glow': '0 0 20px -5px rgba(135, 206, 250, 0.6)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Custom Table Scrollbar */
+        .table-container::-webkit-scrollbar { height: 8px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .glass-row:hover { background-color: rgba(248, 250, 252, 0.8); backdrop-filter: blur(4px); }
+        
+        /* Toast Animation */
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col m-0 p-0">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Negotiations List</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Audit Trail</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Team & Account</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col w-full max-w-[1440px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header & Metrics Ribbon -->
+        <div class="mb-8" id="page-header">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 mb-1">Audit Trail</h1>
+                    <p class="text-sm text-slate-500">Chronological log of all AI negotiations and transactions</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Global Metrics Ribbon -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="metrics-ribbon">
+                <div class="bg-white p-5 rounded-[16px] border border-slate-200 shadow-soft relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-file-invoice text-4xl text-brand-600"></i>
+                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-1">Total Transactions</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold text-slate-900">12,458</h3>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> 12%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-[16px] border border-slate-200 shadow-soft relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-piggy-bank text-4xl text-green-600"></i>
+                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-1">Total Savings (YTD)</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold text-slate-900">€4.2M</h3>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> 8.5%
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-[16px] border border-slate-200 shadow-soft relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-bolt text-4xl text-orange-500"></i>
+                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-1">Avg. Negotiation Time</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold text-slate-900">2.4s</h3>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-down text-[10px]"></i> 0.3s
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-[16px] border border-slate-200 shadow-soft relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-shield-check text-4xl text-navy"></i>
+                    </div>
+                    <p class="text-xs font-medium text-slate-500 mb-1">Policy Compliance</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold text-slate-900">98.2%</h3>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> 1.1%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Bar & Table Section -->
+        <div class="bg-white border border-slate-200 rounded-[16px] shadow-soft flex flex-col" id="audit-table-section">
+            
+            <!-- Transaction Filter Bar -->
+            <div class="p-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-50/50 rounded-t-[16px]">
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                    <!-- Search -->
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" placeholder="Search reference, hotel, hash..." class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white">
+                    </div>
+                    
+                    <!-- Date Range Filter -->
+                    <div class="relative w-full sm:w-auto">
+                        <button class="w-full sm:w-auto px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-slate-400"></i>
+                                <span>Last 30 Days</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+
+                    <!-- Corporate Account Filter -->
+                    <div class="relative w-full sm:w-auto">
+                        <button class="w-full sm:w-auto px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-building text-slate-400"></i>
+                                <span>All Accounts</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Destination Filter -->
+                    <div class="relative w-full sm:w-auto">
+                        <button class="w-full sm:w-auto px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-between gap-2 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-location-dot text-slate-400"></i>
+                                <span>All Destinations</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200" title="Clear Filters">
+                        <i class="fa-solid fa-filter-circle-xmark"></i>
+                    </button>
+                    <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200" title="Columns">
+                        <i class="fa-solid fa-table-columns"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="overflow-x-auto table-container">
+                <table class="w-full text-left border-collapse min-w-[1000px]">
+                    <thead class="bg-white sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">Ref / Date</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">Account</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">Hotel & Location</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 text-right">Final Rate</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 text-right">Savings</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200">Audit Hash</th>
+                            <th class="px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-200 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                        
+                        <!-- Row 1 -->
+                        <tr class="glass-row transition-colors group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-navy hover:text-brand-600 cursor-pointer">BKG-8492-AX</span>
+                                    <span class="text-xs text-slate-500">Oct 24, 2026 • 10:42 AM</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">AC</div>
+                                    <span class="text-sm text-slate-700">Acme Corp</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-slate-900">The Savoy</span>
+                                    <span class="text-xs text-slate-500"><i class="fa-solid fa-location-dot text-[10px] mr-1"></i>London, UK</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <span class="text-sm font-bold text-slate-900">€265.00</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-sm font-medium text-green-600">€35.00</span>
+                                    <span class="text-[10px] text-slate-500">vs €300 public</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs text-slate-600 bg-slate-50 border border-slate-200 px-2 py-1 rounded">0x8f2a...3b9c</span>
+                                    <button class="text-slate-400 hover:text-brand-600 transition-colors" onclick="copyHash('0x8f2a7d4e9b1c5f3a2b8c7d6e5f4a3b9c')" title="Copy Hash">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button class="p-1.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-md transition-colors" title="View Audit Detail">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr class="glass-row transition-colors group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-navy hover:text-brand-600 cursor-pointer">BKG-8491-ZT</span>
+                                    <span class="text-xs text-slate-500">Oct 24, 2026 • 09:15 AM</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">GL</div>
+                                    <span class="text-sm text-slate-700">Globex Inc</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-slate-900">Marriott Marquis</span>
+                                    <span class="text-xs text-slate-500"><i class="fa-solid fa-location-dot text-[10px] mr-1"></i>New York, NY</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <span class="text-sm font-bold text-slate-900">$310.00</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-sm font-medium text-green-600">$40.00</span>
+                                    <span class="text-[10px] text-slate-500">vs $350 public</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs text-slate-600 bg-slate-50 border border-slate-200 px-2 py-1 rounded">0x1a4b...9f2d</span>
+                                    <button class="text-slate-400 hover:text-brand-600 transition-colors" onclick="copyHash('0x1a4b2c3d4e5f6a7b8c9d0e1f2a3b9f2d')" title="Copy Hash">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button class="p-1.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-md transition-colors" title="View Audit Detail">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr class="glass-row transition-colors group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-navy hover:text-brand-600 cursor-pointer">BKG-8490-KL</span>
+                                    <span class="text-xs text-slate-500">Oct 23, 2026 • 16:30 PM</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">IN</div>
+                                    <span class="text-sm text-slate-700">Initech</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-slate-900">Hilton Tokyo</span>
+                                    <span class="text-xs text-slate-500"><i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Tokyo, JP</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <span class="text-sm font-bold text-slate-900">¥28,500</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-sm font-medium text-green-600">¥3,500</span>
+                                    <span class="text-[10px] text-slate-500">vs ¥32k public</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs text-slate-600 bg-slate-50 border border-slate-200 px-2 py-1 rounded">0x7c9e...1a4b</span>
+                                    <button class="text-slate-400 hover:text-brand-600 transition-colors" onclick="copyHash('0x7c9e1a2b3c4d5e6f7a8b9c0d1e2f1a4b')" title="Copy Hash">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button class="p-1.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-md transition-colors" title="View Audit Detail">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        
+                         <!-- Row 4 -->
+                         <tr class="glass-row transition-colors group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold text-navy hover:text-brand-600 cursor-pointer">BKG-8489-PQ</span>
+                                    <span class="text-xs text-slate-500">Oct 23, 2026 • 14:12 PM</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">ST</div>
+                                    <span class="text-sm text-slate-700">Stark Ind</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-medium text-slate-900">Four Seasons</span>
+                                    <span class="text-xs text-slate-500"><i class="fa-solid fa-location-dot text-[10px] mr-1"></i>Paris, FR</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <span class="text-sm font-bold text-slate-900">€420.00</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-sm font-medium text-green-600">€80.00</span>
+                                    <span class="text-[10px] text-slate-500">vs €500 public</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono text-xs text-slate-600 bg-slate-50 border border-slate-200 px-2 py-1 rounded">0x3f5d...8e2a</span>
+                                    <button class="text-slate-400 hover:text-brand-600 transition-colors" onclick="copyHash('0x3f5d7a9b1c2d4e6f8a0b2c4d6e8f8e2a')" title="Copy Hash">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                <button class="p-1.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-md transition-colors" title="View Audit Detail">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-slate-100 bg-white rounded-b-[16px] flex items-center justify-between">
+                <div class="text-sm text-slate-500">
+                    Showing <span class="font-medium text-slate-900">1</span> to <span class="font-medium text-slate-900">10</span> of <span class="font-medium text-slate-900">12,458</span> results
+                </div>
+                <div class="flex items-center gap-1">
+                    <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded bg-brand-600 text-white font-medium text-sm">1</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">2</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">3</button>
+                    <span class="w-8 h-8 flex items-center justify-center text-slate-500">...</span>
+                    <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">1245</button>
+                    <button class="w-8 h-8 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors text-brand-600 font-medium">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        function copyHash(hash) {
+            // Simulate copy to clipboard
+            navigator.clipboard.writeText(hash).then(() => {
+                showToast(`Copied hash ${hash.substring(0, 6)}... to clipboard`);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                showToast('Failed to copy hash');
+            });
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            toast.className = 'bg-slate-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 text-sm font-medium toast-enter';
+            toast.innerHTML = `
+                <i class="fa-solid fa-circle-check text-green-400"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(100%)';
+                toast.style.transition = 'all 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Wizard - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .gradient-text {
+            background: linear-gradient(135deg, #000080 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(135, 206, 250, 0.15) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        /* Custom Toggle Switch Styles based on prior UI colors */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #000080;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #000080;
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #cbd5e1;
+            border-radius: 9999px;
+            transition: all 0.3s;
+        }
+        .toggle-circle {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: white;
+            border-radius: 50%;
+            top: 0.125rem;
+            left: 0.125rem;
+            transition: all 0.3s;
+        }
+        .toggle-checkbox:checked + .toggle-label .toggle-circle {
+            transform: translateX(1.5rem);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col m-0 p-0">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Wizard Step 2 -->
+    <main class="flex-1 flex w-full max-w-[1440px] mx-auto py-12 px-6">
+        
+        <div class="w-full mx-auto">
+            
+            <!-- Wizard Card -->
+            <div class="bg-white rounded-[16px] shadow-soft border border-slate-200 p-8 md:p-10">
+                
+                <!-- Header & Progress -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900 mb-1">Baseline Configuration</h1>
+                        <p class="text-sm text-slate-500">Quick-start setup for Corporate Policy & Hotel Yield Rules</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-slate-900">Step 2</span>
+                        <span class="text-sm text-slate-500">of 2</span>
+                    </div>
+                </div>
+
+                <!-- Dual Configuration Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                    
+                    <!-- Left Column: Corporate Policy -->
+                    <div class="space-y-8">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-900 mb-2">Corporate Policy</h2>
+                            <p class="text-sm text-slate-500 mb-6">Define buying rules for your AI Corporate Agent.</p>
+                            
+                            <div class="bg-slate-50 rounded-[12px] p-6 border border-slate-100 space-y-6">
+                                
+                                <!-- Max Rate -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Default Max Rate (EUR) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <span class="text-slate-500 sm:text-sm">€</span>
+                                        </div>
+                                        <input type="number" class="block w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white" placeholder="250" value="250">
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-slate-500">Hard cap for AI agent bidding.</p>
+                                </div>
+
+                                <!-- Min Hotel Category -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Minimum Hotel Category</label>
+                                    <div class="relative">
+                                        <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white appearance-none">
+                                            <option>3 Stars</option>
+                                            <option selected>4 Stars</option>
+                                            <option>5 Stars</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ESG Requirement -->
+                                <div class="flex items-center justify-between py-2">
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-700">ESG Certification Required</label>
+                                        <p class="text-xs text-slate-500 mt-0.5">Only negotiate with eco-certified properties.</p>
+                                    </div>
+                                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                        <input type="checkbox" name="toggle_esg" id="toggle_esg" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                        <label for="toggle_esg" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer">
+                                            <span class="toggle-circle absolute block"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Cancellation Policy Required -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Required Cancellation Policy</label>
+                                    <div class="relative">
+                                        <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white appearance-none">
+                                            <option>Non-refundable (Lowest rate)</option>
+                                            <option>48 Hours Prior</option>
+                                            <option selected>24 Hours Prior</option>
+                                            <option>Same Day (6 PM)</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Loyalty Program -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Preferred Loyalty Chains</label>
+                                    <input type="text" class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white" placeholder="e.g., Marriott, Hilton" value="Marriott Bonvoy, Hilton Honors">
+                                    <div class="flex gap-2 mt-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600 border border-brand-100">
+                                            Marriott Bonvoy <button class="ml-1.5 text-brand-600 hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
+                                        </span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600 border border-brand-100">
+                                            Hilton Honors <button class="ml-1.5 text-brand-600 hover:text-brand-900"><i class="fa-solid fa-xmark"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Hotel Yield Rules -->
+                    <div class="space-y-8">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-900 mb-2">Hotel Yield Rules</h2>
+                            <p class="text-sm text-slate-500 mb-6">Set selling parameters for your AI Hotel Agent.</p>
+                            
+                            <div class="bg-slate-50 rounded-[12px] p-6 border border-slate-100 space-y-6">
+                                
+                                <!-- Base Rate -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Standard Base Rate (EUR) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <span class="text-slate-500 sm:text-sm">€</span>
+                                        </div>
+                                        <input type="number" class="block w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white" placeholder="300" value="300">
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-slate-500">Starting point for negotiations.</p>
+                                </div>
+
+                                <!-- Floor Rate -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Absolute Floor Rate (EUR) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <span class="text-slate-500 sm:text-sm">€</span>
+                                        </div>
+                                        <input type="number" class="block w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white" placeholder="180" value="180">
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-slate-500">Agent will not bid below this amount.</p>
+                                </div>
+
+                                <!-- Volume Discount -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Volume Discount Tier</label>
+                                    <div class="relative">
+                                        <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-white appearance-none">
+                                            <option>None</option>
+                                            <option>> 50 nights/yr (5% off)</option>
+                                            <option selected>> 100 nights/yr (10% off)</option>
+                                            <option>> 500 nights/yr (15% off)</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Seasonal Adjustments -->
+                                <div class="flex items-center justify-between py-2">
+                                    <div>
+                                        <label class="text-sm font-medium text-slate-700">Enable Seasonal Multipliers</label>
+                                        <p class="text-xs text-slate-500 mt-0.5">Automatically adjust floor rates during peak season.</p>
+                                    </div>
+                                    <div class="relative inline-block w-12 mr-2 align-middle select-none">
+                                        <input type="checkbox" name="toggle_season" id="toggle_season" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                                        <label for="toggle_season" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer">
+                                            <span class="toggle-circle absolute block"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Cancellation Policies Offered -->
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Permitted Cancellation Tiers</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center gap-3">
+                                            <input type="checkbox" class="w-4 h-4 text-navy border-slate-300 rounded focus:ring-navy" checked>
+                                            <span class="text-sm text-slate-700">Non-refundable (Max discount)</span>
+                                        </label>
+                                        <label class="flex items-center gap-3">
+                                            <input type="checkbox" class="w-4 h-4 text-navy border-slate-300 rounded focus:ring-navy" checked>
+                                            <span class="text-sm text-slate-700">48 Hours Prior (Standard)</span>
+                                        </label>
+                                        <label class="flex items-center gap-3">
+                                            <input type="checkbox" class="w-4 h-4 text-navy border-slate-300 rounded focus:ring-navy">
+                                            <span class="text-sm text-slate-700">Same Day 6PM (Premium rate)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-10 pt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                    <button type="button" class="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                        Skip for now
+                    </button>
+                    
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button type="button" class="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl transition-colors">
+                            Back
+                        </button>
+                        <button type="button" class="w-full sm:w-auto px-8 py-2.5 text-sm font-medium text-white bg-navy hover:bg-blue-900 rounded-xl shadow-sm transition-colors shadow-soft">
+                            Complete Setup
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "company": "TechCorp SAS",
+  "corporate_id": "TC-2026-001",
+  "industry": "Software / SaaS",
+  "headcount": 280,
+  "annual_travel_budget_eur": 850000,
+  "travel_manager": {
+    "name": "Marie Dupont",
+    "email": "m.dupont@techcorp.fr",
+    "phone": "+33 6 12 34 56 78"
+  },
+  "travel_policy": {
+    "max_rate_per_night_eur": {
+      "paris": 180,
+      "lyon": 150,
+      "bordeaux": 140,
+      "lille": 130,
+      "default": 130
+    },
+    "minimum_category": "3_star",
+    "esg_requirement": "tier_B_minimum",
+    "cancellation_required": "24h_free",
+    "breakfast": "optional_reimbursed",
+    "parking": "reimbursed_if_no_public_transport",
+    "loyalty_program": {
+      "mode": "accumulate_company_account",
+      "preferred_chains": ["Accor ALL", "IHG Rewards", "Marriott Bonvoy"]
+    },
+    "approval_required_above_eur": 250,
+    "max_advance_booking_days": 90,
+    "booking_class": "economy_only"
+  },
+  "negotiation_rules": {
+    "max_counter_rounds": 2,
+    "volume_leverage_nights_threshold": 5,
+    "auto_accept_conditions": {
+      "below_budget_pct": 100,
+      "cancellation_met": true,
+      "esg_met": true
+    },
+    "counter_propose_if": {
+      "rate_within_pct_above_budget": 15,
+      "missing_inclusions": ["cancellation_24h"]
+    },
+    "escalate_to_human_if": {
+      "rate_above_budget_pct": 15,
+      "rounds_exceeded": true,
+      "timeout_seconds": 30
+    }
+  },
+  "travel_history": {
+    "ytd_nights": 127,
+    "ytd_spend_eur": 18450,
+    "top_destinations": ["Paris", "Lyon", "Berlin"],
+    "avg_stay_nights": 2.1,
+    "preferred_hotel_ids": ["LMBH-PARIS-001"],
+    "last_booking_date": "2026-03-15"
+  },
+  "travelers": [
+    {
+      "id": "T001",
+      "name": "Paul Martin",
+      "role": "Sales Director",
+      "loyalty_ids": { "accor": "ACC789456" },
+      "preferences": ["quiet_floor", "high_floor", "twin_bed"]
+    },
+    {
+      "id": "T002",
+      "name": "Sophie Chen",
+      "role": "CTO",
+      "loyalty_ids": { "marriott": "MBV234567" },
+      "preferences": ["suite_if_available", "gym_access"]
+    }
+  ]
+}

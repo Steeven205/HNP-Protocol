@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organization Setup - HNP Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e5edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        navy: '#000080',
+                        sky: '#87CEFA',
+                        surface: '#f8fafc',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .gradient-text {
+            background: linear-gradient(135deg, #000080 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(135, 206, 250, 0.15) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation (Retained from Previous Screen) -->
+    <header id="header" class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+        <div class="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="#" class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                        H
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-navy">HNP Protocol</span>
+                </a>
+                
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Welcome</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Sign In</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg">Organization Setup</a>
+                    <a href="#" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors">Configuration</a>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <a href="#" class="hidden md:block text-sm font-medium text-slate-600 hover:text-navy transition-colors">Documentation</a>
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4 ml-2">
+                    <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="User" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content: Wizard -->
+    <main class="flex-1 flex w-full max-w-[1440px] mx-auto py-12 px-6">
+        
+        <div class="w-full max-w-[800px] mx-auto">
+            
+            <!-- Wizard Card -->
+            <div class="bg-white rounded-[16px] shadow-soft border border-slate-200 p-8 md:p-10">
+                
+                <!-- Header & Progress -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900 mb-1">Organization Profile</h1>
+                        <p class="text-sm text-slate-500">Set up your multi-tenant workspace</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium text-slate-900">Step 1</span>
+                        <span class="text-sm text-slate-500">of 2</span>
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div class="space-y-8">
+                    
+                    <!-- Section: Workspace Details -->
+                    <div>
+                        <h2 class="text-base font-semibold text-slate-900 mb-4">Workspace Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">Organization Name <span class="text-red-500">*</span></label>
+                                <input type="text" class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white" placeholder="Acme Corp">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">Industry <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white appearance-none">
+                                        <option>Technology</option>
+                                        <option>Finance</option>
+                                        <option>Healthcare</option>
+                                        <option>Manufacturing</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1.5">Company Size</label>
+                                <div class="relative">
+                                    <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white appearance-none">
+                                        <option>1-50 employees</option>
+                                        <option>51-200 employees</option>
+                                        <option>201-1000 employees</option>
+                                        <option>1000+ employees</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Invite Teammates -->
+                    <div class="pt-6 border-t border-slate-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-base font-semibold text-slate-900">Invite Teammates</h2>
+                                <p class="text-sm text-slate-500">Add members to your workspace and assign roles.</p>
+                            </div>
+                            <button type="button" class="text-sm font-medium text-brand-600 hover:text-navy transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-plus"></i> Add Another
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Invite Row 1 -->
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div class="flex-1 w-full">
+                                    <input type="email" class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white" placeholder="colleague@company.com" value="sarah.j@acmecorp.com">
+                                </div>
+                                <div class="w-full sm:w-48 relative">
+                                    <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white appearance-none">
+                                        <option selected>Admin</option>
+                                        <option>Analyst</option>
+                                        <option>Read-only</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                                    </div>
+                                </div>
+                                <button type="button" class="p-2.5 text-slate-400 hover:text-red-500 transition-colors hidden sm:block">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Invite Row 2 -->
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div class="flex-1 w-full">
+                                    <input type="email" class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white" placeholder="colleague@company.com">
+                                </div>
+                                <div class="w-full sm:w-48 relative">
+                                    <select class="block w-full px-4 py-2.5 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent transition-shadow bg-slate-50 focus:bg-white appearance-none">
+                                        <option>Admin</option>
+                                        <option selected>Analyst</option>
+                                        <option>Read-only</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                                    </div>
+                                </div>
+                                <button type="button" class="p-2.5 text-slate-400 hover:text-red-500 transition-colors hidden sm:block">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-10 pt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+                    <button type="button" class="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                        Skip for now
+                    </button>
+                    
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <button type="button" class="w-full sm:w-auto px-6 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl transition-colors">
+                            Back
+                        </button>
+                        <button type="button" class="w-full sm:w-auto px-8 py-2.5 text-sm font-medium text-white bg-navy hover:bg-blue-900 rounded-xl shadow-sm transition-colors shadow-soft">
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Retained from Previous Screen) -->
+    <footer id="footer" class="bg-white border-t border-slate-200 pt-16 pb-8 px-6 mt-auto">
+        <div class="max-w-[1440px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-navy flex items-center justify-center text-white font-bold text-lg">
+                            H
+                        </div>
+                        <span class="font-bold text-xl text-slate-900">HNP Protocol</span>
+                    </div>
+                    <p class="text-slate-500 max-w-sm mb-6">
+                        The intelligent layer for corporate travel procurement. Automating negotiations with AI.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Audit Trail</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Configuration</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">API Access</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-3 text-slate-600 text-sm">
+                        <li><a href="#" class="hover:text-navy transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Security</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-navy transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-sm text-slate-500">© 2026 HNP Protocol. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
