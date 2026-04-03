@@ -291,18 +291,39 @@ function OfferCard({
           {offer.district}
         </p>
 
-        {/* Rate */}
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-2xl font-bold text-navy-800">{offer.rate_eur}€</span>
-          <span className="text-sm text-slate-400">/night</span>
-          <span className="text-sm text-slate-400 line-through ml-auto">{offer.base_rate_eur}€</span>
+        {/* 3-Tier Pricing Breakdown */}
+        <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-2">
+          {/* Public rate (OTA) */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-400">Public rate (OTA)</span>
+            <span className="text-sm text-slate-400 line-through">{offer.base_rate_eur}€</span>
+          </div>
+          {/* Rateflow rate (after OTA offset) */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-navy-600 font-medium">Rateflow rate</span>
+              <span className="text-[10px] bg-navy-50 text-navy-600 px-1.5 py-0.5 rounded font-medium">
+                -{offer.savings_vs_budget_pct > 20 ? "18" : "15"}% OTA saved
+              </span>
+            </div>
+            <span className="text-sm font-semibold text-navy-800">
+              {Math.round(offer.base_rate_eur * (1 - (offer.savings_vs_budget_pct > 20 ? 0.18 : 0.15)))}€
+            </span>
+          </div>
+          {/* Final negotiated rate */}
+          <div className="flex items-center justify-between border-t border-slate-200 pt-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-green-700">After negotiation</span>
+            </div>
+            <span className="text-lg font-bold text-green-700">{offer.rate_eur}€</span>
+          </div>
         </div>
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-            -{offer.savings_vs_budget_pct}% vs budget
+            -{Math.round(((offer.base_rate_eur - offer.rate_eur) / offer.base_rate_eur) * 100)}% total savings
           </span>
           <span className="text-xs text-slate-400">
-            Total: {offer.rate_eur * nights}€
+            Total: {Math.round(offer.rate_eur * nights)}€
           </span>
         </div>
 

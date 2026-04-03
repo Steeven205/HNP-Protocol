@@ -55,15 +55,38 @@ export interface YieldContext {
 export interface YieldResult {
   adjusted_rate_eur: number;
   adjustments: RateAdjustment[];
+  /** Tarif public OTA (avant offset commission) */
+  public_rate_eur?: number;
+  /** Tarif base Rateflow après offset OTA (avant yield) */
+  rateflow_base_eur?: number;
 }
 
 export function computeYield(
   base_rate_eur: number,
   config: YieldConfig,
   ctx: YieldContext,
+  ota_commission_pct?: number,
 ): YieldResult {
   const adjustments: RateAdjustment[] = [];
-  let rate = base_rate_eur;
+
+  // ─── OTA Commission Offset (first adjustment) ─────────────────────────
+  // Hotels pay 15-25% commission to Booking.com/Expedia.
+  // Rateflow removes this middleman → the hotel can offer a lower base rate
+  // while keeping the same (or better) net revenue.
+  const public_rate_eur = base_rate_eur;
+  let rateflow_base_eur = base_rate_eur;
+
+  if (ota_commission_pct && ota_commission_pct > 0) {
+    const offset = base_rate_eur * (ota_commission_pct / 100);
+    rateflow_base_eur = Math.round((base_rate_eur - offset) * 100) / 100;
+    adjustments.push({
+      rule: "ota_commission_offset",
+      percentage: -ota_commission_pct,
+      reason: `Commission OTA économisée (${ota_commission_pct}%)`,
+    });
+  }
+
+  let rate = rateflow_base_eur;
 
   const checkInMonth = ctx.check_in.getMonth() + 1;
   const nights = Math.ceil(
@@ -80,7 +103,7 @@ export function computeYield(
       percentage: pct,
       reason: `Haute saison (mois ${checkInMonth})`,
     });
-    rate += base_rate_eur * (pct / 100);
+    rate += rateflow_base_eur * (pct / 100);
   } else if (config.low_season_months.includes(checkInMonth)) {
     const pct = -config.low_season_discount_pct;
     adjustments.push({
@@ -88,7 +111,7 @@ export function computeYield(
       percentage: pct,
       reason: `Basse saison (mois ${checkInMonth})`,
     });
-    rate += base_rate_eur * (pct / 100);
+    rate += rateflow_base_eur * (pct / 100);
   }
 
   // ─── Occupancy ─────────────────────────────────────────────────────────
@@ -99,7 +122,7 @@ export function computeYield(
         percentage: tier.surcharge_pct,
         reason: `Occupation ${ctx.occupancy_pct}% > ${tier.above_pct}%`,
       });
-      rate += base_rate_eur * (tier.surcharge_pct / 100);
+      rate += rateflow_base_eur * (tier.surcharge_pct / 100);
       break;
     }
     if ("below_pct" in tier && ctx.occupancy_pct < tier.below_pct) {
@@ -108,7 +131,7 @@ export function computeYield(
         percentage: -tier.discount_pct,
         reason: `Occupation ${ctx.occupancy_pct}% < ${tier.below_pct}%`,
       });
-      rate -= base_rate_eur * (tier.discount_pct / 100);
+      rate -= rateflow_base_eur * (tier.discount_pct / 100);
       break;
     }
   }
@@ -124,7 +147,7 @@ export function computeYield(
         percentage: -los.discount_pct,
         reason: `Séjour ${nights} nuits ≥ ${los.min_nights}`,
       });
-      rate -= base_rate_eur * (los.discount_pct / 100);
+      rate -= rateflow_base_eur * (los.discount_pct / 100);
       break;
     }
   }
@@ -137,7 +160,7 @@ export function computeYield(
       percentage: -pct,
       reason: `Compte corporate ${ctx.corporate.tier}`,
     });
-    rate -= base_rate_eur * (pct / 100);
+    rate -= rateflow_base_eur * (pct / 100);
   }
 
   // ─── Last minute ───────────────────────────────────────────────────────
@@ -151,7 +174,7 @@ export function computeYield(
       percentage: pct,
       reason: `Réservation < ${config.last_minute_surcharge.hours_before}h avant arrivée`,
     });
-    rate += base_rate_eur * (pct / 100);
+    rate += rateflow_base_eur * (pct / 100);
   }
 
   // ─── Caps ──────────────────────────────────────────────────────────────
@@ -178,5 +201,7 @@ export function computeYield(
   return {
     adjusted_rate_eur: Math.round(rate * 100) / 100,
     adjustments,
+    public_rate_eur: public_rate_eur,
+    rateflow_base_eur: rateflow_base_eur,
   };
 }

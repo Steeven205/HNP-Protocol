@@ -92,6 +92,10 @@ export interface SiteMinderHotel {
   yield_config: YieldConfig;
   corporate_discounts: Record<string, CorporateDiscount>;
   auto_inclusions: { condition: string; inclusions: string[] };
+  /** Commission OTA que l'hôtel paie à Booking.com/Expedia (15-25%) */
+  ota_commission_pct: number;
+  /** Fee Rateflow sur la transaction */
+  rateflow_fee_pct: number;
 }
 
 // 5 realistic Paris hotels
@@ -140,6 +144,8 @@ const HOTELS: SiteMinderHotel[] = [
       "TC-2026-001": { tier: "gold", negotiated_discount_pct: 12 },
     },
     auto_inclusions: { condition: "nights_gte_2", inclusions: ["wifi", "late_checkout_12h"] },
+    ota_commission_pct: 18,
+    rateflow_fee_pct: 3,
   },
   {
     hotel_id: "BAST-PARIS-002",
@@ -184,6 +190,8 @@ const HOTELS: SiteMinderHotel[] = [
       "TC-2026-001": { tier: "silver", negotiated_discount_pct: 8 },
     },
     auto_inclusions: { condition: "nights_gte_2", inclusions: ["wifi"] },
+    ota_commission_pct: 20,
+    rateflow_fee_pct: 3,
   },
   {
     hotel_id: "REPB-PARIS-003",
@@ -229,6 +237,8 @@ const HOTELS: SiteMinderHotel[] = [
       "TC-2026-001": { tier: "gold", negotiated_discount_pct: 10 },
     },
     auto_inclusions: { condition: "nights_gte_1", inclusions: ["wifi", "breakfast", "gym", "minibar"] },
+    ota_commission_pct: 15,
+    rateflow_fee_pct: 3,
   },
   {
     hotel_id: "SNTH-PARIS-004",
@@ -270,6 +280,8 @@ const HOTELS: SiteMinderHotel[] = [
     },
     corporate_discounts: {},
     auto_inclusions: { condition: "nights_gte_3", inclusions: ["wifi"] },
+    ota_commission_pct: 22,
+    rateflow_fee_pct: 3,
   },
   {
     hotel_id: "OPRA-PARIS-005",
@@ -314,6 +326,8 @@ const HOTELS: SiteMinderHotel[] = [
       "TC-2026-001": { tier: "gold", negotiated_discount_pct: 8 },
     },
     auto_inclusions: { condition: "nights_gte_1", inclusions: ["wifi", "breakfast_gourmet", "gym", "minibar", "room_service"] },
+    ota_commission_pct: 15,
+    rateflow_fee_pct: 3,
   },
 ];
 
@@ -410,7 +424,7 @@ export class SiteMinderProvider {
     }
 
     const ctx: YieldContext = { check_in, check_out, occupancy_pct, corporate };
-    const { adjusted_rate_eur, adjustments } = computeYield(room.base_rate_eur, hotel.yield_config, ctx);
+    const yieldResult = computeYield(room.base_rate_eur, hotel.yield_config, ctx, hotel.ota_commission_pct);
 
     // Auto-inclusions
     const inclusions = ["wifi"];
@@ -423,11 +437,15 @@ export class SiteMinderProvider {
     return {
       room_type: params.room_type,
       base_rate_eur: room.base_rate_eur,
-      adjusted_rate_eur,
-      adjustments,
+      adjusted_rate_eur: yieldResult.adjusted_rate_eur,
+      adjustments: yieldResult.adjustments,
       inclusions,
       currency: "EUR",
-    };
+      public_rate_eur: yieldResult.public_rate_eur,
+      rateflow_base_eur: yieldResult.rateflow_base_eur,
+      ota_commission_pct: hotel.ota_commission_pct,
+      rateflow_fee_pct: hotel.rateflow_fee_pct,
+    } as RateResponse & { public_rate_eur?: number; rateflow_base_eur?: number; ota_commission_pct: number; rateflow_fee_pct: number };
   }
 
   /** Create a booking */
