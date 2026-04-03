@@ -50,8 +50,10 @@ async function launchNegotiation(
   });
 
   try {
-    // Dynamic import to avoid bundling server-only code
-    const { runNegotiation } = await import("@hnp/corporate-agent/agent");
+    // Dynamic import — only works locally (MCP subprocess + Claude API)
+    // On Vercel serverless, this will fail gracefully
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { runNegotiation } = await import(/* webpackIgnore: true */ "@hnp/corporate-agent/agent");
 
     store.update(id, { status: "in_progress" });
 
