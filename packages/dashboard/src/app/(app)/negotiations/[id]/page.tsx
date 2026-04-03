@@ -212,8 +212,9 @@ function NegotiationDetailInner({ params }: { params: Promise<{ id: string }> })
   const offerCount = messages.filter((m) => m.type === "HOTEL_OFFER").length;
   const currentRound = Math.max(1, Math.min(offerCount, 2));
 
-  const isInProgress = neg.status === "in_progress" || neg.status === "connecting";
-  const isConfirmed = neg.status === "confirmed";
+  const status = neg.status as string;
+  const isInProgress = status === "in_progress" || status === "connecting";
+  const isConfirmed = status === "confirmed";
 
   const policyChecks = [
     { label: `Rate ≤ budget (€${neg.budget})`, passed: currentRate <= neg.budget },
@@ -305,8 +306,9 @@ function NegotiationDetailInner({ params }: { params: Promise<{ id: string }> })
           {/* Messages */}
           <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2 pb-4">
             {messages.map((msg) => {
-              const isCorporate = msg.agent === "corporate";
-              const isSystem = msg.agent === "system";
+              const agent = msg.agent as string;
+              const isCorporate = agent === "corporate";
+              const isSystem = agent === "system";
               const isHotelOffer = msg.type === "HOTEL_OFFER";
 
               if (isSystem) {
@@ -397,9 +399,9 @@ function NegotiationDetailInner({ params }: { params: Promise<{ id: string }> })
                           <span className="text-sm font-semibold text-green-800">Booking Confirmed</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs text-green-700">
-                          {msg.data.booking_ref && <span>Ref: {String(msg.data.booking_ref)}</span>}
-                          {msg.data.total && <span>Total: {String(msg.data.total)}&nbsp;&euro;</span>}
-                          {msg.data.savings_pct && <span>Savings: {String(msg.data.savings_pct)}%</span>}
+                          {msg.data.booking_ref != null && <span>Ref: {String(msg.data.booking_ref)}</span>}
+                          {msg.data.total != null && <span>Total: {String(msg.data.total)}&nbsp;&euro;</span>}
+                          {msg.data.savings_pct != null && <span>Savings: {String(msg.data.savings_pct)}%</span>}
                         </div>
                       </div>
                     )}
