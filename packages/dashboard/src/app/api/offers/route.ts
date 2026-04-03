@@ -34,8 +34,7 @@ export async function POST(request: Request) {
 
   const config = TIER_CONFIGS[tier] ?? TIER_CONFIGS.starter;
 
-  // Dynamic import to avoid webpack resolution issues on Vercel
-  const { SiteMinderProvider } = await import("@hnp/hotel-agent/siteminder-provider");
+  const { SiteMinderProvider } = await import("@/lib/siteminder-provider");
   const provider = new SiteMinderProvider(destination);
 
   const results = await provider.getMultiHotelOffers({
