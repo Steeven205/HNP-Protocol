@@ -92,7 +92,7 @@ export interface SiteMinderHotel {
   yield_config: YieldConfig;
   corporate_discounts: Record<string, CorporateDiscount>;
   auto_inclusions: { condition: string; inclusions: string[] };
-  /** Commission OTA que l'hôtel paie à Booking.com/Expedia (15-25%) */
+  /** Commission OTA que l'hôtel paie aux agences en ligne (15-25%) */
   ota_commission_pct: number;
   /** Fee Rateflow sur la transaction */
   rateflow_fee_pct: number;

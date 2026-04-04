@@ -67,16 +67,16 @@ export const t = {
   },
   problem_4_title: { en: "OTA Commissions Lost", fr: "Commissions OTA perdues" },
   problem_4_text: {
-    en: "Hotels pay 15–25% to Booking.com per corporate booking. That money disappears. Neither side benefits.",
-    fr: "Les hôtels versent 15–25% à Booking.com par réservation corporate. Cet argent disparaît. Aucune partie n'en bénéficie.",
+    en: "Hotels pay 15–25% commission to online travel agencies on every corporate booking. That money vanishes. Neither side benefits.",
+    fr: "Les hôtels versent 15–25% de commission aux agences en ligne sur chaque réservation corporate. Cet argent disparaît. Aucune partie n'en bénéficie.",
   },
 
-  // ── Visa Analogy
-  analogy_badge: { en: "The Analogy", fr: "L'Analogie" },
-  analogy_title: { en: "Think of It Like Visa for Hotels", fr: "Pensez-y comme Visa pour l'hôtellerie" },
+  // ── Exchange Analogy
+  analogy_badge: { en: "The Concept", fr: "Le Concept" },
+  analogy_title: { en: "A Real-Time Exchange for Hotel Rates", fr: "Une bourse d'échange en temps réel pour les tarifs hôteliers" },
   analogy_subtitle: {
-    en: "Visa is neither the buyer's bank nor the seller's bank. Visa created the protocol both banks use. Rateflow does the same for hotels and corporations.",
-    fr: "Visa n'est ni la banque de l'acheteur ni celle du vendeur. Visa crée le protocole que les deux utilisent. Rateflow fait la même chose.",
+    en: "Like a financial exchange connects buyers and sellers with transparent pricing, Rateflow connects corporate demand and hotel supply through a standardized protocol — with real-time price discovery on every transaction.",
+    fr: "Comme une bourse connecte acheteurs et vendeurs avec des prix transparents, Rateflow connecte la demande corporate et l'offre hôtelière via un protocole standardisé — avec une découverte de prix en temps réel à chaque transaction.",
   },
   analogy_corp_title: { en: "Corporate Agent", fr: "Agent Corporate" },
   analogy_corp_text: {
@@ -139,8 +139,8 @@ export const t = {
   },
   b_hotel_2: { en: "Recover OTA Commissions (15–25%)", fr: "Récupérez les commissions OTA (15–25%)" },
   b_hotel_2t: {
-    en: "Every corporate booking via Rateflow is a direct booking. No OTA commission paid. You pay 3–5% to Rateflow instead of 15–25% to Booking.com.",
-    fr: "Chaque réservation corporate via Rateflow est une réservation directe. Pas de commission OTA. Vous payez 3–5% à Rateflow au lieu de 15–25% à Booking.com.",
+    en: "Every corporate booking via Rateflow is a direct booking. No OTA commission paid. You pay 3–5% to Rateflow instead of 15–25% to online travel agencies.",
+    fr: "Chaque réservation corporate via Rateflow est une réservation directe. Pas de commission OTA. Vous payez 3–5% à Rateflow au lieu de 15–25% aux agences en ligne.",
   },
   b_hotel_3: { en: "Natural Language Configuration", fr: "Configuration en langage naturel" },
   b_hotel_3t: {
@@ -184,7 +184,7 @@ export const t = {
 
   // ── OTA Commission Offset
   ota_badge: { en: "OTA Commission Offset", fr: "Redistribution des commissions OTA" },
-  ota_title: { en: "Everyone Wins. Except Booking.com.", fr: "Tout le monde gagne. Sauf Booking.com." },
+  ota_title: { en: "Everyone Wins. Except the Middleman.", fr: "Tout le monde gagne. Sauf l'intermédiaire." },
   ota_subtitle: {
     en: "Hotels pay 15–25% commission to OTAs on every corporate booking. Rateflow redistributes that commission between the hotel and the corporate.",
     fr: "Les hôtels paient 15–25% de commission aux OTAs sur chaque réservation corporate. Rateflow redistribue cette commission entre l'hôtel et le corporate.",
@@ -200,8 +200,8 @@ export const t = {
   ota_rateflow_fee: { en: "Rateflow fee (4%)", fr: "Fee Rateflow (4%)" },
   ota_callout_title: { en: "The OTA Commission Is Redistributed, Not Eliminated", fr: "La commission OTA est redistribuée, pas éliminée" },
   ota_callout_text: {
-    en: "The 20% OTA commission becomes: 14% discount for the corporate (first automatic discount on every booking), 3% additional net gain for the hotel, 3-5% Rateflow fee. Everyone wins — except Booking.com and Expedia.",
-    fr: "La commission OTA de 20% devient : 14% de remise pour le corporate (premier discount automatique), 3% de gain net supplémentaire pour l'hôtel, 3–5% de fee Rateflow. Tout le monde gagne — sauf Booking.com et Expedia.",
+    en: "The 20% OTA commission becomes: 14% discount for the corporate (first automatic discount on every booking), 3% additional net gain for the hotel, 3–5% Rateflow fee. The value stays in the transaction — not with a middleman.",
+    fr: "La commission OTA de 20% devient : 14% de remise pour le corporate (premier discount automatique), 3% de gain net supplémentaire pour l'hôtel, 3–5% de fee Rateflow. La valeur reste dans la transaction — pas chez un intermédiaire.",
   },
 
   // ── Onboarding

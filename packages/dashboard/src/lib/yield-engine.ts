@@ -70,7 +70,7 @@ export function computeYield(
   const adjustments: RateAdjustment[] = [];
 
   // ─── OTA Commission Offset (first adjustment) ─────────────────────────
-  // Hotels pay 15-25% commission to Booking.com/Expedia.
+  // Hotels pay 15-25% commission to online travel agencies.
   // Rateflow removes this middleman → the hotel can offer a lower base rate
   // while keeping the same (or better) net revenue.
   const public_rate_eur = base_rate_eur;
