@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rateflow.ai — AI-to-AI Hotel Rate Negotiation Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --navy: #00007A;
+  --navy-dark: #000055;
+  --navy-light: #0000A0;
+  --sky: #87CEFA;
+  --sky-light: #C8E8FD;
+  --sky-dark: #4AADEE;
+  --white: #FFFFFF;
+  --off-white: #F7F9FC;
+  --gray-100: #F0F2F7;
+  --gray-200: #E2E6F0;
+  --gray-400: #8892AA;
+  --gray-600: #4A5568;
+  --gray-900: #0F1225;
+  --green: #059669;
+  --green-light: #D1FAE5;
+  --amber: #D97706;
+  --amber-light: #FEF3C7;
+  --red: #DC2626;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --shadow-sm: 0 1px 3px rgba(0,0,80,0.06), 0 1px 2px rgba(0,0,80,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,80,0.08), 0 2px 6px rgba(0,0,80,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,80,0.12), 0 4px 12px rgba(0,0,80,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--gray-900);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.container-wide { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Typography ── */
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.15; }
+h1 { font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 800; }
+h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; }
+h3 { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; }
+
+.label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--navy);
+  background: rgba(0,0,122,0.06); border: 1px solid rgba(0,0,122,0.12);
+  padding: 6px 14px; border-radius: 100px;
+  margin-bottom: 20px;
+}
+.label.sky { color: #0A6699; background: rgba(135,206,250,0.15); border-color: rgba(135,206,250,0.3); }
+.label.white { color: var(--sky); background: rgba(135,206,250,0.12); border-color: rgba(135,206,250,0.25); }
+
+.fr { font-size: 0.85em; opacity: 0.65; font-weight: 300; font-style: italic; display: block; margin-top: 4px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.9); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 24px; height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-mark {
+  width: 36px; height: 36px; background: var(--navy);
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; color: white;
+  font-family: var(--font-display); font-weight: 800; font-size: 18px;
+}
+.nav-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--navy); }
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-links a {
+  font-size: 14px; font-weight: 500; color: var(--gray-600);
+  text-decoration: none; padding: 8px 14px; border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+.nav-links a:hover { color: var(--navy); background: var(--gray-100); }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.lang-toggle {
+  display: flex; background: var(--gray-100); border-radius: 100px; padding: 3px; gap: 2px;
+}
+.lang-btn {
+  font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 100px;
+  border: none; cursor: pointer; transition: all 0.2s; background: transparent; color: var(--gray-400);
+}
+.lang-btn.active { background: white; color: var(--navy); box-shadow: var(--shadow-sm); }
+.btn-nav {
+  background: var(--navy); color: white; font-family: var(--font-body);
+  font-size: 14px; font-weight: 500; padding: 10px 20px;
+  border-radius: var(--radius-md); border: none; cursor: pointer; text-decoration: none;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-nav:hover { background: var(--navy-dark); transform: translateY(-1px); }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--navy); color: white; font-family: var(--font-body);
+  font-size: 15px; font-weight: 500; padding: 14px 28px;
+  border-radius: var(--radius-md); border: none; cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-primary:hover { background: var(--navy-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: white; color: var(--navy); font-family: var(--font-body);
+  font-size: 15px; font-weight: 500; padding: 14px 28px;
+  border-radius: var(--radius-md); border: 1.5px solid var(--gray-200); cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--navy); background: var(--off-white); transform: translateY(-1px); }
+.btn-white {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: white; color: var(--navy); font-family: var(--font-body);
+  font-size: 15px; font-weight: 500; padding: 14px 28px;
+  border-radius: var(--radius-md); border: none; cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-white:hover { background: var(--sky-light); }
+.btn-outline-white {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; color: white; font-family: var(--font-body);
+  font-size: 15px; font-weight: 500; padding: 14px 28px;
+  border-radius: var(--radius-md); border: 1.5px solid rgba(255,255,255,0.35); cursor: pointer;
+  text-decoration: none; transition: all 0.2s;
+}
+.btn-outline-white:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+/* ── HERO ── */
+.hero {
+  padding: 140px 0 80px;
+  background: linear-gradient(160deg, #FAFBFF 0%, #EEF3FF 40%, #E8F5FF 100%);
+  overflow: hidden; position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -100px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(135,206,250,0.2) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.hero-title { margin-bottom: 24px; }
+.hero-title .accent { color: var(--navy); position: relative; }
+.hero-title .accent::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--sky-dark), var(--sky));
+  border-radius: 2px;
+}
+.hero-sub { font-size: 18px; color: var(--gray-600); margin-bottom: 36px; line-height: 1.7; max-width: 480px; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+.hero-stats { display: flex; gap: 32px; }
+.hero-stat-val { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--navy); }
+.hero-stat-label { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+
+/* Negotiation Live Widget */
+.nego-widget {
+  background: white; border-radius: var(--radius-xl);
+  border: 1.5px solid var(--gray-200); box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.nego-header {
+  background: var(--navy); padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nego-title { color: white; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; }
+.nego-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--sky);
+}
+.pulse { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
+
+.nego-body { padding: 20px; }
+.nego-agents { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.agent-badge {
+  flex: 1; padding: 10px 14px; border-radius: var(--radius-md);
+  display: flex; align-items: center; gap: 10px;
+}
+.agent-badge.corp { background: rgba(0,0,122,0.06); border: 1px solid rgba(0,0,122,0.12); }
+.agent-badge.hotel { background: rgba(135,206,250,0.12); border: 1px solid rgba(135,206,250,0.25); }
+.agent-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.agent-icon.corp { background: var(--navy); color: white; }
+.agent-icon.hotel { background: var(--sky-dark); color: white; }
+.agent-name { font-size: 12px; font-weight: 600; }
+.agent-desc { font-size: 10px; color: var(--gray-400); margin-top: 1px; }
+.protocol-pill {
+  padding: 6px 12px; background: var(--gray-100); border-radius: 100px;
+  font-size: 10px; font-weight: 700; color: var(--gray-600); white-space: nowrap;
+  letter-spacing: 0.06em;
+}
+
+.nego-messages { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.msg { max-width: 85%; padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px; line-height: 1.5; }
+.msg.corp { background: rgba(0,0,122,0.05); border: 1px solid rgba(0,0,122,0.1); align-self: flex-start; }
+.msg.hotel { background: rgba(135,206,250,0.12); border: 1px solid rgba(135,206,250,0.25); align-self: flex-end; }
+.msg-type { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 4px; }
+.msg-type.corp { color: var(--navy); }
+.msg-type.hotel { color: var(--sky-dark); }
+
+.nego-result {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1px solid #A7F3D0; border-radius: var(--radius-md);
+  padding: 12px 16px;
+}
+.result-row { display: flex; align-items: center; justify-content: space-between; }
+.result-label { font-size: 11px; font-weight: 600; color: #065F46; }
+.result-val { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: #059669; }
+.result-meta { display: flex; gap: 16px; margin-top: 8px; }
+.result-meta-item { font-size: 10px; color: #059669; display: flex; align-items: center; gap: 4px; }
+
+/* ── SECTION BASE ── */
+section { padding: 96px 0; }
+.section-header { text-align: center; margin-bottom: 64px; }
+.section-header h2 { margin-bottom: 16px; }
+.section-header p { font-size: 18px; color: var(--gray-600); max-width: 560px; margin: 0 auto; }
+
+/* ── PROBLEM SECTION ── */
+.problem-section { background: var(--gray-900); }
+.problem-section .label { color: #f87171; background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.2); }
+.problem-section h2 { color: white; }
+.problem-section p { color: #94A3B8; }
+.problem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.06); border-radius: var(--radius-lg); overflow: hidden; }
+.problem-card { background: var(--gray-900); padding: 32px 28px; }
+.problem-card:hover { background: #1a1d30; }
+.problem-icon { font-size: 24px; margin-bottom: 20px; }
+.problem-card h4 { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: white; margin-bottom: 10px; }
+.problem-card p { font-size: 14px; color: #64748B; line-height: 1.65; }
+
+/* ── ANALOGY ── */
+.analogy-section { background: var(--off-white); }
+.analogy-diagram { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center; max-width: 880px; margin: 0 auto; }
+.analogy-side { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius-lg); padding: 32px; box-shadow: var(--shadow-sm); }
+.analogy-icon { width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+.analogy-icon.corp { background: rgba(0,0,122,0.08); color: var(--navy); }
+.analogy-icon.hotel { background: rgba(135,206,250,0.2); color: var(--sky-dark); }
+.analogy-side h4 { font-family: var(--font-display); font-weight: 700; margin-bottom: 8px; }
+.analogy-side p { font-size: 13px; color: var(--gray-400); }
+.analogy-center { padding: 0 32px; text-align: center; }
+.analogy-center-box { background: var(--navy); color: white; padding: 28px 24px; border-radius: var(--radius-lg); min-width: 160px; }
+.analogy-center-box h4 { font-family: var(--font-display); font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--sky); }
+.analogy-center-box p { font-size: 11px; color: rgba(255,255,255,0.6); }
+.analogy-center-box .protocol-items { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+.protocol-item { font-size: 11px; background: rgba(255,255,255,0.08); padding: 5px 10px; border-radius: 6px; color: rgba(255,255,255,0.7); }
+.analogy-arrow { color: var(--gray-200); font-size: 20px; text-align: center; }
+
+/* ── TWO SIDES ── */
+.two-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.side-card {
+  border-radius: var(--radius-xl); overflow: hidden;
+  border: 1.5px solid var(--gray-200);
+}
+.side-header { padding: 32px; }
+.side-header.corp { background: linear-gradient(135deg, var(--navy), #2244AA); }
+.side-header.hotel { background: linear-gradient(135deg, #0A6699, var(--sky-dark)); }
+.side-icon-wrap { width: 56px; height: 56px; background: rgba(255,255,255,0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; margin-bottom: 16px; }
+.side-header h3 { color: white; font-size: 22px; margin-bottom: 6px; }
+.side-header .sub { color: rgba(255,255,255,0.65); font-size: 14px; }
+.side-body { padding: 28px 32px; background: white; }
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.feature-item { display: flex; gap: 14px; align-items: flex-start; }
+.feature-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.feature-dot.corp { background: rgba(0,0,122,0.08); color: var(--navy); }
+.feature-dot.hotel { background: rgba(135,206,250,0.2); color: var(--sky-dark); }
+.feature-item h5 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.feature-item p { font-size: 13px; color: var(--gray-400); line-height: 1.55; }
+
+/* ── PROTOCOL ── */
+.protocol-section { background: var(--navy); }
+.protocol-section .section-header h2 { color: white; }
+.protocol-section .section-header p { color: rgba(255,255,255,0.6); }
+.protocol-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+.protocol-step-connector { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.2); font-size: 18px; }
+.step-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); padding: 28px 24px; }
+.step-num { font-family: var(--font-display); font-size: 48px; font-weight: 800; color: rgba(255,255,255,0.06); line-height: 1; margin-bottom: 16px; }
+.step-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+.step-tag.corp { background: rgba(0,0,122,0.4); color: var(--sky); border: 1px solid rgba(135,206,250,0.2); }
+.step-tag.hotel { background: rgba(135,206,250,0.12); color: var(--sky); border: 1px solid rgba(135,206,250,0.2); }
+.step-tag.mutual { background: rgba(52,211,153,0.12); color: #6EE7B7; border: 1px solid rgba(52,211,153,0.2); }
+.step-card h4 { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: white; margin-bottom: 10px; }
+.step-card p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+
+/* ── OTA OFFSET ── */
+.ota-section { background: white; }
+.ota-diagram { max-width: 900px; margin: 0 auto; }
+.ota-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 24px; align-items: start; margin-bottom: 40px; }
+.ota-side { background: var(--off-white); border: 1.5px solid var(--gray-200); border-radius: var(--radius-lg); padding: 28px; }
+.ota-side.rateflow { background: linear-gradient(135deg, #EEFFEE, #D1FAE5); border-color: #A7F3D0; }
+.ota-side-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.ota-price { font-family: var(--font-display); font-size: 36px; font-weight: 800; margin: 8px 0; }
+.ota-price.red { color: #DC2626; }
+.ota-price.green { color: #059669; }
+.ota-bar { height: 8px; border-radius: 4px; background: var(--gray-200); margin: 12px 0; overflow: hidden; }
+.ota-bar-fill { height: 100%; border-radius: 4px; }
+.ota-bar-fill.red { background: #FCA5A5; }
+.ota-bar-fill.green { background: #6EE7B7; }
+.ota-breakdown { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.ota-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.ota-row:last-child { border-bottom: none; }
+.ota-row .label-text { color: var(--gray-600); }
+.ota-row .val-text { font-weight: 600; }
+.ota-row .val-text.negative { color: var(--red); }
+.ota-row .val-text.positive { color: var(--green); }
+.ota-row .val-text.neutral { color: var(--gray-900); }
+.ota-vs { display: flex; align-items: center; justify-content: center; }
+.ota-vs-pill { background: var(--navy); color: white; font-family: var(--font-display); font-size: 13px; font-weight: 700; padding: 10px 16px; border-radius: 100px; }
+
+.ota-callout { background: linear-gradient(135deg, var(--navy), #1a3aaa); border-radius: var(--radius-lg); padding: 32px; color: white; display: flex; align-items: center; gap: 24px; }
+.ota-callout-icon { font-size: 40px; opacity: 0.8; flex-shrink: 0; }
+.ota-callout h4 { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--sky); }
+.ota-callout p { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.65; }
+
+/* ── ONBOARDING ── */
+.onboarding-section { background: var(--off-white); }
+.onboarding-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.onboarding-card { background: white; border-radius: var(--radius-lg); padding: 32px; border: 1.5px solid var(--gray-200); box-shadow: var(--shadow-sm); position: relative; }
+.step-circle { width: 48px; height: 48px; background: var(--navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 20px; font-weight: 800; margin-bottom: 20px; }
+.step-time { position: absolute; top: 28px; right: 28px; font-size: 12px; font-weight: 600; color: var(--sky-dark); background: rgba(135,206,250,0.12); padding: 4px 10px; border-radius: 100px; }
+.onboarding-card h4 { font-family: var(--font-display); font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+.onboarding-card p { font-size: 14px; color: var(--gray-400); margin-bottom: 20px; line-height: 1.6; }
+.onboarding-items { display: flex; flex-direction: column; gap: 8px; }
+.onboarding-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-600); }
+.onboarding-item i { color: var(--green); font-size: 12px; }
+
+/* ── SHADOW MODE ── */
+.shadow-section { background: white; }
+.shadow-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.shadow-visual { background: var(--gray-900); border-radius: var(--radius-xl); padding: 32px; overflow: hidden; }
+.shadow-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; background: rgba(251,191,36,0.12); color: #FCD34D; border: 1px solid rgba(251,191,36,0.2); padding: 5px 12px; border-radius: 100px; margin-bottom: 20px; }
+.shadow-months { display: flex; flex-direction: column; gap: 12px; }
+.shadow-month { display: flex; align-items: center; gap: 12px; }
+.shadow-month-label { font-size: 12px; color: rgba(255,255,255,0.4); width: 36px; }
+.shadow-bar-wrap { flex: 1; height: 28px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
+.shadow-bar { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; }
+.shadow-bar.paid { background: rgba(100,116,139,0.3); }
+.shadow-bar.hnp { background: linear-gradient(90deg, rgba(52,211,153,0.5), rgba(52,211,153,0.3)); }
+.shadow-bar-label { font-size: 11px; font-weight: 600; }
+.shadow-bar-label.paid { color: rgba(255,255,255,0.5); }
+.shadow-bar-label.hnp { color: #6EE7B7; }
+.shadow-savings { display: flex; align-items: center; gap: 6px; }
+.shadow-savings-num { font-size: 11px; font-weight: 700; color: #6EE7B7; }
+
+.shadow-content .big-saving { font-family: var(--font-display); font-size: 56px; font-weight: 800; color: var(--navy); line-height: 1; margin: 16px 0 8px; }
+.shadow-content .big-saving span { color: var(--green); }
+.shadow-bullet { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.shadow-bullet-icon { width: 32px; height: 32px; background: rgba(0,0,122,0.06); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--navy); flex-shrink: 0; }
+.shadow-bullet h5 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.shadow-bullet p { font-size: 13px; color: var(--gray-400); line-height: 1.55; }
+
+/* ── CONNECTORS ── */
+.connectors-section { background: var(--off-white); }
+.connectors-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+.connector-card { background: white; border: 1.5px solid var(--gray-200); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); }
+.connector-priority { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--navy); background: rgba(0,0,122,0.06); border: 1px solid rgba(0,0,122,0.12); padding: 4px 10px; border-radius: 100px; display: inline-block; margin-bottom: 16px; }
+.connector-logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.connector-logo { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 18px; }
+.connector-logo.dedge { background: #003087; color: white; }
+.connector-logo.siteminder { background: #E8140A; color: white; }
+.connector-logo.mews { background: #1A1A1A; color: white; }
+.connector-card h4 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin-bottom: 6px; }
+.connector-card .count { font-size: 13px; color: var(--gray-400); margin-bottom: 14px; }
+.connector-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.connector-tag { font-size: 11px; background: var(--gray-100); color: var(--gray-600); padding: 4px 10px; border-radius: 6px; }
+
+/* ── STATS ── */
+.stats-section { background: var(--navy); }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,0.08); border-radius: var(--radius-xl); overflow: hidden; }
+.stat-block { background: var(--navy); padding: 40px 32px; text-align: center; }
+.stat-block:hover { background: rgba(255,255,255,0.04); }
+.stat-num { font-family: var(--font-display); font-size: 48px; font-weight: 800; color: var(--sky); line-height: 1; margin-bottom: 12px; }
+.stat-desc { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+/* ── AUDIT ── */
+.audit-section { background: var(--gray-900); }
+.audit-section .section-header h2 { color: white; }
+.audit-section .section-header p { color: rgba(255,255,255,0.55); }
+.audit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.audit-trail-demo { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); overflow: hidden; }
+.audit-trail-header { background: rgba(255,255,255,0.04); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.audit-trail-title { font-size: 13px; font-weight: 600; color: white; }
+.audit-entry { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.audit-entry:last-child { border-bottom: none; }
+.audit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.audit-dot.intent { background: #60A5FA; }
+.audit-dot.offer { background: #34D399; }
+.audit-dot.counter { background: #FBBF24; }
+.audit-dot.confirm { background: #6EE7B7; }
+.audit-type { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; width: 130px; flex-shrink: 0; }
+.audit-type.intent { color: #60A5FA; }
+.audit-type.offer { color: #34D399; }
+.audit-type.counter { color: #FBBF24; }
+.audit-type.confirm { color: #6EE7B7; }
+.audit-hash { font-family: 'Courier New', monospace; font-size: 11px; color: rgba(255,255,255,0.3); }
+.audit-time { font-size: 11px; color: rgba(255,255,255,0.25); margin-left: auto; white-space: nowrap; }
+
+.audit-benefits { display: flex; flex-direction: column; gap: 20px; }
+.audit-benefit { display: flex; gap: 16px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius-md); }
+.audit-benefit-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.audit-benefit h5 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 6px; }
+.audit-benefit p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.55; }
+
+/* ── CTA ── */
+.cta-section { background: linear-gradient(135deg, var(--navy) 0%, #0A2870 100%); padding: 96px 0; position: relative; overflow: hidden; }
+.cta-section::before {
+  content: ''; position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(135,206,250,0.15) 0%, transparent 70%);
+}
+.cta-inner { text-align: center; position: relative; }
+.cta-inner h2 { color: white; margin-bottom: 16px; }
+.cta-inner p { font-size: 18px; color: rgba(255,255,255,0.65); max-width: 520px; margin: 0 auto 40px; }
+.cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── FOOTER ── */
+footer { background: var(--gray-900); padding: 64px 0 32px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+.footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.footer-logo-mark { width: 32px; height: 32px; background: var(--navy); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+.footer-logo-text { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: white; }
+.footer-desc { font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.7; margin-bottom: 20px; }
+.footer-socials { display: flex; gap: 10px; }
+.social-link { width: 32px; height: 32px; background: rgba(255,255,255,0.06); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); font-size: 13px; text-decoration: none; transition: all 0.2s; }
+.social-link:hover { background: rgba(255,255,255,0.1); color: white; }
+.footer-col h5 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: white; margin-bottom: 16px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col ul li a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+.footer-col ul li a:hover { color: white; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; align-items: center; justify-content: space-between; }
+.footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.25); }
+.footer-kairion { font-size: 12px; color: rgba(255,255,255,0.25); }
+.footer-kairion a { color: rgba(135,206,250,0.6); text-decoration: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .hero-content, .two-sides, .shadow-grid, .audit-grid { grid-template-columns: 1fr; }
+  .problem-grid, .protocol-steps { grid-template-columns: repeat(2, 1fr); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .analogy-diagram { grid-template-columns: 1fr; gap: 16px; }
+  .analogy-center { padding: 0; }
+  .ota-comparison { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  section { padding: 64px 0; }
+  .nav-links { display: none; }
+  h1 { font-size: 2rem; }
+  .problem-grid, .stats-grid, .onboarding-steps, .connectors-grid { grid-template-columns: 1fr; }
+  .protocol-steps { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fadeUp 0.6s ease forwards; }
+.fade-up-1 { animation-delay: 0.1s; opacity: 0; }
+.fade-up-2 { animation-delay: 0.2s; opacity: 0; }
+.fade-up-3 { animation-delay: 0.3s; opacity: 0; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">R</div>
+    <span class="nav-logo-text">Rateflow.ai</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#protocol">Protocol</a>
+    <a href="#shadow">Shadow Mode</a>
+    <a href="#connectors">Integrations</a>
+    <a href="#audit">Security</a>
+  </div>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+      <button class="lang-btn" onclick="setLang('fr',this)">FR</button>
+    </div>
+    <a href="#cta" class="btn-nav">
+      <i class="fa-solid fa-calendar"></i>
+      <span data-en="Request Demo" data-fr="Demander une démo">Request Demo</span>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="fade-up fade-up-1">
+        <div class="label">
+          <span class="pulse"></span>
+          <span data-en="AI-to-AI Negotiation Protocol" data-fr="Protocole de négociation IA-à-IA">AI-to-AI Negotiation Protocol</span>
+        </div>
+        <h1 class="hero-title">
+          <span data-en="The End of the Annual Hotel RFP" data-fr="La fin du RFP hôtelier annuel">The End of the Annual Hotel RFP</span>
+        </h1>
+        <p class="hero-sub">
+          <span data-en="Two AI agents negotiate hotel bookings in real time — no annual contract, no human intervention, no more frozen rates." data-fr="Deux agents IA négocient des réservations hôtelières en temps réel — sans contrat annuel, sans intervention humaine, sans tarifs figés.">Two AI agents negotiate hotel bookings in real time — no annual contract, no human intervention, no more frozen rates.</span>
+        </p>
+        <div class="hero-btns">
+          <a href="#cta" class="btn-primary">
+            <span data-en="Request a Pilot" data-fr="Demander un pilote">Request a Pilot</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <a href="#protocol" class="btn-secondary">
+            <i class="fa-solid fa-play"></i>
+            <span data-en="See it in action" data-fr="Voir en action">See it in action</span>
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-val">&lt;30s</div>
+            <div class="hero-stat-label" data-en="Per negotiation" data-fr="Par négociation">Per negotiation</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">15–35%</div>
+            <div class="hero-stat-label" data-en="Average savings" data-fr="Économies moyennes">Average savings</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">0</div>
+            <div class="hero-stat-label" data-en="Humans involved" data-fr="Humains impliqués">Humans involved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Negotiation Widget -->
+      <div class="fade-up fade-up-2">
+        <div class="nego-widget">
+          <div class="nego-header">
+            <span class="nego-title" data-en="LIVE NEGOTIATION" data-fr="NÉGOCIATION EN DIRECT">LIVE NEGOTIATION</span>
+            <span class="nego-status"><span class="pulse"></span> <span data-en="In Progress" data-fr="En cours">In Progress</span></span>
+          </div>
+          <div class="nego-body">
+            <div class="nego-agents">
+              <div class="agent-badge corp">
+                <div class="agent-icon corp"><i class="fa-solid fa-building"></i></div>
+                <div>
+                  <div class="agent-name" data-en="Corporate Agent" data-fr="Agent Corporate">Corporate Agent</div>
+                  <div class="agent-desc">TechCorp SAS — Travel AI</div>
+                </div>
+              </div>
+              <div class="protocol-pill">HNP Protocol</div>
+              <div class="agent-badge hotel">
+                <div class="agent-icon hotel"><i class="fa-solid fa-hotel"></i></div>
+                <div>
+                  <div class="agent-name" data-en="Hotel Agent" data-fr="Agent Hôtelier">Hotel Agent</div>
+                  <div class="agent-desc">Le Marais — Revenue AI</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="nego-messages">
+              <div class="msg corp">
+                <div class="msg-type corp">TRAVEL_INTENT</div>
+                <span data-en="Paris, May 12–15 · Standard Room · Budget max: €180/night · Gold account, 127 nights YTD" data-fr="Paris, 12–15 mai · Chambre standard · Budget max : 180€/nuit · Compte gold, 127 nuits YTD">Paris, May 12–15 · Standard Room · Budget max: €180/night · Gold account, 127 nights YTD</span>
+              </div>
+              <div class="msg hotel">
+                <div class="msg-type hotel">HOTEL_OFFER</div>
+                <span data-en="€145 → €116/night · WiFi + Late checkout · 24h free cancellation · ESG Tier A · -12% gold discount" data-fr="145€ → 116€/nuit · WiFi + Late checkout · Annulation 24h gratuite · ESG Tier A · -12% remise gold">€145 → €116/night · WiFi + Late checkout · 24h free cancellation · ESG Tier A · -12% gold discount</span>
+              </div>
+            </div>
+
+            <div class="nego-result">
+              <div class="result-row">
+                <span class="result-label" data-en="✓ CONFIRMED — BK-LMBH-PM0512" data-fr="✓ CONFIRMÉ — BK-LMBH-PM0512">✓ CONFIRMED — BK-LMBH-PM0512</span>
+                <span class="result-val">€116/night</span>
+              </div>
+              <div class="result-meta">
+                <span class="result-meta-item"><i class="fa-solid fa-clock"></i> 26.6s</span>
+                <span class="result-meta-item"><i class="fa-solid fa-arrow-trend-down"></i> -35.6% <span data-en="vs budget" data-fr="vs budget">vs budget</span></span>
+                <span class="result-meta-item"><i class="fa-solid fa-user-slash"></i> <span data-en="0 humans" data-fr="0 humains">0 humans</span></span>
+                <span class="result-meta-item"><i class="fa-solid fa-shield"></i> SHA-256</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label" style="color:#f87171;background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.2)">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span data-en="The Problem" data-fr="Le Problème">The Problem</span>
+      </div>
+      <h2 style="color:white" data-en="The Annual Hotel RFP Is Structurally Broken" data-fr="Le RFP hôtelier annuel est structurellement obsolète">The Annual Hotel RFP Is Structurally Broken</h2>
+      <p data-en="Corporate travel managers spend months negotiating rates that are outdated before the ink dries." data-fr="Les travel managers passent des mois à négocier des tarifs obsolètes avant même la signature.">Corporate travel managers spend months negotiating rates that are outdated before the ink dries.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-icon">📅</div>
+        <h4 data-en="Frozen Rates" data-fr="Tarifs figés">Frozen Rates</h4>
+        <p data-en="Rates locked for 12 months in a market that fluctuates daily. By month 2, your contract is already sub-optimal." data-fr="Tarifs figés 12 mois dans un marché qui fluctue quotidiennement. Dès le 2e mois, votre contrat est sous-optimal.">Rates locked for 12 months in a market that fluctuates daily. By month 2, your contract is already sub-optimal.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">📊</div>
+        <h4 data-en="3–6 Month Cycles" data-fr="Cycles de 3 à 6 mois">3–6 Month Cycles</h4>
+        <p data-en="Travel managers and revenue managers exchange spreadsheets for months. An entire RFP process to fix what should be automatic." data-fr="Des mois d'échanges de tableurs entre travel managers et revenue managers pour un résultat immédiatement dépassé.">Travel managers and revenue managers exchange spreadsheets for months. An entire RFP process to fix what should be automatic.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🚧</div>
+        <h4 data-en="Locked to Contracted Hotels" data-fr="Limité aux hôtels sous contrat">Locked to Contracted Hotels</h4>
+        <p data-en="Independent hotels outside your group contract are inaccessible. You overpay for alternatives or go without options." data-fr="Les hôtels indépendants hors contrat sont inaccessibles. Vous surpayez pour des alternatives ou renoncez.">Independent hotels outside your group contract are inaccessible. You overpay for alternatives or go without options.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">💸</div>
+        <h4 data-en="OTA Commissions Lost" data-fr="Commissions OTA perdues">OTA Commissions Lost</h4>
+        <p data-en="Hotels pay 15–25% to Booking.com per corporate booking. That money disappears. Neither side benefits." data-fr="Les hôtels versent 15–25% à Booking.com par réservation corporate. Cet argent disparaît. Aucune partie n'en bénéficie.">Hotels pay 15–25% to Booking.com per corporate booking. That money disappears. Neither side benefits.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANALOGY -->
+<section class="analogy-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label sky"><i class="fa-solid fa-lightbulb"></i> <span data-en="The Analogy" data-fr="L'Analogie">The Analogy</span></div>
+      <h2 data-en="Think of It Like Visa for Hotels" data-fr="Pensez-y comme Visa pour l'hôtellerie">Think of It Like Visa for Hotels</h2>
+      <p data-en="Visa is neither the buyer's bank nor the seller's bank. Visa created the protocol both banks use. Rateflow does the same for hotels and corporations." data-fr="Visa n'est ni la banque de l'acheteur ni celle du vendeur. Visa crée le protocole que les deux utilisent. Rateflow fait la même chose.">Visa is neither the buyer's bank nor the seller's bank. Visa created the protocol both banks use. Rateflow does the same for hotels and corporations.</p>
+    </div>
+    <div class="analogy-diagram">
+      <div class="analogy-side">
+        <div class="analogy-icon corp"><i class="fa-solid fa-building"></i></div>
+        <h4 data-en="Corporate Agent" data-fr="Agent Corporate">Corporate Agent</h4>
+        <p data-en="Travel policy encoded as AI. Negotiates on behalf of the company within approved limits." data-fr="Politique voyage encodée en IA. Négocie au nom de l'entreprise dans les limites approuvées.">Travel policy encoded as AI. Negotiates on behalf of the company within approved limits.</p>
+      </div>
+      <div class="analogy-center">
+        <div class="analogy-arrow">←</div>
+        <div class="analogy-center-box">
+          <h4>HNP Protocol</h4>
+          <p data-en="The standard both agents use" data-fr="Le standard utilisé par les deux">The standard both agents use</p>
+          <div class="protocol-items">
+            <div class="protocol-item">TRAVEL_INTENT</div>
+            <div class="protocol-item">HOTEL_OFFER</div>
+            <div class="protocol-item">COUNTER_PROPOSAL</div>
+            <div class="protocol-item">CONFIRMATION</div>
+          </div>
+        </div>
+        <div class="analogy-arrow">→</div>
+      </div>
+      <div class="analogy-side">
+        <div class="analogy-icon hotel"><i class="fa-solid fa-hotel"></i></div>
+        <h4 data-en="Hotel Agent" data-fr="Agent Hôtelier">Hotel Agent</h4>
+        <p data-en="Yield rules encoded as AI. Negotiates with corporates autonomously, maximizing RevPAR." data-fr="Règles de yield encodées en IA. Négocie avec les corporates de façon autonome, en maximisant le RevPAR.">Yield rules encoded as AI. Negotiates with corporates autonomously, maximizing RevPAR.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TWO SIDES -->
+<section id="features" style="background:white">
+  <div class="container">
+    <div class="section-header">
+      <div class="label"><i class="fa-solid fa-users"></i> <span data-en="Two Products, One Protocol" data-fr="Deux produits, un protocole">Two Products, One Protocol</span></div>
+      <h2 data-en="Built for Both Sides of Every Booking" data-fr="Conçu pour les deux côtés de chaque réservation">Built for Both Sides of Every Booking</h2>
+      <p data-en="Rateflow deploys two AI agents that speak the same protocol. Hotels configure once. Corporates automate forever." data-fr="Rateflow déploie deux agents IA qui parlent le même protocole. Les hôtels configurent une fois. Les corporates automatisent pour toujours.">Rateflow deploys two AI agents that speak the same protocol. Hotels configure once. Corporates automate forever.</p>
+    </div>
+    <div class="two-sides">
+      <!-- Corporate -->
+      <div class="side-card">
+        <div class="side-header corp">
+          <div class="side-icon-wrap"><i class="fa-solid fa-briefcase"></i></div>
+          <h3 data-en="For Corporate Travel Managers" data-fr="Pour les Travel Managers Corporate">For Corporate Travel Managers</h3>
+          <p class="sub" data-en="Automate your hotel procurement. Eliminate the annual RFP." data-fr="Automatisez votre procurement hôtelier. Éliminez le RFP annuel.">Automate your hotel procurement. Eliminate the annual RFP.</p>
+        </div>
+        <div class="side-body">
+          <ul class="feature-list">
+            <li class="feature-item">
+              <div class="feature-dot corp"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="100% Policy Compliance, Automated" data-fr="Conformité politique 100% automatisée">100% Policy Compliance, Automated</h5>
+                <p data-en="Budget caps per city, ESG requirements, cancellation policies — enforced automatically on every booking without manual review." data-fr="Plafonds budgétaires par ville, exigences ESG, politiques d'annulation — appliqués automatiquement sur chaque réservation.">Budget caps per city, ESG requirements, cancellation policies — enforced automatically on every booking without manual review.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot corp"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Access to All Connected Hotels" data-fr="Accès à tous les hôtels connectés">Access to All Connected Hotels</h5>
+                <p data-en="Not just your contracted hotels. Any hotel connected to Rateflow Protocol — independents, boutique properties, apart-hotels — is instantly available." data-fr="Pas seulement vos hôtels sous contrat. Tout hôtel connecté au protocole Rateflow est instantanément accessible.">Not just your contracted hotels. Any hotel connected to Rateflow Protocol — independents, boutique properties, apart-hotels — is instantly available.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot corp"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Volume Leverage, Used Automatically" data-fr="Levier volume utilisé automatiquement">Volume Leverage, Used Automatically</h5>
+                <p data-en="Your YTD nights, loyalty tier, and spending history become negotiating leverage on every single booking — not just at contract renewal." data-fr="Vos nuits YTD, votre tier de fidélité et votre historique deviennent un levier de négociation à chaque réservation.">Your YTD nights, loyalty tier, and spending history become negotiating leverage on every single booking — not just at contract renewal.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot corp"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Shadow Mode — Keep Your Contracts" data-fr="Mode Shadow — Gardez vos contrats">Shadow Mode — Keep Your Contracts</h5>
+                <p data-en="Keep existing contracts. Run Rateflow in parallel. See exactly what you would have saved each month before committing." data-fr="Gardez vos contrats existants. Lancez Rateflow en parallèle. Voyez exactement ce que vous auriez économisé chaque mois.">Keep existing contracts. Run Rateflow in parallel. See exactly what you would have saved each month before committing.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot corp"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Multi-Hotel Bidding (1-to-N)" data-fr="Appel d'offres multi-hôtels (1-to-N)">Multi-Hotel Bidding (1-to-N)</h5>
+                <p data-en="Corporate Agent broadcasts to N hotels simultaneously. Collects all offers. Ranks by price, ESG, and policy fit. Presents top 3 in seconds." data-fr="L'Agent Corporate broadcast vers N hôtels simultanément. Collecte toutes les offres. Classe par prix, ESG et conformité politique.">Corporate Agent broadcasts to N hotels simultaneously. Collects all offers. Ranks by price, ESG, and policy fit. Presents top 3 in seconds.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Hotel -->
+      <div class="side-card">
+        <div class="side-header hotel">
+          <div class="side-icon-wrap"><i class="fa-solid fa-hotel"></i></div>
+          <h3 data-en="For Hotel Revenue Managers" data-fr="Pour les Revenue Managers Hôteliers">For Hotel Revenue Managers</h3>
+          <p class="sub" data-en="Accept corporate bookings automatically. Maximize RevPAR without manual effort." data-fr="Acceptez les réservations corporate automatiquement. Maximisez le RevPAR sans effort manuel.">Accept corporate bookings automatically. Maximize RevPAR without manual effort.</p>
+        </div>
+        <div class="side-body">
+          <ul class="feature-list">
+            <li class="feature-item">
+              <div class="feature-dot hotel"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="20-Minute Setup, No System Changes" data-fr="Configuration en 20 minutes, zéro changement système">20-Minute Setup, No System Changes</h5>
+                <p data-en="Connects via your existing channel manager (D-EDGE, SiteMinder). Import your rates automatically. Set 3 parameters. Live in minutes." data-fr="Se connecte via votre channel manager existant (D-EDGE, SiteMinder). Import automatique des tarifs. 3 paramètres à configurer. Opérationnel en minutes.">Connects via your existing channel manager (D-EDGE, SiteMinder). Import your rates automatically. Set 3 parameters. Live in minutes.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot hotel"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Recover OTA Commissions (15–25%)" data-fr="Récupérez les commissions OTA (15–25%)">Recover OTA Commissions (15–25%)</h5>
+                <p data-en="Every corporate booking via Rateflow is a direct booking. No OTA commission paid. You pay 3–5% to Rateflow instead of 15–25% to Booking.com." data-fr="Chaque réservation corporate via Rateflow est une réservation directe. Pas de commission OTA. Vous payez 3–5% à Rateflow au lieu de 15–25% à Booking.com.">Every corporate booking via Rateflow is a direct booking. No OTA commission paid. You pay 3–5% to Rateflow instead of 15–25% to Booking.com.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot hotel"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Natural Language Configuration" data-fr="Configuration en langage naturel">Natural Language Configuration</h5>
+                <p data-en="Tell your Hotel Agent what you want in plain language: 'Fill my Monday/Tuesday rooms first' or 'Reward accounts with 50+ nights per year'." data-fr="Dites à votre Agent Hôtelier ce que vous voulez en langage naturel : 'Remplir mes lundis/mardis en priorité' ou 'Fidéliser les comptes 50+ nuits/an'.">Tell your Hotel Agent what you want in plain language: 'Fill my Monday/Tuesday rooms first' or 'Reward accounts with 50+ nights per year'.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot hotel"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Dynamic Yield Engine" data-fr="Moteur de yield dynamique">Dynamic Yield Engine</h5>
+                <p data-en="Adjusts rates automatically based on real-time occupancy, season, stay duration, and account loyalty tier. Smarter than any static rate plan." data-fr="Ajuste les tarifs automatiquement selon l'occupation, la saisonnalité, la durée de séjour et le tier de fidélité du compte.">Adjusts rates automatically based on real-time occupancy, season, stay duration, and account loyalty tier. Smarter than any static rate plan.</p>
+              </div>
+            </li>
+            <li class="feature-item">
+              <div class="feature-dot hotel"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <h5 data-en="Access New Corporate Clients" data-fr="Accédez à de nouveaux clients corporate">Access New Corporate Clients</h5>
+                <p data-en="Any corporate using Rateflow Protocol can discover and book your hotel — without a pre-existing contract, without a sales team, without a RFP cycle." data-fr="Tout corporate utilisant le protocole Rateflow peut découvrir et réserver votre hôtel — sans contrat préalable, sans équipe commerciale.">Any corporate using Rateflow Protocol can discover and book your hotel — without a pre-existing contract, without a sales team, without a RFP cycle.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOL FLOW -->
+<section id="protocol" class="protocol-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label white"><i class="fa-solid fa-diagram-project"></i> <span data-en="How It Works" data-fr="Comment ça marche">How It Works</span></div>
+      <h2 data-en="The HNP Protocol — 4 Messages, 30 Seconds" data-fr="Le Protocole HNP — 4 messages, 30 secondes">The HNP Protocol — 4 Messages, 30 Seconds</h2>
+      <p data-en="A complete hotel booking negotiation, from intent to confirmation, in under 30 seconds." data-fr="Une négociation complète, de l'intention à la confirmation, en moins de 30 secondes.">A complete hotel booking negotiation, from intent to confirmation, in under 30 seconds.</p>
+    </div>
+    <div class="protocol-steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-tag corp">CORPORATE → HOTEL</div>
+        <h4>TRAVEL_INTENT</h4>
+        <p data-en="Corporate Agent detects travel need (calendar, email, or manual trigger). Broadcasts destination, dates, budget limits, policy requirements, and volume leverage signal to N hotels simultaneously." data-fr="L'Agent Corporate détecte un besoin de voyage. Broadcast vers N hôtels simultanément avec les dates, budget, politique et signal de volume.">Corporate Agent detects travel need (calendar, email, or manual trigger). Broadcasts destination, dates, budget limits, policy requirements, and volume leverage signal to N hotels simultaneously.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-tag hotel">HOTEL → CORPORATE</div>
+        <h4>HOTEL_OFFER</h4>
+        <p data-en="Hotel Agent checks real-time availability, applies yield engine (occupancy, season, corporate tier, OTA offset), and returns an optimized rate with inclusions. Offer valid for 15 minutes." data-fr="L'Agent Hôtelier vérifie la disponibilité en temps réel, applique le yield engine et retourne un tarif optimisé avec inclusions. Offre valable 15 minutes.">Hotel Agent checks real-time availability, applies yield engine (occupancy, season, corporate tier, OTA offset), and returns an optimized rate with inclusions. Offer valid for 15 minutes.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-tag corp">CORPORATE → HOTEL</div>
+        <h4>COUNTER_PROPOSAL</h4>
+        <p data-en="If rate or conditions don't fully meet policy, Corporate Agent counter-proposes — citing YTD volume, loyalty tier, or stay duration. Maximum 2 rounds. Hotel Agent responds instantly." data-fr="Si le tarif ou les conditions ne correspondent pas, l'Agent Corporate contre-propose en citant le volume YTD et la fidélité. Maximum 2 rounds.">If rate or conditions don't fully meet policy, Corporate Agent counter-proposes — citing YTD volume, loyalty tier, or stay duration. Maximum 2 rounds. Hotel Agent responds instantly.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-tag mutual">BOTH PARTIES</div>
+        <h4>CONFIRMATION</h4>
+        <p data-en="Agreement reached. Booking reference generated. SHA-256 audit hash computed. Both agents confirm. Total time: under 30 seconds. Zero humans required." data-fr="Accord trouvé. Référence de réservation générée. Hash SHA-256 calculé. Les deux agents confirment. Durée totale : moins de 30 secondes.">Agreement reached. Booking reference generated. SHA-256 audit hash computed. Both agents confirm. Total time: under 30 seconds. Zero humans required.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OTA OFFSET -->
+<section class="ota-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label sky"><i class="fa-solid fa-rotate"></i> <span data-en="OTA Commission Offset" data-fr="Redistribution des commissions OTA">OTA Commission Offset</span></div>
+      <h2 data-en="Everyone Wins. Except Booking.com." data-fr="Tout le monde gagne. Sauf Booking.com.">Everyone Wins. Except Booking.com.</h2>
+      <p data-en="Hotels pay 15–25% commission to OTAs on every corporate booking. Rateflow redistributes that commission between the hotel and the corporate." data-fr="Les hôtels paient 15–25% de commission aux OTAs sur chaque réservation corporate. Rateflow redistribue cette commission entre l'hôtel et le corporate.">Hotels pay 15–25% commission to OTAs on every corporate booking. Rateflow redistributes that commission between the hotel and the corporate.</p>
+    </div>
+    <div class="ota-diagram">
+      <div class="ota-comparison">
+        <div class="ota-side">
+          <div class="ota-side-title">
+            <i class="fa-solid fa-xmark" style="color:#DC2626"></i>
+            <span data-en="Booking via OTA Today" data-fr="Réservation via OTA aujourd'hui">Booking via OTA Today</span>
+          </div>
+          <div style="font-size:13px;color:var(--gray-400);margin-bottom:6px" data-en="Public rate" data-fr="Tarif public">Public rate</div>
+          <div class="ota-price red">€150<span style="font-size:16px;font-weight:400">/night</span></div>
+          <div class="ota-breakdown">
+            <div class="ota-row"><span class="label-text" data-en="OTA Commission (20%)" data-fr="Commission OTA (20%)">OTA Commission (20%)</span><span class="val-text negative">-€30</span></div>
+            <div class="ota-row"><span class="label-text" data-en="Hotel net revenue" data-fr="Revenu net hôtel">Hotel net revenue</span><span class="val-text neutral">€120</span></div>
+            <div class="ota-row"><span class="label-text" data-en="Corporate pays" data-fr="Le corporate paie">Corporate pays</span><span class="val-text neutral">€150</span></div>
+          </div>
+        </div>
+
+        <div class="ota-vs">
+          <div class="ota-vs-pill">VS</div>
+        </div>
+
+        <div class="ota-side rateflow">
+          <div class="ota-side-title">
+            <i class="fa-solid fa-check" style="color:#059669"></i>
+            <span data-en="Booking via Rateflow" data-fr="Réservation via Rateflow">Booking via Rateflow</span>
+          </div>
+          <div style="font-size:13px;color:#065F46;margin-bottom:6px" data-en="Negotiated rate" data-fr="Tarif négocié">Negotiated rate</div>
+          <div class="ota-price green">€128<span style="font-size:16px;font-weight:400;color:#059669">/night</span></div>
+          <div class="ota-breakdown">
+            <div class="ota-row"><span class="label-text" data-en="OTA Commission" data-fr="Commission OTA">OTA Commission</span><span class="val-text positive">€0</span></div>
+            <div class="ota-row"><span class="label-text" data-en="Rateflow fee (4%)" data-fr="Fee Rateflow (4%)">Rateflow fee (4%)</span><span class="val-text neutral" style="color:#92400E">-€5</span></div>
+            <div class="ota-row"><span class="label-text" data-en="Hotel net revenue" data-fr="Revenu net hôtel">Hotel net revenue</span><span class="val-text positive">€123 (+€3)</span></div>
+            <div class="ota-row"><span class="label-text" data-en="Corporate pays" data-fr="Le corporate paie">Corporate pays</span><span class="val-text positive">€128 (-€22)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ota-callout">
+        <div class="ota-callout-icon">💡</div>
+        <div>
+          <h4 data-en="The OTA Commission Is Redistributed, Not Eliminated" data-fr="La commission OTA est redistribuée, pas éliminée">The OTA Commission Is Redistributed, Not Eliminated</h4>
+          <p data-en="The 20% OTA commission becomes: 14% discount for the corporate (first automatic discount on every booking), 3% additional net gain for the hotel, 3-5% Rateflow fee. Everyone wins — except Booking.com and Expedia." data-fr="La commission OTA de 20% devient : 14% de remise pour le corporate (premier discount automatique), 3% de gain net supplémentaire pour l'hôtel, 3–5% de fee Rateflow. Tout le monde gagne — sauf Booking.com et Expedia.">The 20% OTA commission becomes: 14% discount for the corporate (first automatic discount on every booking), 3% additional net gain for the hotel, 3-5% Rateflow fee. Everyone wins — except Booking.com and Expedia.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ONBOARDING -->
+<section class="onboarding-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label"><i class="fa-solid fa-rocket"></i> <span data-en="Onboarding" data-fr="Onboarding">Onboarding</span></div>
+      <h2 data-en="Live in 20 Minutes. Really." data-fr="Opérationnel en 20 minutes. Vraiment.">Live in 20 Minutes. Really.</h2>
+      <p data-en="No developer required. No system migration. No training. Three steps and your Hotel Agent is negotiating corporate bookings." data-fr="Pas de développeur nécessaire. Pas de migration système. Pas de formation. Trois étapes et votre Agent Hôtelier négocie des réservations corporate.">No developer required. No system migration. No training. Three steps and your Hotel Agent is negotiating corporate bookings.</p>
+    </div>
+    <div class="onboarding-steps">
+      <div class="onboarding-card">
+        <div class="step-circle">1</div>
+        <div class="step-time">5 min</div>
+        <h4 data-en="Auto-Import from Channel Manager" data-fr="Import automatique du channel manager">Auto-Import from Channel Manager</h4>
+        <p data-en="Connect your D-EDGE or SiteMinder account. Your room types, current rates, and cancellation policies are imported automatically. Nothing to re-enter." data-fr="Connectez votre compte D-EDGE ou SiteMinder. Vos types de chambres, tarifs actuels et politiques d'annulation sont importés automatiquement.">Connect your D-EDGE or SiteMinder account. Your room types, current rates, and cancellation policies are imported automatically. Nothing to re-enter.</p>
+        <div class="onboarding-items">
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Room types imported" data-fr="Types de chambres importés">Room types imported</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Current rates imported" data-fr="Tarifs actuels importés">Current rates imported</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Cancellation policies imported" data-fr="Politiques d'annulation importées">Cancellation policies imported</span></div>
+        </div>
+      </div>
+      <div class="onboarding-card">
+        <div class="step-circle">2</div>
+        <div class="step-time">10 min</div>
+        <h4 data-en="3 Essential Parameters" data-fr="3 paramètres essentiels">3 Essential Parameters</h4>
+        <p data-en="That's all you need to start. No complex rate plans. No consultant required. Just three decisions." data-fr="C'est tout ce dont vous avez besoin pour démarrer. Pas de plans tarifaires complexes. Pas de consultant.">That's all you need to start. No complex rate plans. No consultant required. Just three decisions.</p>
+        <div class="onboarding-items">
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Floor rate (slider: never below €X/night)" data-fr="Tarif plancher (slider : jamais en dessous de X€/nuit)">Floor rate (slider: never below €X/night)</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Volume discount (X+ nights/year → Y% off)" data-fr="Remise volume (X+ nuits/an → Y% remise)">Volume discount (X+ nights/year → Y% off)</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Auto-inclusions (WiFi / Breakfast / Late checkout)" data-fr="Inclusions auto (WiFi / PDJ / Late checkout)">Auto-inclusions (WiFi / Breakfast / Late checkout)</span></div>
+        </div>
+      </div>
+      <div class="onboarding-card">
+        <div class="step-circle">3</div>
+        <div class="step-time">5 min</div>
+        <h4 data-en="Preview Before Going Live" data-fr="Prévisualiser avant de lancer">Preview Before Going Live</h4>
+        <p data-en="Run 3 simulated negotiations with your configured rules. See exactly what your Hotel Agent would offer before accepting real bookings." data-fr="Lancez 3 négociations simulées avec vos règles configurées. Voyez exactement ce que votre Agent Hôtelier proposerait avant d'accepter de vraies réservations.">Run 3 simulated negotiations with your configured rules. See exactly what your Hotel Agent would offer before accepting real bookings.</p>
+        <div class="onboarding-items">
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="3 simulated negotiations" data-fr="3 négociations simulées">3 simulated negotiations</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Review offers and pricing" data-fr="Vérifier les offres et tarifs">Review offers and pricing</span></div>
+          <div class="onboarding-item"><i class="fa-solid fa-check"></i> <span data-en="Adjust rules if needed" data-fr="Ajuster les règles si nécessaire">Adjust rules if needed</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHADOW MODE -->
+<section id="shadow" class="shadow-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label"><i class="fa-regular fa-eye-slash"></i> <span data-en="Shadow Mode" data-fr="Mode Shadow">Shadow Mode</span></div>
+      <h2 data-en="Keep Your Contracts. See What You're Missing." data-fr="Gardez vos contrats. Voyez ce que vous perdez.">Keep Your Contracts. See What You're Missing.</h2>
+      <p data-en="Run Rateflow in parallel with your existing contracts. Every month, a report shows the exact savings you would have made." data-fr="Lancez Rateflow en parallèle avec vos contrats existants. Chaque mois, un rapport montre les économies exactes que vous auriez réalisées.">Run Rateflow in parallel with your existing contracts. Every month, a report shows the exact savings you would have made.</p>
+    </div>
+    <div class="shadow-grid">
+      <div class="shadow-visual">
+        <div class="shadow-badge"><i class="fa-regular fa-eye-slash"></i> SHADOW MODE</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:20px" data-en="Monthly savings simulation — TechCorp SAS" data-fr="Simulation d'économies mensuelles — TechCorp SAS">Monthly savings simulation — TechCorp SAS</div>
+        <div class="shadow-months">
+          <div style="display:flex;gap:8px;margin-bottom:8px;font-size:11px;color:rgba(255,255,255,0.3)">
+            <span style="width:36px"></span>
+            <span style="color:rgba(255,255,255,0.25)" data-en="Paid" data-fr="Payé">Paid</span>
+            <span style="margin-left:auto;color:#6EE7B7" data-en="via Rateflow" data-fr="via Rateflow">via Rateflow</span>
+          </div>
+          <div class="shadow-month">
+            <span class="shadow-month-label">Jan</span>
+            <div class="shadow-bar-wrap">
+              <div class="shadow-bar paid" style="width:100%"><span class="shadow-bar-label paid">€4,200</span></div>
+            </div>
+            <div class="shadow-savings"><span class="shadow-savings-num">-€630</span></div>
+          </div>
+          <div class="shadow-month">
+            <span class="shadow-month-label">Feb</span>
+            <div class="shadow-bar-wrap">
+              <div class="shadow-bar paid" style="width:100%"><span class="shadow-bar-label paid">€3,800</span></div>
+            </div>
+            <div class="shadow-savings"><span class="shadow-savings-num">-€570</span></div>
+          </div>
+          <div class="shadow-month">
+            <span class="shadow-month-label">Mar</span>
+            <div class="shadow-bar-wrap">
+              <div class="shadow-bar paid" style="width:100%"><span class="shadow-bar-label paid">€5,100</span></div>
+            </div>
+            <div class="shadow-savings"><span class="shadow-savings-num">-€765</span></div>
+          </div>
+          <div class="shadow-month">
+            <span class="shadow-month-label" data-en="Apr" data-fr="Avr">Apr</span>
+            <div class="shadow-bar-wrap">
+              <div class="shadow-bar hnp" style="width:82%"><span class="shadow-bar-label hnp">€3,690</span></div>
+            </div>
+            <div class="shadow-savings"><span class="shadow-savings-num">-€810</span></div>
+          </div>
+        </div>
+        <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12px;color:rgba(255,255,255,0.35)" data-en="Q1 simulated savings" data-fr="Économies simulées T1">Q1 simulated savings</span>
+          <span style="font-family:var(--font-display);font-size:24px;font-weight:800;color:#6EE7B7">€2,775</span>
+        </div>
+      </div>
+
+      <div class="shadow-content">
+        <div class="big-saving"><span>€2,775</span><br>saved in Q1</div>
+        <p style="color:var(--gray-400);margin-bottom:32px;font-size:15px" data-en="That's what TechCorp would have saved in the first quarter alone — without changing a single contract." data-fr="C'est ce que TechCorp aurait économisé au premier trimestre seulement — sans changer un seul contrat.">That's what TechCorp would have saved in the first quarter alone — without changing a single contract.</p>
+
+        <div class="shadow-bullet">
+          <div class="shadow-bullet-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div>
+            <h5 data-en="Zero Risk to Existing Contracts" data-fr="Zéro risque pour les contrats existants">Zero Risk to Existing Contracts</h5>
+            <p data-en="Shadow mode never books anything. It only simulates. Your existing contracts remain untouched." data-fr="Le mode shadow ne réserve rien. Il simule uniquement. Vos contrats existants restent intacts.">Shadow mode never books anything. It only simulates. Your existing contracts remain untouched.</p>
+          </div>
+        </div>
+        <div class="shadow-bullet">
+          <div class="shadow-bullet-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div>
+            <h5 data-en="Monthly Savings Report" data-fr="Rapport mensuel d'économies">Monthly Savings Report</h5>
+            <p data-en="Every month: what you paid vs what Rateflow would have negotiated. Delta in euros, per booking, per city, per hotel." data-fr="Chaque mois : ce que vous avez payé vs ce que Rateflow aurait négocié. Delta en euros, par réservation, par ville, par hôtel.">Every month: what you paid vs what Rateflow would have negotiated. Delta in euros, per booking, per city, per hotel.</p>
+          </div>
+        </div>
+        <div class="shadow-bullet">
+          <div class="shadow-bullet-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div>
+            <h5 data-en="Switch When You're Ready" data-fr="Basculez quand vous êtes prêt">Switch When You're Ready</h5>
+            <p data-en="When the numbers convince you — and they will — switching to live mode is a single toggle. Your configuration is already set." data-fr="Quand les chiffres vous convainquent — et ils le feront — passer en mode live est un simple bouton. Votre configuration est déjà prête.">When the numbers convince you — and they will — switching to live mode is a single toggle. Your configuration is already set.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTORS -->
+<section id="connectors" class="connectors-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label"><i class="fa-solid fa-plug"></i> <span data-en="Integrations" data-fr="Intégrations">Integrations</span></div>
+      <h2 data-en="Connects to Your Existing Stack" data-fr="Se connecte à votre stack existante">Connects to Your Existing Stack</h2>
+      <p data-en="One connector per channel manager. Thousands of hotels. No system migration required." data-fr="Un connecteur par channel manager. Des milliers d'hôtels. Aucune migration système requise.">One connector per channel manager. Thousands of hotels. No system migration required.</p>
+    </div>
+    <div class="connectors-grid">
+      <div class="connector-card">
+        <div class="connector-priority" data-en="Priority 1 — France & Benelux" data-fr="Priorité 1 — France & Benelux">Priority 1 — France & Benelux</div>
+        <div class="connector-logo-area">
+          <div class="connector-logo dedge">D</div>
+          <div>
+            <h4>D-EDGE</h4>
+            <div class="count" data-en="17,000+ hotels · Paris-based" data-fr="17 000+ hôtels · Basé à Paris">17,000+ hotels · Paris-based</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--gray-400);margin-bottom:16px" data-en="The reference channel manager for French-speaking Europe. Direct booking engine, CRS, and Channel Manager in one API. Strategic partnership potential." data-fr="Le channel manager de référence pour l'Europe francophone. Moteur de réservation direct, CRS et Channel Manager en une API. Partenariat stratégique potentiel.">The reference channel manager for French-speaking Europe. Direct booking engine, CRS, and Channel Manager in one API. Strategic partnership potential.</p>
+        <div class="connector-tags">
+          <span class="connector-tag">Channel Manager</span>
+          <span class="connector-tag">CRS</span>
+          <span class="connector-tag">Booking Engine</span>
+          <span class="connector-tag">REST API</span>
+        </div>
+      </div>
+      <div class="connector-card">
+        <div class="connector-priority" data-en="Priority 2 — Europe & Global Scale" data-fr="Priorité 2 — Europe & Scale mondial">Priority 2 — Europe & Global Scale</div>
+        <div class="connector-logo-area">
+          <div class="connector-logo siteminder">S</div>
+          <div>
+            <h4>SiteMinder</h4>
+            <div class="count" data-en="40,000+ hotels · 150 countries" data-fr="40 000+ hôtels · 150 pays">40,000+ hotels · 150 countries</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--gray-400);margin-bottom:16px" data-en="The global leader in hotel channel management. One API for 40,000+ hotels across 150 countries. The key to scaling Rateflow worldwide." data-fr="Le leader mondial du channel management hôtelier. Une API pour 40 000+ hôtels dans 150 pays. La clé pour scaler Rateflow mondialement.">The global leader in hotel channel management. One API for 40,000+ hotels across 150 countries. The key to scaling Rateflow worldwide.</p>
+        <div class="connector-tags">
+          <span class="connector-tag">Channel Manager</span>
+          <span class="connector-tag">GDS</span>
+          <span class="connector-tag">450+ channels</span>
+          <span class="connector-tag">REST API</span>
+        </div>
+      </div>
+      <div class="connector-card">
+        <div class="connector-priority" data-en="Priority 3 — Direct PMS" data-fr="Priorité 3 — PMS Direct">Priority 3 — Direct PMS</div>
+        <div class="connector-logo-area">
+          <div class="connector-logo mews">M</div>
+          <div>
+            <h4>Mews</h4>
+            <div class="count" data-en="Direct PMS integration" data-fr="Intégration PMS directe">Direct PMS integration</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--gray-400);margin-bottom:16px" data-en="Direct PMS connection for hotels using Mews. Access real-time availability, corporate rate plans, and booking confirmation directly. Already validated in sandbox." data-fr="Connexion PMS directe pour les hôtels utilisant Mews. Accès disponibilité temps réel, rate plans corporate et confirmation de réservation. Déjà validé en sandbox.">Direct PMS connection for hotels using Mews. Access real-time availability, corporate rate plans, and booking confirmation directly. Already validated in sandbox.</p>
+        <div class="connector-tags">
+          <span class="connector-tag">PMS Direct</span>
+          <span class="connector-tag">Rate Plans</span>
+          <span class="connector-tag">Real-time</span>
+          <span class="connector-tag">Validated</span>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;color:var(--gray-400);font-size:14px">
+      <i class="fa-solid fa-circle-info" style="margin-right:8px"></i>
+      <span data-en="More connectors in roadmap: Amadeus, Sabre, Opera Cloud, Cloudbeds, RoomRaccoon" data-fr="Plus de connecteurs en roadmap : Amadeus, Sabre, Opera Cloud, Cloudbeds, RoomRaccoon">More connectors in roadmap: Amadeus, Sabre, Opera Cloud, Cloudbeds, RoomRaccoon</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-block">
+        <div class="stat-num">&lt;30s</div>
+        <div class="stat-desc" data-en="Average negotiation time. From travel intent to confirmed booking." data-fr="Durée moyenne de négociation. De l'intention à la confirmation.">Average negotiation time. From travel intent to confirmed booking.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">15–35%</div>
+        <div class="stat-desc" data-en="Average savings vs annual contracted rates. Measured on live negotiations." data-fr="Économies moyennes vs tarifs contractuels annuels. Mesurés sur des négociations live.">Average savings vs annual contracted rates. Measured on live negotiations.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">0</div>
+        <div class="stat-desc" data-en="Human touchpoints required. From intent to confirmation, fully autonomous." data-fr="Points de contact humains requis. De l'intention à la confirmation, entièrement autonome.">Human touchpoints required. From intent to confirmation, fully autonomous.</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">~€500B</div>
+        <div class="stat-desc" data-en="Global corporate hotel spending addressable market. Growing at 8% CAGR." data-fr="Marché adressable mondial hébergement corporate. Croissance de 8% par an.">Global corporate hotel spending addressable market. Growing at 8% CAGR.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIT -->
+<section id="audit" class="audit-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="label white"><i class="fa-solid fa-shield-halved"></i> <span data-en="Security & Compliance" data-fr="Sécurité & Conformité">Security & Compliance</span></div>
+      <h2 data-en="Every Negotiation, Immutably Logged" data-fr="Chaque négociation, loggée de façon immuable">Every Negotiation, Immutably Logged</h2>
+      <p data-en="Full SHA-256 audit trail on every message. Every offer, counter-proposal, and confirmation is cryptographically sealed." data-fr="Audit trail SHA-256 complet sur chaque message. Chaque offre, contre-proposition et confirmation est scellée cryptographiquement.">Full SHA-256 audit trail on every message. Every offer, counter-proposal, and confirmation is cryptographically sealed.</p>
+    </div>
+    <div class="audit-grid">
+      <div>
+        <div class="audit-trail-demo">
+          <div class="audit-trail-header">
+            <span class="audit-trail-title" data-en="Audit Trail — NEG-2026-8923" data-fr="Audit Trail — NEG-2026-8923">Audit Trail — NEG-2026-8923</span>
+            <span style="font-size:11px;color:#6EE7B7;font-weight:600">✓ VERIFIED</span>
+          </div>
+          <div class="audit-entry">
+            <div class="audit-dot intent"></div>
+            <span class="audit-type intent">TRAVEL_INTENT</span>
+            <span class="audit-hash">sha256:3fc00244f2ae...</span>
+            <span class="audit-time">09:00:00.181</span>
+          </div>
+          <div class="audit-entry">
+            <div class="audit-dot offer"></div>
+            <span class="audit-type offer">HOTEL_OFFER</span>
+            <span class="audit-hash">sha256:60e07ce81fdd...</span>
+            <span class="audit-time">09:00:06.656</span>
+          </div>
+          <div class="audit-entry">
+            <div class="audit-dot counter"></div>
+            <span class="audit-type counter">COUNTER_PROPOSAL</span>
+            <span class="audit-hash">sha256:a4b1c8d3e9f2...</span>
+            <span class="audit-time">09:00:11.903</span>
+          </div>
+          <div class="audit-entry">
+            <div class="audit-dot confirm"></div>
+            <span class="audit-type confirm">CONFIRMATION</span>
+            <span class="audit-hash">sha256:70f3c36e56fb...</span>
+            <span class="audit-time">09:00:16.638</span>
+          </div>
+          <div style="padding:16px 20px;border-top:1px solid rgba(255,255,255,0.06)">
+            <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px" data-en="Session Hash" data-fr="Hash de session">Session Hash</div>
+            <div style="font-family:'Courier New',monospace;font-size:11px;color:rgba(255,255,255,0.4)">sha256:8cf0f1e439a90e4b920c2b88d7f3...</div>
+          </div>
+        </div>
+      </div>
+      <div class="audit-benefits">
+        <div class="audit-benefit">
+          <div class="audit-benefit-icon" style="background:rgba(96,165,250,0.1);color:#60A5FA"><i class="fa-solid fa-lock"></i></div>
+          <div>
+            <h5 data-en="Cryptographic Integrity" data-fr="Intégrité cryptographique">Cryptographic Integrity</h5>
+            <p data-en="Every HNP message is hashed with SHA-256. Any tampering is immediately detectable. The audit trail cannot be falsified." data-fr="Chaque message HNP est hashé en SHA-256. Toute altération est immédiatement détectable. L'audit trail ne peut pas être falsifié.">Every HNP message is hashed with SHA-256. Any tampering is immediately detectable. The audit trail cannot be falsified.</p>
+          </div>
+        </div>
+        <div class="audit-benefit">
+          <div class="audit-benefit-icon" style="background:rgba(52,211,153,0.1);color:#34D399"><i class="fa-solid fa-file-invoice"></i></div>
+          <div>
+            <h5 data-en="GDPR-Compliant Logging" data-fr="Logging conforme RGPD">GDPR-Compliant Logging</h5>
+            <p data-en="All negotiation data stored in Supabase EU region. Data retention policies configurable. Full data export on request." data-fr="Toutes les données de négociation stockées dans la région Supabase EU. Politiques de rétention configurables. Export complet sur demande.">All negotiation data stored in Supabase EU region. Data retention policies configurable. Full data export on request.</p>
+          </div>
+        </div>
+        <div class="audit-benefit">
+          <div class="audit-benefit-icon" style="background:rgba(251,191,36,0.1);color:#FBBF24"><i class="fa-solid fa-chart-bar"></i></div>
+          <div>
+            <h5 data-en="Full Spend Visibility" data-fr="Visibilité totale des dépenses">Full Spend Visibility</h5>
+            <p data-en="Every booking, every negotiation round, every rate evolution. Exportable for financial reporting, expense management, and policy audits." data-fr="Chaque réservation, chaque round de négociation, chaque évolution tarifaire. Exportable pour le reporting financier et les audits de politique.">Every booking, every negotiation round, every rate evolution. Exportable for financial reporting, expense management, and policy audits.</p>
+          </div>
+        </div>
+        <div class="audit-benefit">
+          <div class="audit-benefit-icon" style="background:rgba(167,139,250,0.1);color:#A78BFA"><i class="fa-solid fa-user-shield"></i></div>
+          <div>
+            <h5 data-en="Hotel Yield Rules Stay Private" data-fr="Règles de yield hôtelières confidentielles">Hotel Yield Rules Stay Private</h5>
+            <p data-en="The Hotel Agent's yield logic is never exposed to the Corporate Agent or to Rateflow. Corporates only see the final offer — never the pricing rules behind it." data-fr="La logique de yield de l'Agent Hôtelier n'est jamais exposée à l'Agent Corporate ni à Rateflow. Les corporates ne voient que l'offre finale.">The Hotel Agent's yield logic is never exposed to the Corporate Agent or to Rateflow. Corporates only see the final offer — never the pricing rules behind it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="label white"><i class="fa-solid fa-handshake"></i> <span data-en="Join the Pilot" data-fr="Rejoindre le pilote">Join the Pilot</span></div>
+      <h2 data-en="Ready to Automate Your Hotel Procurement?" data-fr="Prêt à automatiser votre procurement hôtelier ?">Ready to Automate Your Hotel Procurement?</h2>
+      <p data-en="We're looking for 3 hotel partners and 3 corporate partners to validate the protocol on real data. Free for 6 months. Your feedback shapes the product." data-fr="Nous cherchons 3 hôtels partenaires et 3 entreprises partenaires pour valider le protocole sur des données réelles. Gratuit pendant 6 mois.">We're looking for 3 hotel partners and 3 corporate partners to validate the protocol on real data. Free for 6 months. Your feedback shapes the product.</p>
+      <div class="cta-btns">
+        <a href="mailto:hello@rateflow.ai" class="btn-white">
+          <i class="fa-solid fa-hotel"></i>
+          <span data-en="I'm a Hotel Partner" data-fr="Je suis un hôtel partenaire">I'm a Hotel Partner</span>
+        </a>
+        <a href="mailto:hello@rateflow.ai" class="btn-white">
+          <i class="fa-solid fa-briefcase"></i>
+          <span data-en="I'm a Corporate Partner" data-fr="Je suis un corporate partenaire">I'm a Corporate Partner</span>
+        </a>
+        <a href="mailto:hello@rateflow.ai" class="btn-outline-white">
+          <i class="fa-solid fa-chart-line"></i>
+          <span data-en="I'm an Investor" data-fr="Je suis un investisseur">I'm an Investor</span>
+        </a>
+      </div>
+      <p style="color:rgba(255,255,255,0.35);font-size:13px;margin-top:24px" data-en="Built by Steve Ambassa · Kairion · Brussels, Belgium · background: BCG · Pullman Brussels · Montempô Paris" data-fr="Développé par Steve Ambassa · Kairion · Bruxelles, Belgique · background : BCG · Pullman Brussels · Montempô Paris">Built by Steve Ambassa · Kairion · Brussels, Belgium · background: BCG · Pullman Brussels · Montempô Paris</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="footer-logo-mark">R</div>
+          <span class="footer-logo-text">Rateflow.ai</span>
+        </div>
+        <p class="footer-desc" data-en="The AI-to-AI negotiation protocol for corporate hotel bookings. Built on HNP — the open standard that replaces the annual hotel RFP." data-fr="Le protocole de négociation IA-à-IA pour les réservations hôtelières corporate. Construit sur HNP — le standard ouvert qui remplace le RFP hôtelier annuel.">The AI-to-AI negotiation protocol for corporate hotel bookings. Built on HNP — the open standard that replaces the annual hotel RFP.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#" class="social-link"><i class="fa-brands fa-github"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 data-en="Product" data-fr="Produit">Product</h5>
+        <ul>
+          <li><a href="#features" data-en="For Corporates" data-fr="Pour les Corporates">For Corporates</a></li>
+          <li><a href="#features" data-en="For Hotels" data-fr="Pour les Hôtels">For Hotels</a></li>
+          <li><a href="#protocol" data-en="HNP Protocol" data-fr="Protocole HNP">HNP Protocol</a></li>
+          <li><a href="#shadow" data-en="Shadow Mode" data-fr="Mode Shadow">Shadow Mode</a></li>
+          <li><a href="#connectors" data-en="Integrations" data-fr="Intégrations">Integrations</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-en="Company" data-fr="Entreprise">Company</h5>
+        <ul>
+          <li><a href="#" data-en="About Kairion" data-fr="À propos de Kairion">About Kairion</a></li>
+          <li><a href="#" data-en="MindDesk.ai" data-fr="MindDesk.ai">MindDesk.ai</a></li>
+          <li><a href="#" data-en="Xenia Visibility" data-fr="Xenia Visibility">Xenia Visibility</a></li>
+          <li><a href="#cta" data-en="Contact" data-fr="Contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#" data-en="Terms of Service" data-fr="Conditions d'utilisation">Terms of Service</a></li>
+          <li><a href="#" data-en="Privacy Policy" data-fr="Politique de confidentialité">Privacy Policy</a></li>
+          <li><a href="#" data-en="Data Processing (GDPR)" data-fr="Traitement des données (RGPD)">Data Processing (GDPR)</a></li>
+          <li><a href="#audit" data-en="Security" data-fr="Sécurité">Security</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Rateflow.ai · Kairion SRL · Brussels, Belgium</p>
+      <p class="footer-kairion" data-en="Part of the Kairion AI ecosystem · Also: MindDesk · Xenia Visibility · Alterneo" data-fr="Partie de l'écosystème IA Kairion · Aussi : MindDesk · Xenia Visibility · Alterneo">Part of the Kairion AI ecosystem · Also: MindDesk · Xenia Visibility · Alterneo</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+let currentLang = 'en';
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[data-en]').forEach(el => {
+    const text = el.getAttribute('data-' + lang);
+    if (text) el.textContent = text;
+  });
+  document.documentElement.lang = lang;
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
