@@ -2,10 +2,5 @@
   "framework": "nextjs",
   "installCommand": "npm install",
   "buildCommand": "npm run build",
-  "outputDirectory": "packages/dashboard/.next",
-  "functions": {
-    "packages/dashboard/src/app/api/negotiate/route.ts": {
-      "maxDuration": 60
-    }
-  }
+  "outputDirectory": "packages/dashboard/.next"
 }
