@@ -65,8 +65,18 @@ export const t = {
     en: "Independent hotels outside your group contract are inaccessible. You overpay for alternatives or go without options.",
     fr: "Les hôtels indépendants hors contrat sont inaccessibles. Vous surpayez pour des alternatives ou renoncez.",
   },
-  problem_4_title: { en: "OTA Commissions Lost", fr: "Commissions OTA perdues" },
+  problem_4_title: { en: "Months of PMS Loading", fr: "Des mois de chargement PMS" },
   problem_4_text: {
+    en: "Once a contract is signed, negotiated rates must be manually loaded into the PMS of every hotel — one by one. For a 100-hotel group, this takes 2–3 months. The contract exists but rates aren't bookable.",
+    fr: "Une fois le contrat signé, les tarifs négociés doivent être chargés manuellement dans le PMS de chaque hôtel — un par un. Pour un groupe de 100 hôtels, cela prend 2 à 3 mois. Le contrat existe mais les tarifs ne sont pas réservables.",
+  },
+  problem_5_title: { en: "Dedicated Teams on Both Sides", fr: "Des équipes dédiées des deux côtés" },
+  problem_5_text: {
+    en: "Hotel groups need teams to load, verify, and maintain corporate rates across hundreds of properties. Corporates need teams to track, audit, and reconcile. A hidden operational cost on every contract.",
+    fr: "Les groupes hôteliers mobilisent des équipes pour charger, vérifier et maintenir les tarifs corporate sur des centaines d'établissements. Les corporates mobilisent des équipes pour suivre et réconcilier. Un coût opérationnel caché sur chaque contrat.",
+  },
+  problem_6_title: { en: "OTA Commissions Lost", fr: "Commissions OTA perdues" },
+  problem_6_text: {
     en: "Hotels pay 15–25% commission to online travel agencies on every corporate booking. That money vanishes. Neither side benefits.",
     fr: "Les hôtels versent 15–25% de commission aux agences en ligne sur chaque réservation corporate. Cet argent disparaît. Aucune partie n'en bénéficie.",
   },

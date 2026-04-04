@@ -227,13 +227,15 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-[rgba(255,255,255,0.06)] rounded-[20px] overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-[rgba(255,255,255,0.06)] rounded-[20px] overflow-hidden">
             {(
               [
                 { emoji: "\uD83D\uDCC5", titleK: "problem_1_title" as TKey, textK: "problem_1_text" as TKey },
                 { emoji: "\uD83D\uDCCA", titleK: "problem_2_title" as TKey, textK: "problem_2_text" as TKey },
                 { emoji: "\uD83D\uDEA7", titleK: "problem_3_title" as TKey, textK: "problem_3_text" as TKey },
-                { emoji: "\uD83D\uDCB8", titleK: "problem_4_title" as TKey, textK: "problem_4_text" as TKey },
+                { emoji: "\u23F3", titleK: "problem_4_title" as TKey, textK: "problem_4_text" as TKey },
+                { emoji: "\uD83D\uDC65", titleK: "problem_5_title" as TKey, textK: "problem_5_text" as TKey },
+                { emoji: "\uD83D\uDCB8", titleK: "problem_6_title" as TKey, textK: "problem_6_text" as TKey },
               ]
             ).map((c) => (
               <div key={c.titleK} className="bg-gray-900 p-7 hover:bg-[#1a1d30] transition-colors">
