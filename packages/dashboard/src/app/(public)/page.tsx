@@ -1004,7 +1004,7 @@ export default function LandingPage() {
 
           {/* Bottom bar */}
           <div className="border-t border-white/[0.08] pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-white/25">{"\u00A9"} 2026 Rateflow.ai {"\u00B7"} Kairion SRL {"\u00B7"} Brussels, Belgium</p>
+            <p className="text-xs text-white/25">{"\u00A9"} 2026 Rateflow.ai</p>
             <p className="text-xs text-white/25">{l("footer_ecosystem")}</p>
           </div>
         </div>
