@@ -153,15 +153,62 @@ export async function POST(request: Request) {
         // Send enriched offers for the choose page
         sendMeta({ offers: enrichedOffers, budget: budgetNum, nights, decision_timeout_min: 30 });
 
-        // ── Policy check summary ────────────────────────────────────
-        const compliant = enrichedOffers.filter((o) => o.policy_compliant).length;
-        send("corporate", "COUNTER_PROPOSAL",
-          `${compliant}/${enrichedOffers.length} offers are within policy. Best rate: ${enrichedOffers[0].rate_eur}€/night (${enrichedOffers[0].savings_vs_budget_pct}% below budget). All offers have 24h cancellation and ESG Tier B+. Ready for your selection.`,
-          { round_number: 1 },
-        );
+        // ── Claude evaluates offers ─────────────────────────────────
+        send("system", "SYSTEM", "Corporate Agent analyzing offers against travel policy...");
+
+        const apiKey = process.env.ANTHROPIC_API_KEY;
+        if (apiKey) {
+          const hotelSummary = offers.map((o, i) =>
+            `${i + 1}. ${o.hotel.name} (${o.hotel.category.replace("_", " ")})\n` +
+            `   Rate: ${o.rates.adjusted_rate_eur}€/night (base ${o.rates.base_rate_eur}€)\n` +
+            `   Inclusions: ${o.rates.inclusions.join(", ")}\n` +
+            `   Cancellation: ${o.hotel.cancellation_policy.replace(/_/g, " ")}\n` +
+            `   ESG: Tier ${o.hotel.esg_tier} | Rating: ${o.hotel.rating_google}★ (${o.hotel.reviews_count} reviews)\n` +
+            `   Distance: ${o.hotel.distance_office_km}km | Transit: ${o.hotel.transit_min}min`
+          ).join("\n\n");
+
+          try {
+            const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": apiKey,
+                "anthropic-version": "2023-06-01",
+              },
+              body: JSON.stringify({
+                model: "claude-sonnet-4-20250514",
+                max_tokens: 1024,
+                system: `You are the Corporate Travel AI Agent for ${CORPORATE.company}. You evaluate hotel offers for business travelers. Be concise and professional. Respond in the same language as the user's destination (French for French cities, English otherwise).
+
+POLICY: Max rate for ${destination}: ${budgetNum}€/night. ESG: ${CORPORATE.esg}. Cancellation: ${CORPORATE.cancellation}. Volume leverage: ${CORPORATE.ytd_nights} nights YTD, ${CORPORATE.tier} tier.
+
+Provide a brief analysis (3-5 sentences) comparing the ${offers.length} offers. Mention which is the best value, which has the best rating, and your recommendation. Do NOT make a final decision — the traveler will choose.`,
+                messages: [{
+                  role: "user",
+                  content: `Analyze these ${offers.length} hotel offers for ${traveler} in ${destination} (${nights} nights, budget ${budgetNum}€/night):\n\n${hotelSummary}`,
+                }],
+              }),
+            });
+
+            if (claudeRes.ok) {
+              const claudeData = await claudeRes.json() as {
+                content: Array<{ type: string; text?: string }>;
+              };
+              const analysis = claudeData.content
+                .filter((b) => b.type === "text")
+                .map((b) => b.text ?? "")
+                .join("\n");
+
+              send("corporate", "COUNTER_PROPOSAL", analysis, { round_number: 1 });
+            }
+          } catch {
+            // Claude failed — continue without analysis
+          }
+        }
 
         // ── Waiting for user choice ─────────────────────────────────
-        send("system", "SYSTEM", `${enrichedOffers.length} offers ready — compare and choose your hotel.`);
+        const compliant = enrichedOffers.filter((o) => o.policy_compliant).length;
+        send("system", "SYSTEM", `${compliant} policy-compliant offers ready — compare and choose your hotel.`);
         sendMeta({ status: "awaiting_choice" });
 
       } catch (err) {
