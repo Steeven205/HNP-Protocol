@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/status-badge";
 
 interface LiveMessage {
@@ -51,6 +51,7 @@ function LiveNegotiationInner() {
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [initialRate, setInitialRate] = useState<number | null>(null);
+  const [offers, setOffers] = useState<Record<string, unknown>[] | null>(null);
 
   const startRef = useRef(Date.now());
   const endRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,7 @@ function LiveNegotiationInner() {
 
   // Timer
   useEffect(() => {
-    if (status === "confirmed" || status === "error") return;
+    if (status === "confirmed" || status === "error" || status === "awaiting_choice") return;
     const i = setInterval(() => setElapsed(Math.round((Date.now() - startRef.current) / 100) / 10), 100);
     return () => clearInterval(i);
   }, [status]);
@@ -114,6 +115,7 @@ function LiveNegotiationInner() {
                 if (parsed.final_rate) setFinalRate(parsed.final_rate);
                 if (parsed.savings_pct) setSavingsPct(parsed.savings_pct);
                 if (parsed.booking_ref) setBookingRef(parsed.booking_ref);
+                if (parsed.offers) setOffers(parsed.offers as Record<string, unknown>[]);
               } else {
                 // It's a message
                 const msg = parsed as LiveMessage;
@@ -131,7 +133,7 @@ function LiveNegotiationInner() {
         }
 
         // Stream ended
-        setStatus((s) => s === "in_progress" ? "confirmed" : s);
+        setStatus((s) => s === "in_progress" ? "awaiting_choice" : s);
       } catch (err) {
         setStatus("error");
         setMessages((prev) => [...prev, {
@@ -151,6 +153,8 @@ function LiveNegotiationInner() {
   const savingsDisplay = savingsPct ?? (initialRate ? Math.round(((Number(budget) - initialRate) / Number(budget)) * 1000) / 10 : 0);
   const isInProgress = status === "in_progress" || status === "connecting";
   const isConfirmed = status === "confirmed";
+  const isAwaitingChoice = status === "awaiting_choice";
+  const router = useRouter();
 
   return (
     <div>
@@ -273,6 +277,64 @@ function LiveNegotiationInner() {
                     <span className="typing-dot h-2 w-2 rounded-full bg-sky-400" />
                     <span className="typing-dot h-2 w-2 rounded-full bg-sky-400" />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Compare & Choose CTA */}
+            {isAwaitingChoice && offers && (
+              <div className="mt-6 bg-gradient-to-r from-navy-800 to-navy-900 rounded-[16px] p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">
+                      {offers.length} offers ready for you
+                    </h3>
+                    <p className="text-sm text-white/70">
+                      AI negotiated the best rates. Now compare hotels, check reviews, and pick your favorite.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      // Store offers in sessionStorage for the choose page
+                      sessionStorage.setItem("rateflow_live_offers", JSON.stringify({
+                        offers,
+                        traveler,
+                        destination,
+                        check_in,
+                        check_out,
+                        nights,
+                        budget: Number(budget),
+                        decision_timeout_min: 30,
+                        negotiation_id: negId,
+                      }));
+                      router.push(`/negotiations/${negId || "live"}/choose?from=live`);
+                    }}
+                    className="shrink-0 bg-white text-navy-800 px-6 py-3 rounded-xl font-semibold text-sm hover:bg-sky-100 transition-colors flex items-center gap-2"
+                  >
+                    <i className="fa-solid fa-columns" />
+                    Compare &amp; Choose
+                  </button>
+                </div>
+
+                {/* Mini offer preview */}
+                <div className="grid grid-cols-3 gap-3 mt-4">
+                  {(offers as Array<Record<string, unknown>>).slice(0, 3).map((o) => (
+                    <div key={o.id as string} className="bg-white/10 rounded-xl p-3 border border-white/10">
+                      <p className="text-sm font-semibold text-white truncate">{o.hotel_name as string}</p>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-lg font-bold text-sky">{String(o.rate_eur)}€</span>
+                        <span className="text-xs text-white/50">/night</span>
+                        <span className="text-xs text-green-400 ml-auto">-{String(o.savings_vs_budget_pct)}%</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1.5 text-[11px] text-white/50">
+                        <span>★ {String(o.rating_google)}</span>
+                        <span>ESG {o.esg_tier as string}</span>
+                        {o.badge === "best_price" && <span className="bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded text-[9px] font-bold">BEST PRICE</span>}
+                        {o.badge === "recommended" && <span className="bg-sky/20 text-sky px-1.5 py-0.5 rounded text-[9px] font-bold">RECOMMENDED</span>}
+                        {o.badge === "best_rated" && <span className="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded text-[9px] font-bold">BEST RATED</span>}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

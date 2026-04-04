@@ -26,7 +26,36 @@ const categoryStars: Record<string, number> = {
 
 export default function ChooseOfferPage() {
   const router = useRouter();
-  const data = offerComparison;
+
+  // Try to load live offers from sessionStorage, fallback to mock
+  const [data, setData] = useState(offerComparison);
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("rateflow_live_offers");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.offers && parsed.offers.length > 0) {
+          setData({
+            negotiation_id: parsed.negotiation_id ?? "LIVE",
+            traveler: parsed.traveler ?? "Traveler",
+            destination: parsed.destination ?? "Paris",
+            check_in: parsed.check_in ?? "",
+            check_out: parsed.check_out ?? "",
+            nights: parsed.nights ?? 1,
+            budget: parsed.budget ?? 180,
+            decision_timeout_min: parsed.decision_timeout_min ?? 30,
+            created_at: new Date().toISOString(),
+            offers: parsed.offers as HotelOffer[],
+          });
+          setIsLive(true);
+        }
+      }
+    } catch {
+      // Use mock data
+    }
+  }, []);
 
   // Decision countdown (30 min = 1800s)
   const [countdown, setCountdown] = useState(data.decision_timeout_min * 60);

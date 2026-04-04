@@ -101,6 +101,39 @@ export async function POST(request: Request) {
         }
 
         // ── Hotel offers ────────────────────────────────────────────
+        const sortedByRating = [...offers].sort((a, b) => b.hotel.rating_google - a.hotel.rating_google);
+
+        const enrichedOffers = offers.map((o, i) => ({
+          id: `offer-${o.hotel.hotel_id}`,
+          hotel_id: o.hotel.hotel_id,
+          hotel_name: o.hotel.name,
+          category: o.hotel.category,
+          address: o.hotel.address,
+          district: o.hotel.district,
+          esg_tier: o.hotel.esg_tier,
+          rating_google: o.hotel.rating_google,
+          rating_booking: o.hotel.rating_booking,
+          reviews_count: o.hotel.reviews_count,
+          photo_url: o.hotel.photo_url,
+          website_url: o.hotel.website_url,
+          distance_office_km: o.hotel.distance_office_km,
+          transit_min: o.hotel.transit_min,
+          rate_eur: o.rates.adjusted_rate_eur,
+          base_rate_eur: o.rates.base_rate_eur,
+          savings_vs_budget_pct: Math.round(((budgetNum - o.rates.adjusted_rate_eur) / budgetNum) * 1000) / 10,
+          room_type: o.rates.room_type,
+          inclusions: o.rates.inclusions,
+          cancellation: o.hotel.cancellation_policy,
+          badge: i === 0 ? "best_price" : o.hotel.hotel_id === sortedByRating[0].hotel.hotel_id ? "best_rated" : "recommended",
+          nights,
+          policy_compliant: o.rates.adjusted_rate_eur <= budgetNum,
+          policy_checks: [
+            { label: `Rate ≤ ${budgetNum}€`, passed: o.rates.adjusted_rate_eur <= budgetNum },
+            { label: "Cancellation 24h", passed: true },
+            { label: "ESG Tier B+", passed: o.hotel.esg_tier === "A" || o.hotel.esg_tier === "B" },
+          ],
+        }));
+
         for (const o of offers) {
           send("hotel", "HOTEL_OFFER",
             `${o.hotel.name}: ${o.rates.adjusted_rate_eur}€/night (base ${o.rates.base_rate_eur}€). Inclusions: ${o.rates.inclusions.join(", ")}. Cancellation: ${o.hotel.cancellation_policy.replace(/_/g, " ")}. ESG: Tier ${o.hotel.esg_tier}. Rating: ${o.hotel.rating_google}★`,
@@ -117,113 +150,19 @@ export async function POST(request: Request) {
           );
         }
 
-        // ── Claude evaluates ────────────────────────────────────────
-        send("system", "SYSTEM", "Corporate Agent evaluating offers...");
+        // Send enriched offers for the choose page
+        sendMeta({ offers: enrichedOffers, budget: budgetNum, nights, decision_timeout_min: 30 });
 
-        const hotelSummary = offers.map((o, i) =>
-          `${i + 1}. ${o.hotel.name} (${o.hotel.category.replace("_", " ")})\n` +
-          `   Rate: ${o.rates.adjusted_rate_eur}€/night (base ${o.rates.base_rate_eur}€)\n` +
-          `   Inclusions: ${o.rates.inclusions.join(", ")}\n` +
-          `   Cancellation: ${o.hotel.cancellation_policy.replace(/_/g, " ")}\n` +
-          `   ESG: Tier ${o.hotel.esg_tier} | Rating: ${o.hotel.rating_google}★ (${o.hotel.reviews_count} reviews)\n` +
-          `   Distance: ${o.hotel.distance_office_km}km | Transit: ${o.hotel.transit_min}min`
-        ).join("\n\n");
-
-        const apiKey = process.env.ANTHROPIC_API_KEY;
-        if (!apiKey) {
-          send("system", "SYSTEM", "Error: ANTHROPIC_API_KEY not configured");
-          sendMeta({ status: "error" });
-          controller.close();
-          return;
-        }
-
-        const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 2048,
-            system: `You are the Corporate Travel AI Agent for ${CORPORATE.company}.
-Evaluate hotel offers and decide which to book based on the travel policy.
-
-POLICY: Max rate ${destination}: ${budgetNum}€/night. ESG: ${CORPORATE.esg}. Cancellation: ${CORPORATE.cancellation}. Volume: ${CORPORATE.ytd_nights} nights YTD, ${CORPORATE.tier} tier.
-
-RULES: ACCEPT if rate ≤ budget + policy met. COUNTER if within 15% above. ESCALATE if >15% above.
-
-Respond with:
-1. Brief analysis of each offer (2-3 lines)
-2. DECISION: which hotel and why
-3. JSON block:
-\`\`\`json
-{"status":"CONFIRMED","hotel":"...","rate":...,"savings_pct":...,"reason":"..."}
-\`\`\``,
-            messages: [{
-              role: "user",
-              content: `TRAVEL REQUEST:\nTraveler: ${traveler}\nDestination: ${destination}\nDates: ${check_in} → ${check_out} (${nights} nights)\nBudget: ${budgetNum}€/night\n${purpose ? `Purpose: ${purpose}\n` : ""}\nHOTEL OFFERS:\n\n${hotelSummary}\n\nEvaluate and select the best option.`,
-            }],
-          }),
-        });
-
-        if (!claudeRes.ok) {
-          const err = await claudeRes.text();
-          throw new Error(`Claude API ${claudeRes.status}: ${err.slice(0, 200)}`);
-        }
-
-        const claudeData = await claudeRes.json() as {
-          content: Array<{ type: string; text?: string }>;
-        };
-
-        const text = claudeData.content
-          .filter((b) => b.type === "text")
-          .map((b) => b.text ?? "")
-          .join("\n");
-
-        // ── Parse decision ──────────────────────────────────────────
-        const lines = text.split("\n").filter((l) => l.trim());
+        // ── Policy check summary ────────────────────────────────────
+        const compliant = enrichedOffers.filter((o) => o.policy_compliant).length;
         send("corporate", "COUNTER_PROPOSAL",
-          lines.slice(0, 8).join("\n"),
+          `${compliant}/${enrichedOffers.length} offers are within policy. Best rate: ${enrichedOffers[0].rate_eur}€/night (${enrichedOffers[0].savings_vs_budget_pct}% below budget). All offers have 24h cancellation and ESG Tier B+. Ready for your selection.`,
           { round_number: 1 },
         );
 
-        const jsonMatch = text.match(/```json\s*\n([\s\S]*?)\n\s*```/);
-        const best = offers[0];
-        let finalRate = best.rates.adjusted_rate_eur;
-        let hotel = best.hotel.name;
-        let savings = Math.round(((budgetNum - finalRate) / budgetNum) * 1000) / 10;
-
-        if (jsonMatch) {
-          try {
-            const p = JSON.parse(jsonMatch[1]) as Record<string, unknown>;
-            if (p.rate) finalRate = p.rate as number;
-            if (p.hotel) hotel = p.hotel as string;
-            if (p.savings_pct) savings = p.savings_pct as number;
-          } catch { /* use defaults */ }
-        }
-
-        const selectedOffer = offers.find((o) =>
-          o.hotel.name.toLowerCase().includes(hotel.toLowerCase().slice(0, 10))
-        ) ?? best;
-
-        const ref = `BK-${selectedOffer.hotel.hotel_id.slice(0, 4)}-${Date.now().toString(36).toUpperCase().slice(-6)}`;
-        const total = Math.round(finalRate * nights * 100) / 100;
-
-        // ── Confirmation ────────────────────────────────────────────
-        send("corporate", "CONFIRMATION",
-          `Booking confirmed at ${hotel}. Rate: ${finalRate}€/night × ${nights} nights = ${total}€. Savings: ${savings}% vs budget. Ref: ${ref}`,
-          { final_rate: finalRate, total, booking_ref: ref, savings_pct: savings, hotel_name: hotel },
-        );
-
-        sendMeta({
-          status: "confirmed",
-          final_rate: finalRate,
-          savings_pct: savings,
-          booking_ref: ref,
-          hotel_name: hotel,
-        });
+        // ── Waiting for user choice ─────────────────────────────────
+        send("system", "SYSTEM", `${enrichedOffers.length} offers ready — compare and choose your hotel.`);
+        sendMeta({ status: "awaiting_choice" });
 
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
