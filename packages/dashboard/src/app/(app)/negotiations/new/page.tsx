@@ -27,28 +27,16 @@ export default function NewNegotiationPage() {
     if (submitting) return;
     setSubmitting(true);
 
-    try {
-      const res = await fetch("/api/negotiate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          traveler: traveler || "Paul Martin",
-          destination: destination || "Paris",
-          check_in: checkIn || "2026-05-12",
-          check_out: checkOut || "2026-05-15",
-          budget: maxBudget || "180",
-          purpose: specialRequests || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (data.id) {
-        router.push(`/negotiations/${data.id}?live=true`);
-      } else {
-        setSubmitting(false);
-      }
-    } catch {
-      setSubmitting(false);
-    }
+    const params = new URLSearchParams({
+      traveler: traveler || "Paul Martin",
+      destination: destination || "Paris",
+      check_in: checkIn || "2026-05-12",
+      check_out: checkOut || "2026-05-15",
+      budget: maxBudget || "180",
+      purpose: specialRequests || "",
+    });
+
+    router.push(`/negotiations/live?${params.toString()}`);
   }
 
   return (
