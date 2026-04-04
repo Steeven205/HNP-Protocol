@@ -896,10 +896,6 @@ export default function LandingPage() {
         <div className="absolute -top-[200px] -right-[200px] w-[600px] h-[600px] pointer-events-none" style={{ background: "radial-gradient(circle, rgba(135,206,250,0.15) 0%, transparent 70%)" }} />
 
         <div className="max-w-[1200px] mx-auto px-6 text-center relative">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.08em] uppercase text-sky bg-[rgba(135,206,250,0.12)] border border-[rgba(135,206,250,0.25)] px-3.5 py-1.5 rounded-full mb-5">
-            <i className="fa-solid fa-handshake" />
-            <T k="cta_badge" lang={lang} />
-          </div>
           <h2 className="font-display font-bold text-[clamp(1.8rem,3.5vw,2.8rem)] leading-[1.15] text-white mb-4">
             <T k="cta_title" lang={lang} />
           </h2>
@@ -907,20 +903,15 @@ export default function LandingPage() {
             <T k="cta_subtitle" lang={lang} />
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <a href="mailto:hello@rateflow.ai" className="inline-flex items-center gap-2.5 bg-white text-navy-800 text-[15px] font-medium px-7 py-3.5 rounded-xl border-none cursor-pointer no-underline hover:bg-sky-light transition-all">
-              <i className="fa-solid fa-hotel" />
-              {l("cta_hotel")}
+            <a href="mailto:steve@kairion.be" className="inline-flex items-center gap-2.5 bg-white text-navy-800 text-[15px] font-medium px-7 py-3.5 rounded-xl border-none cursor-pointer no-underline hover:bg-sky-light transition-all">
+              <i className="fa-solid fa-calendar" />
+              {l("cta_btn_demo")}
             </a>
-            <a href="mailto:hello@rateflow.ai" className="inline-flex items-center gap-2.5 bg-white text-navy-800 text-[15px] font-medium px-7 py-3.5 rounded-xl border-none cursor-pointer no-underline hover:bg-sky-light transition-all">
-              <i className="fa-solid fa-briefcase" />
-              {l("cta_corporate")}
-            </a>
-            <a href="mailto:hello@rateflow.ai" className="inline-flex items-center gap-2.5 bg-transparent text-white text-[15px] font-medium px-7 py-3.5 rounded-xl border-[1.5px] border-white/35 cursor-pointer no-underline hover:bg-white/10 hover:border-white transition-all">
-              <i className="fa-solid fa-chart-line" />
-              {l("cta_investor")}
+            <a href="mailto:steve@kairion.be" className="inline-flex items-center gap-2.5 bg-transparent text-white text-[15px] font-medium px-7 py-3.5 rounded-xl border-[1.5px] border-white/35 cursor-pointer no-underline hover:bg-white/10 hover:border-white transition-all">
+              <i className="fa-solid fa-envelope" />
+              {l("cta_btn_contact")}
             </a>
           </div>
-          <p className="text-white/35 text-[13px] mt-6">{l("cta_built_by")}</p>
         </div>
       </section>
 

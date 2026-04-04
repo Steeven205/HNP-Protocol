@@ -345,19 +345,13 @@ export const t = {
   },
 
   // ── CTA
-  cta_badge: { en: "Join the Pilot", fr: "Rejoindre le pilote" },
   cta_title: { en: "Ready to Automate Your Hotel Procurement?", fr: "Prêt à automatiser votre procurement hôtelier ?" },
   cta_subtitle: {
-    en: "We're looking for 3 hotel partners and 3 corporate partners to validate the protocol on real data. Free for 6 months. Your feedback shapes the product.",
-    fr: "Nous cherchons 3 hôtels partenaires et 3 entreprises partenaires pour valider le protocole sur des données réelles. Gratuit pendant 6 mois.",
+    en: "Stop overpaying for hotel bookings. Let AI negotiate the best rates for your company — in real time, on every transaction.",
+    fr: "Arrêtez de surpayer vos réservations hôtelières. Laissez l'IA négocier les meilleurs tarifs pour votre entreprise — en temps réel, à chaque transaction.",
   },
-  cta_hotel: { en: "I'm a Hotel Partner", fr: "Je suis un hôtel partenaire" },
-  cta_corporate: { en: "I'm a Corporate Partner", fr: "Je suis un corporate partenaire" },
-  cta_investor: { en: "I'm an Investor", fr: "Je suis un investisseur" },
-  cta_built_by: {
-    en: "Built by Steve Ambassa · Kairion · Brussels, Belgium · background: BCG · Pullman Brussels · Montempô Paris",
-    fr: "Développé par Steve Ambassa · Kairion · Bruxelles, Belgique · background : BCG · Pullman Brussels · Montempô Paris",
-  },
+  cta_btn_demo: { en: "Request a Demo", fr: "Demander une démo" },
+  cta_btn_contact: { en: "Contact Us", fr: "Nous contacter" },
 
   // ── Footer
   footer_desc: {
