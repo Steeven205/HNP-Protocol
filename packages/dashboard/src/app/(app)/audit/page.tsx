@@ -1,12 +1,97 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { KpiCard } from "@/components/kpi-card";
-import { auditEntries, auditMetrics } from "@/lib/mock-data";
+import {
+  auditEntries as mockAuditEntries,
+  auditMetrics as mockAuditMetrics,
+  type AuditEntry,
+} from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 
 function truncateHash(hash: string): string {
   return hash.slice(0, 12) + "\u2026";
 }
 
+interface AuditMetrics {
+  totalTransactions: number;
+  totalSavingsEur: number;
+  avgNegotiationTime: number;
+  policyCompliance: number;
+}
+
+function computeMetrics(entries: AuditEntry[]): AuditMetrics {
+  if (entries.length === 0) return mockAuditMetrics;
+
+  const totalTransactions = entries.length;
+  const totalSavingsEur = entries.reduce((sum, e) => sum + (e.savings ?? 0), 0);
+  // avg negotiation time: not available in audit_entries rows, use mock fallback
+  const avgNegotiationTime = mockAuditMetrics.avgNegotiationTime;
+  // compliance: count entries with savings >= 0 (i.e. final_rate <= budget)
+  const compliant = entries.filter((e) => e.savings >= 0).length;
+  const policyCompliance =
+    totalTransactions > 0
+      ? Math.round((compliant / totalTransactions) * 1000) / 10
+      : 100;
+
+  return { totalTransactions, totalSavingsEur, avgNegotiationTime, policyCompliance };
+}
+
 export default function AuditPage() {
+  const [entries, setEntries] = useState<AuditEntry[]>(mockAuditEntries);
+  const [metrics, setMetrics] = useState<AuditMetrics>(mockAuditMetrics);
+  const [loading, setLoading] = useState(true);
+  const [copiedHash, setCopiedHash] = useState<string | null>(null);
+
+  /* ── Fetch from Supabase on mount ───────────────────────────────────── */
+  useEffect(() => {
+    async function fetchAudit() {
+      try {
+        const { data, error } = await supabase
+          .from("audit_entries")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        if (error || !data || data.length === 0) {
+          // Fallback to mock data — already set as initial state
+          return;
+        }
+
+        // Map Supabase rows to AuditEntry shape
+        const mapped: AuditEntry[] = data.map((row) => ({
+          id: row.id ?? row.audit_id ?? "",
+          ref: row.ref ?? row.booking_ref ?? "",
+          date: row.date ?? (row.created_at ? row.created_at.slice(0, 10) : ""),
+          account: row.account ?? row.corporate_name ?? "",
+          hotel: row.hotel ?? row.hotel_name ?? "",
+          location: row.location ?? row.city ?? "",
+          final_rate: row.final_rate ?? 0,
+          currency: row.currency ?? "EUR",
+          savings: row.savings ?? 0,
+          audit_hash: row.audit_hash ?? "",
+          negotiation_id: row.negotiation_id ?? "",
+        }));
+
+        setEntries(mapped);
+        setMetrics(computeMetrics(mapped));
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAudit();
+  }, []);
+
+  /* ── Copy hash to clipboard ─────────────────────────────────────────── */
+  const copyHash = useCallback((hash: string) => {
+    navigator.clipboard.writeText(hash).then(() => {
+      setCopiedHash(hash);
+      setTimeout(() => setCopiedHash(null), 1500);
+    });
+  }, []);
+
   return (
     <div>
       {/* ── Header ──────────────────────────────────────────────────────── */}
@@ -25,28 +110,28 @@ export default function AuditPage() {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <KpiCard
           title="Total Transactions"
-          value={auditMetrics.totalTransactions.toString()}
+          value={metrics.totalTransactions.toString()}
           icon="fa-solid fa-receipt"
           trend="+12 this month"
           trendUp
         />
         <KpiCard
           title="Total Savings YTD"
-          value={`${auditMetrics.totalSavingsEur.toLocaleString("fr-FR")}\u00A0\u20AC`}
+          value={`${metrics.totalSavingsEur.toLocaleString("fr-FR")}\u00A0\u20AC`}
           icon="fa-solid fa-piggy-bank"
           trend="+18% vs last quarter"
           trendUp
         />
         <KpiCard
           title="Avg. Negotiation Time"
-          value={`${auditMetrics.avgNegotiationTime}s`}
+          value={`${metrics.avgNegotiationTime}s`}
           icon="fa-solid fa-clock"
           trend="-2.1s vs last month"
           trendUp
         />
         <KpiCard
           title="Policy Compliance"
-          value={`${auditMetrics.policyCompliance}%`}
+          value={`${metrics.policyCompliance}%`}
           icon="fa-solid fa-shield-halved"
           trend="Above 95% target"
           trendUp
@@ -129,7 +214,7 @@ export default function AuditPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {auditEntries.map((entry) => (
+            {entries.map((entry) => (
               <tr
                 key={entry.id}
                 className="hover:bg-slate-50/60 transition-colors"
@@ -169,10 +254,17 @@ export default function AuditPage() {
                     </code>
                     <button
                       type="button"
-                      title="Copy hash"
+                      title={copiedHash === entry.audit_hash ? "Copied!" : "Copy hash"}
+                      onClick={() => copyHash(entry.audit_hash)}
                       className="text-slate-400 hover:text-navy-600 transition-colors"
                     >
-                      <i className="fa-regular fa-copy text-xs" />
+                      <i
+                        className={
+                          copiedHash === entry.audit_hash
+                            ? "fa-solid fa-check text-xs text-green-600"
+                            : "fa-regular fa-copy text-xs"
+                        }
+                      />
                     </button>
                   </span>
                 </td>

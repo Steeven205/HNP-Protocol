@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { teamMembers, corporate } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
+import { teamMembers as mockTeamMembers, corporate } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 
 type Tab = "profile" | "members" | "api" | "notifications";
 
@@ -12,8 +13,49 @@ const tabs: { id: Tab; label: string; icon: string }[] = [
   { id: "notifications", label: "Notifications", icon: "fa-bell" },
 ];
 
+interface TeamMember {
+  name: string;
+  email: string;
+  role: string;
+  status: "active" | "pending";
+}
+
 export default function TeamPage() {
   const [activeTab, setActiveTab] = useState<Tab>("profile");
+
+  /* ── Team members from Supabase (fallback to mock) ──────────────────── */
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(mockTeamMembers);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+
+  useEffect(() => {
+    async function fetchProfiles() {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (!error && data && data.length > 0) {
+          setTeamMembers(
+            data.map((p: Record<string, string>) => ({
+              name: p.full_name || p.name || p.email || "Unknown",
+              email: p.email || "",
+              role: p.role || "Traveler",
+              status: (p.status === "active" ? "active" : "pending") as "active" | "pending",
+            })),
+          );
+        }
+        // If no data or error, keep mock data
+      } catch {
+        // Keep mock data on failure
+      } finally {
+        setMembersLoading(false);
+      }
+    }
+    fetchProfiles();
+  }, []);
 
   /* ── Form state ─────────────────────────────────────────────────────── */
   const [companyName, setCompanyName] = useState(corporate.company);
@@ -195,13 +237,44 @@ export default function TeamPage() {
               </table>
 
               <div className="px-6 py-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-navy-600 hover:text-navy-800 transition-colors"
-                >
-                  <i className="fa-solid fa-user-plus text-xs" />
-                  Invite Member
-                </button>
+                {!showInviteForm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowInviteForm(true)}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-navy-600 hover:text-navy-800 transition-colors"
+                  >
+                    <i className="fa-solid fa-user-plus text-xs" />
+                    Invite Member
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="email"
+                      placeholder="colleague@company.com"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="flex-1 px-4 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy-600/20 focus:border-navy-600 transition-colors text-sm"
+                    />
+                    <a
+                      href={`mailto:${inviteEmail}?subject=${encodeURIComponent("Join our team on Rateflow")}&body=${encodeURIComponent("You've been invited to join our Rateflow team. Sign up at https://rateflow.co to get started.")}`}
+                      className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                        inviteEmail
+                          ? "bg-navy-800 text-white hover:bg-navy-700"
+                          : "bg-slate-100 text-slate-400 pointer-events-none"
+                      }`}
+                    >
+                      <i className="fa-solid fa-paper-plane text-xs" />
+                      Send Invite
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => { setShowInviteForm(false); setInviteEmail(""); }}
+                      className="text-sm text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
           )}

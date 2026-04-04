@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { rateCaps, corporate, hotel } from "@/lib/mock-data";
+import { useState, useEffect, useCallback } from "react";
+import { rateCaps as mockRateCaps, corporate as mockCorporate, hotel as mockHotel } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 
 interface RateCap {
   city: string;
   max_eur: number;
 }
 
+const CORPORATE_ID = "TC-2026-001";
+
 export default function ConfigurationPage() {
+  /* ── Loading / feedback state ───────────────────────────────────────── */
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
   /* ── Corporate Policy state ─────────────────────────────────────────── */
   const [caps, setCaps] = useState<RateCap[]>(() =>
-    rateCaps.map((r) => ({ ...r })),
+    mockRateCaps.map((r) => ({ ...r })),
   );
   const [minCategory, setMinCategory] = useState(
-    corporate.travel_policy.minimum_category === "3_star" ? "3" : "4",
+    mockCorporate.travel_policy.minimum_category === "3_star" ? "3" : "4",
   );
   const [cancellationPolicy, setCancellationPolicy] = useState("24h");
   const [esgEnabled, setEsgEnabled] = useState(true);
@@ -22,6 +30,145 @@ export default function ConfigurationPage() {
   /* ── Hotel Yield state ──────────────────────────────────────────────── */
   const [floorRate, setFloorRate] = useState(110);
   const [seasonalEnabled, setSeasonalEnabled] = useState(true);
+
+  /* ── Hotel data (from Supabase or mock) ─────────────────────────────── */
+  const [hotel, setHotel] = useState(mockHotel);
+
+  /* ── Initial data snapshot (for Revert) ─────────────────────────────── */
+  const [initialState, setInitialState] = useState<{
+    caps: RateCap[];
+    minCategory: string;
+    cancellationPolicy: string;
+    esgEnabled: boolean;
+    floorRate: number;
+    seasonalEnabled: boolean;
+  } | null>(null);
+
+  /* ── Fetch config from Supabase on mount ────────────────────────────── */
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const { data, error } = await supabase
+          .from("corporate_config")
+          .select("*")
+          .eq("corporate_id", CORPORATE_ID)
+          .single();
+
+        if (error || !data) {
+          // Fallback to mock data — already set as initial state
+          return;
+        }
+
+        // Parse rate_caps JSONB → RateCap[]
+        const rateCapsObj: Record<string, number> = data.rate_caps ?? {};
+        const parsedCaps: RateCap[] = Object.entries(rateCapsObj).map(
+          ([city, max_eur]) => ({
+            city: city.charAt(0).toUpperCase() + city.slice(1),
+            max_eur: max_eur as number,
+          }),
+        );
+        if (parsedCaps.length > 0) setCaps(parsedCaps);
+
+        if (data.minimum_category) {
+          const cat = String(data.minimum_category).replace("_star", "");
+          setMinCategory(cat);
+        }
+        if (data.cancellation_policy) {
+          setCancellationPolicy(data.cancellation_policy);
+        }
+        if (typeof data.esg_enabled === "boolean") {
+          setEsgEnabled(data.esg_enabled);
+        }
+        if (typeof data.floor_rate === "number") {
+          setFloorRate(data.floor_rate);
+        }
+        if (typeof data.seasonal_enabled === "boolean") {
+          setSeasonalEnabled(data.seasonal_enabled);
+        }
+        if (data.hotel_name) {
+          setHotel((prev) => ({ ...prev, name: data.hotel_name }));
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchConfig();
+  }, []);
+
+  /* ── Capture initial state once loading completes (for Revert) ──────── */
+  useEffect(() => {
+    if (!loading && !initialState) {
+      setInitialState({
+        caps: caps.map((c) => ({ ...c })),
+        minCategory,
+        cancellationPolicy,
+        esgEnabled,
+        floorRate,
+        seasonalEnabled,
+      });
+    }
+  }, [loading, initialState, caps, minCategory, cancellationPolicy, esgEnabled, floorRate, seasonalEnabled]);
+
+  /* ── Save to Supabase ───────────────────────────────────────────────── */
+  const handleSave = useCallback(async () => {
+    setSaving(true);
+    setToast(null);
+
+    // Build rate_caps JSONB from RateCap[]
+    const rateCapsObj: Record<string, number> = {};
+    for (const cap of caps) {
+      if (cap.city.trim()) {
+        rateCapsObj[cap.city.trim().toLowerCase()] = cap.max_eur;
+      }
+    }
+
+    const payload = {
+      rate_caps: rateCapsObj,
+      minimum_category: `${minCategory}_star`,
+      cancellation_policy: cancellationPolicy,
+      esg_enabled: esgEnabled,
+      floor_rate: floorRate,
+      seasonal_enabled: seasonalEnabled,
+    };
+
+    const { error } = await supabase
+      .from("corporate_config")
+      .update(payload)
+      .eq("corporate_id", CORPORATE_ID);
+
+    setSaving(false);
+
+    if (error) {
+      setToast("Failed to save configuration. Please try again.");
+    } else {
+      setToast("Configuration saved successfully.");
+      // Update initial state snapshot
+      setInitialState({
+        caps: caps.map((c) => ({ ...c })),
+        minCategory,
+        cancellationPolicy,
+        esgEnabled,
+        floorRate,
+        seasonalEnabled,
+      });
+    }
+
+    // Auto-dismiss toast after 3 seconds
+    setTimeout(() => setToast(null), 3000);
+  }, [caps, minCategory, cancellationPolicy, esgEnabled, floorRate, seasonalEnabled]);
+
+  /* ── Revert to last saved state ─────────────────────────────────────── */
+  const handleRevert = useCallback(() => {
+    if (initialState) {
+      setCaps(initialState.caps.map((c) => ({ ...c })));
+      setMinCategory(initialState.minCategory);
+      setCancellationPolicy(initialState.cancellationPolicy);
+      setEsgEnabled(initialState.esgEnabled);
+      setFloorRate(initialState.floorRate);
+      setSeasonalEnabled(initialState.seasonalEnabled);
+    }
+  }, [initialState]);
 
   /* ── Rate cap helpers ───────────────────────────────────────────────── */
   function updateCap(index: number, field: keyof RateCap, value: string | number) {
@@ -318,18 +465,39 @@ export default function ConfigurationPage() {
 
       {/* ── Footer Actions ────────────────────────────────────────────── */}
       <div className="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-slate-200">
+        {toast && (
+          <p
+            className={`mr-auto text-sm font-medium ${
+              toast.includes("Failed") ? "text-red-600" : "text-green-600"
+            }`}
+          >
+            {toast}
+          </p>
+        )}
         <button
           type="button"
+          onClick={handleRevert}
           className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
         >
           Revert Changes
         </button>
         <button
           type="button"
-          className="inline-flex items-center gap-2 rounded-xl bg-navy-800 px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-700 transition-colors shadow-soft"
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center gap-2 rounded-xl bg-navy-800 px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-700 transition-colors shadow-soft disabled:opacity-60"
         >
-          <i className="fa-solid fa-check text-xs" />
-          Save Configuration
+          {saving ? (
+            <>
+              <i className="fa-solid fa-spinner fa-spin text-xs" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <i className="fa-solid fa-check text-xs" />
+              Save Configuration
+            </>
+          )}
         </button>
       </div>
     </div>

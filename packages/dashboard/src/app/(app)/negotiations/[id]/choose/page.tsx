@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { offerComparison, type HotelOffer } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
 
 function formatCountdown(totalSeconds: number): string {
   if (totalSeconds <= 0) return "00:00";
@@ -62,6 +63,7 @@ export default function ChooseOfferPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
 
   useEffect(() => {
     if (confirmed) return;
@@ -74,13 +76,75 @@ export default function ChooseOfferPage() {
   const expired = countdown <= 0;
   const urgent = countdown < 300; // < 5 min
 
-  function handleConfirm() {
+  async function handleConfirm() {
     if (!selectedId) return;
+    const offer = data.offers.find((o) => o.id === selectedId);
+    if (!offer) return;
+
     setConfirming(true);
-    setTimeout(() => {
-      setConfirmed(true);
-      setConfirming(false);
-    }, 1500);
+
+    const ref = `BK-${offer.hotel_id.slice(0, 4)}-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+
+    if (isLive) {
+      try {
+        const payload = {
+          type: "CONFIRMATION" as const,
+          request_id: data.negotiation_id,
+          booking_ref: ref,
+          hotel_id: offer.hotel_id,
+          hotel_name: offer.hotel_name,
+          final_rate: offer.rate_eur,
+          room_type: offer.room_type,
+          inclusions: offer.inclusions,
+          cancellation: offer.cancellation,
+          confirmed_at: new Date().toISOString(),
+        };
+
+        const hashBuffer = await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(JSON.stringify(payload)),
+        );
+        const sha256 = Array.from(new Uint8Array(hashBuffer))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
+
+        const [updateRes, insertRes] = await Promise.all([
+          supabase
+            .from("negotiations")
+            .update({
+              status: "confirmed",
+              selected_hotel: offer.hotel_name,
+              selected_hotel_id: offer.hotel_id,
+              final_rate: offer.rate_eur,
+              savings_pct: offer.savings_vs_budget_pct,
+              booking_ref: ref,
+              completed_at: new Date().toISOString(),
+            })
+            .eq("id", data.negotiation_id),
+          supabase.from("audit_entries").insert({
+            negotiation_id: data.negotiation_id,
+            booking_ref: ref,
+            message_type: "CONFIRMATION",
+            audit_hash: sha256,
+            payload,
+            account: "TechCorp SAS",
+            hotel: offer.hotel_name,
+            location: data.destination,
+            final_rate: offer.rate_eur,
+            savings: data.budget - offer.rate_eur,
+          }),
+        ]);
+
+        if (updateRes.error) console.error("Negotiation update error:", updateRes.error);
+        if (insertRes.error) console.error("Audit insert error:", insertRes.error);
+      } catch (err) {
+        console.error("Supabase persistence error:", err);
+      }
+    }
+
+    setBookingRef(ref);
+    setConfirmed(true);
+    setConfirming(false);
   }
 
   const selectedOffer = data.offers.find((o) => o.id === selectedId);
@@ -210,7 +274,11 @@ export default function ChooseOfferPage() {
             <i className="fa-solid fa-circle-check text-green-600 text-xl" />
             <h3 className="text-lg font-bold text-green-800">Booking Confirmed</h3>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+            <div>
+              <p className="text-green-600 text-xs uppercase font-semibold mb-1">Booking Ref</p>
+              <p className="font-semibold text-green-900 font-mono text-xs">{bookingRef ?? "---"}</p>
+            </div>
             <div>
               <p className="text-green-600 text-xs uppercase font-semibold mb-1">Hotel</p>
               <p className="font-semibold text-green-900">{selectedOffer.hotel_name}</p>
