@@ -1,5 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { negotiations } from "@/lib/mock-data";
+import { supabase } from "@/lib/supabase";
+import { negotiations as mockNegotiations, type Negotiation } from "@/lib/mock-data";
 import { StatusBadge } from "@/components/status-badge";
 import { KpiCard } from "@/components/kpi-card";
 
@@ -16,17 +20,106 @@ function formatDateRange(checkIn: string, checkOut: string): string {
   return `${month} ${startDay} \u2013 ${endMonth} ${endDay}`;
 }
 
+/** Check whether a negotiation ID matches the mock dataset */
+function isMockNegotiation(id: string): boolean {
+  return mockNegotiations.some((n) => n.id === id);
+}
+
+type SupabaseRow = Record<string, unknown>;
+
+/** Map a Supabase row to the Negotiation shape used by the UI */
+function mapRow(row: SupabaseRow): Negotiation {
+  return {
+    id: String(row.id ?? ""),
+    traveler: String(row.traveler ?? ""),
+    destination: String(row.destination ?? ""),
+    hotel: String(row.hotel ?? ""),
+    check_in: String(row.check_in ?? ""),
+    check_out: String(row.check_out ?? ""),
+    nights: Number(row.nights ?? 0),
+    status: (row.status as Negotiation["status"]) ?? "in_progress",
+    rounds: Number(row.rounds ?? 0),
+    final_rate: row.final_rate != null ? Number(row.final_rate) : null,
+    initial_rate: Number(row.initial_rate ?? 0),
+    budget: Number(row.budget ?? 0),
+    savings_pct: row.savings_pct != null ? Number(row.savings_pct) : null,
+    created_at: String(row.created_at ?? ""),
+    duration_s: Number(row.duration_s ?? 0),
+  };
+}
+
 export default function NegotiationsPage() {
-  const inProgress = negotiations.filter((n) => n.status === "in_progress").length;
-  const confirmed = negotiations.filter((n) => n.status === "confirmed").length;
-  const escalated = negotiations.filter((n) => n.status === "escalated").length;
-  const withSavings = negotiations.filter((n) => n.savings_pct !== null);
+  const [data, setData] = useState<Negotiation[]>(mockNegotiations);
+  const [source, setSource] = useState<"mock" | "supabase">("mock");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchNegotiations() {
+      try {
+        const { data: rows, error } = await supabase
+          .from("negotiations")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        if (cancelled) return;
+
+        if (error || !rows || rows.length === 0) {
+          // Fall back to mock data
+          setData(mockNegotiations);
+          setSource("mock");
+        } else {
+          setData(rows.map(mapRow));
+          setSource("supabase");
+        }
+      } catch {
+        if (!cancelled) {
+          setData(mockNegotiations);
+          setSource("mock");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchNegotiations();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // KPI computations
+  const inProgress = data.filter((n) => n.status === "in_progress").length;
+  const confirmed = data.filter((n) => n.status === "confirmed").length;
+  const escalated = data.filter((n) => n.status === "escalated").length;
+  const withSavings = data.filter((n) => n.savings_pct !== null);
   const avgSavings =
     withSavings.length > 0
       ? (withSavings.reduce((sum, n) => sum + (n.savings_pct ?? 0), 0) / withSavings.length).toFixed(1)
       : "0";
 
-  const destinations = Array.from(new Set(negotiations.map((n) => n.destination)));
+  const destinations = Array.from(new Set(data.map((n) => n.destination)));
+
+  /** Build the correct href for a negotiation row */
+  function rowHref(n: Negotiation): string {
+    if (source === "mock" || isMockNegotiation(n.id)) {
+      return `/negotiations/${n.id}`;
+    }
+    // Live Supabase row — link to /negotiations/live with query params
+    const params = new URLSearchParams({
+      id: n.id,
+      traveler: n.traveler,
+      destination: n.destination,
+      hotel: n.hotel,
+      check_in: n.check_in,
+      check_out: n.check_out,
+      status: n.status,
+    });
+    if (n.final_rate !== null) params.set("final_rate", String(n.final_rate));
+    return `/negotiations/live?${params.toString()}`;
+  }
 
   return (
     <div>
@@ -102,75 +195,82 @@ export default function NegotiationsPage() {
 
       {/* Data Table */}
       <div className="bg-white rounded-[16px] border border-slate-200 shadow-soft overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50 border-b border-slate-200">
-              <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Traveler
-              </th>
-              <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Destination
-              </th>
-              <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Hotel
-              </th>
-              <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Dates
-              </th>
-              <th className="px-6 py-3 text-center text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Rounds
-              </th>
-              <th className="px-6 py-3 text-center text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Status
-              </th>
-              <th className="px-6 py-3 text-right text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                Rate
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {negotiations.map((n) => (
-              <Link
-                key={n.id}
-                href={`/negotiations/${n.id}`}
-                className="contents"
-              >
-                <tr className="hover:bg-slate-50 cursor-pointer transition-colors">
-                  <td className="px-6 py-4 text-sm font-medium text-navy-800">
-                    {n.id}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700">
-                    {n.traveler}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700">
-                    <span className="inline-flex items-center gap-1.5">
-                      <i className="fa-solid fa-location-dot text-slate-400 text-xs" />
-                      {n.destination}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700">
-                    {n.hotel}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">
-                    {formatDateRange(n.check_in, n.check_out)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-slate-700 text-center">
-                    {n.rounds}/2
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <StatusBadge status={n.status} />
-                  </td>
-                  <td className="px-6 py-4 text-sm text-right font-semibold text-slate-900">
-                    {n.final_rate !== null ? `${n.final_rate}\u00A0\u20AC` : "\u2014"}
-                  </td>
-                </tr>
-              </Link>
-            ))}
-          </tbody>
-        </table>
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <i className="fa-solid fa-spinner fa-spin text-slate-400 text-lg mr-3" />
+            <span className="text-sm text-slate-500">Loading negotiations...</span>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Traveler
+                </th>
+                <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Destination
+                </th>
+                <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Hotel
+                </th>
+                <th className="px-6 py-3 text-left text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Dates
+                </th>
+                <th className="px-6 py-3 text-center text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Rounds
+                </th>
+                <th className="px-6 py-3 text-center text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-right text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                  Rate
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {data.map((n) => (
+                <Link
+                  key={n.id}
+                  href={rowHref(n)}
+                  className="contents"
+                >
+                  <tr className="hover:bg-slate-50 cursor-pointer transition-colors">
+                    <td className="px-6 py-4 text-sm font-medium text-navy-800">
+                      {n.id}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-700">
+                      {n.traveler}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-700">
+                      <span className="inline-flex items-center gap-1.5">
+                        <i className="fa-solid fa-location-dot text-slate-400 text-xs" />
+                        {n.destination}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-700">
+                      {n.hotel}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-500">
+                      {formatDateRange(n.check_in, n.check_out)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-slate-700 text-center">
+                      {n.rounds}/2
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <StatusBadge status={n.status} />
+                    </td>
+                    <td className="px-6 py-4 text-sm text-right font-semibold text-slate-900">
+                      {n.final_rate !== null ? `${n.final_rate}\u00A0\u20AC` : "\u2014"}
+                    </td>
+                  </tr>
+                </Link>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

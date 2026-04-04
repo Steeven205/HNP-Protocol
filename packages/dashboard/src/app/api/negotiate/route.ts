@@ -11,6 +11,8 @@
  */
 
 import { SiteMinderProvider } from "@/lib/siteminder-provider";
+import { supabase } from "@/lib/supabase";
+import { createHash } from "node:crypto";
 
 export const maxDuration = 60;
 
@@ -30,6 +32,41 @@ function budgetFor(city: string): number {
   return CORPORATE.max_rate[city.toLowerCase()] ?? CORPORATE.max_rate["default"];
 }
 
+function auditHash(payload: unknown): string {
+  return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+}
+
+function persistMessage(
+  negotiation_id: string,
+  agent: string,
+  message_type: string,
+  content: string,
+  data?: Record<string, unknown>,
+) {
+  supabase
+    .from("negotiation_messages")
+    .insert({ negotiation_id, agent, message_type, content, data: data ?? null })
+    .then(() => {});
+}
+
+function persistAudit(
+  negotiation_id: string,
+  message_type: string,
+  payload: unknown,
+  extra?: Record<string, unknown>,
+) {
+  supabase
+    .from("audit_entries")
+    .insert({
+      negotiation_id,
+      message_type,
+      audit_hash: auditHash(payload),
+      payload,
+      ...extra,
+    })
+    .then(() => {});
+}
+
 export async function POST(request: Request) {
   const body = await request.json();
   const { traveler, destination, check_in, check_out, budget, purpose } = body;
@@ -46,6 +83,24 @@ export async function POST(request: Request) {
     (new Date(check_out).getTime() - new Date(check_in).getTime()) / 86400000,
   );
   const negId = `NEG-LIVE-${Date.now().toString(36).toUpperCase().slice(-8)}`;
+  const negStartedAt = new Date().toISOString();
+
+  // Persist negotiation row (fire-and-forget)
+  supabase
+    .from("negotiations")
+    .insert({
+      id: negId,
+      traveler,
+      destination,
+      check_in,
+      check_out,
+      nights,
+      budget: budgetNum,
+      status: "in_progress",
+      shadow_mode: false,
+      created_at: negStartedAt,
+    })
+    .then(() => {});
 
   const encoder = new TextEncoder();
 
@@ -63,6 +118,9 @@ export async function POST(request: Request) {
           data,
         };
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(msg)}\n\n`));
+
+        // Persist message (fire-and-forget)
+        persistMessage(negId, agent, type, content, data);
       }
 
       function sendMeta(meta: Record<string, unknown>) {
@@ -96,6 +154,14 @@ export async function POST(request: Request) {
         if (offers.length === 0) {
           send("system", "SYSTEM", "No available hotels found.");
           sendMeta({ status: "error" });
+
+          // Update negotiation status (fire-and-forget)
+          supabase
+            .from("negotiations")
+            .update({ status: "error", completed_at: new Date().toISOString() })
+            .eq("id", negId)
+            .then(() => {});
+
           controller.close();
           return;
         }
@@ -133,6 +199,38 @@ export async function POST(request: Request) {
             { label: "ESG Tier B+", passed: o.hotel.esg_tier === "A" || o.hotel.esg_tier === "B" },
           ],
         }));
+
+        // Persist enriched offers (fire-and-forget)
+        for (const eo of enrichedOffers) {
+          supabase
+            .from("negotiation_offers")
+            .insert({
+              negotiation_id: negId,
+              hotel_id: eo.hotel_id,
+              hotel_name: eo.hotel_name,
+              category: eo.category,
+              address: eo.address,
+              district: eo.district,
+              esg_tier: eo.esg_tier,
+              rating_google: eo.rating_google,
+              rating_booking: eo.rating_booking,
+              reviews_count: eo.reviews_count,
+              photo_url: eo.photo_url,
+              website_url: eo.website_url,
+              distance_office_km: eo.distance_office_km,
+              transit_min: eo.transit_min,
+              rate_eur: eo.rate_eur,
+              base_rate_eur: eo.base_rate_eur,
+              savings_vs_budget_pct: eo.savings_vs_budget_pct,
+              room_type: eo.room_type,
+              inclusions: eo.inclusions,
+              cancellation: eo.cancellation,
+              badge: eo.badge,
+              policy_compliant: eo.policy_compliant,
+              policy_checks: eo.policy_checks,
+            })
+            .then(() => {});
+        }
 
         for (const o of offers) {
           send("hotel", "HOTEL_OFFER",
@@ -211,10 +309,47 @@ Provide a brief analysis (3-5 sentences) comparing the ${offers.length} offers. 
         send("system", "SYSTEM", `${compliant} policy-compliant offers ready — compare and choose your hotel.`);
         sendMeta({ status: "awaiting_choice" });
 
+        // Update negotiation status (fire-and-forget)
+        const bestOffer = enrichedOffers[0];
+        const durationS = Math.round((Date.now() - new Date(negStartedAt).getTime()) / 1000);
+        supabase
+          .from("negotiations")
+          .update({
+            status: "awaiting_choice",
+            initial_rate: bestOffer?.base_rate_eur ?? null,
+            final_rate: bestOffer?.rate_eur ?? null,
+            savings_pct: bestOffer?.savings_vs_budget_pct ?? null,
+            rounds: 1,
+            duration_s: durationS,
+          })
+          .eq("id", negId)
+          .then(() => {});
+
+        // Audit trail entry (fire-and-forget)
+        const auditPayload = {
+          negotiation_id: negId,
+          status: "awaiting_choice",
+          offers_count: enrichedOffers.length,
+          compliant_count: compliant,
+          budget: budgetNum,
+          best_rate: bestOffer?.rate_eur,
+        };
+        persistAudit(negId, "AWAITING_CHOICE", auditPayload, {
+          account: CORPORATE.company,
+          location: destination,
+        });
+
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         send("system", "SYSTEM", `Error: ${msg}`);
         sendMeta({ status: "error" });
+
+        // Update negotiation status on error (fire-and-forget)
+        supabase
+          .from("negotiations")
+          .update({ status: "error", completed_at: new Date().toISOString() })
+          .eq("id", negId)
+          .then(() => {});
       } finally {
         controller.close();
       }
