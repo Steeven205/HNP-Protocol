@@ -108,6 +108,8 @@ export async function POST(request: Request) {
     async start(controller) {
       let msgCount = 0;
 
+      const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
       function send(agent: string, type: string, content: string, data?: Record<string, unknown>) {
         const msg = {
           id: `${negId}-${++msgCount}`,
@@ -133,15 +135,21 @@ export async function POST(request: Request) {
 
         send("system", "SYSTEM", `Negotiation started for ${traveler} — ${destination}, ${check_in} → ${check_out}`);
 
+        await delay(1200);
+
         send("corporate", "TRAVEL_INTENT",
           `Booking request for ${traveler} in ${destination}. ${nights} night(s) from ${check_in} to ${check_out}. Budget: ${budgetNum}€/night. Corporate Gold, ${CORPORATE.ytd_nights} nights YTD.`,
           { corporate_id: CORPORATE.corporate_id, budget: budgetNum, nights },
         );
 
+        await delay(1500);
+
         // ── Query hotels ────────────────────────────────────────────
         const provider = new SiteMinderProvider(destination);
         const hotels = provider.getHotels();
         send("system", "SYSTEM", `Querying ${hotels.length} hotels in ${destination}...`);
+
+        await delay(2000);
 
         const offers = await provider.getMultiHotelOffers({
           check_in, check_out,
@@ -232,7 +240,8 @@ export async function POST(request: Request) {
             .then(() => {});
         }
 
-        for (const o of offers) {
+        for (let i = 0; i < offers.length; i++) {
+          const o = offers[i];
           send("hotel", "HOTEL_OFFER",
             `${o.hotel.name}: ${o.rates.adjusted_rate_eur}€/night (base ${o.rates.base_rate_eur}€). Inclusions: ${o.rates.inclusions.join(", ")}. Cancellation: ${o.hotel.cancellation_policy.replace(/_/g, " ")}. ESG: Tier ${o.hotel.esg_tier}. Rating: ${o.hotel.rating_google}★`,
             {
@@ -246,13 +255,17 @@ export async function POST(request: Request) {
               rating: o.hotel.rating_google,
             },
           );
+          // Pause between each hotel offer for realistic feel
+          await delay(1800 + i * 400);
         }
 
         // Send enriched offers for the choose page
         sendMeta({ offers: enrichedOffers, budget: budgetNum, nights, decision_timeout_min: 30 });
 
         // ── Claude evaluates offers ─────────────────────────────────
+        await delay(1500);
         send("system", "SYSTEM", "Corporate Agent analyzing offers against travel policy...");
+        await delay(1000);
 
         const apiKey = process.env.ANTHROPIC_API_KEY;
         if (apiKey) {
@@ -297,6 +310,7 @@ Provide a brief analysis (3-5 sentences) comparing the ${offers.length} offers. 
                 .map((b) => b.text ?? "")
                 .join("\n");
 
+              await delay(1500);
               send("corporate", "COUNTER_PROPOSAL", analysis, { round_number: 1 });
             }
           } catch {
@@ -305,6 +319,7 @@ Provide a brief analysis (3-5 sentences) comparing the ${offers.length} offers. 
         }
 
         // ── Waiting for user choice ─────────────────────────────────
+        await delay(1200);
         const compliant = enrichedOffers.filter((o) => o.policy_compliant).length;
         send("system", "SYSTEM", `${compliant} policy-compliant offers ready — compare and choose your hotel.`);
         sendMeta({ status: "awaiting_choice" });
