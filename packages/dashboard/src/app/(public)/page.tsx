@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { t, type Lang } from "@/lib/i18n";
+import { InteractiveDemo } from "@/components/interactive-demo";
 
 type TKey = keyof typeof t;
 
@@ -882,6 +883,29 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          INTERACTIVE DEMO
+      ================================================================ */}
+      <section id="demo" className="py-24 bg-off-white">
+        <div className="max-w-[1400px] mx-auto px-6">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.08em] uppercase text-navy-800 bg-[rgba(0,0,122,0.06)] border border-[rgba(0,0,122,0.12)] px-3.5 py-1.5 rounded-full mb-5">
+              <i className="fa-solid fa-play" />
+              {lang === "fr" ? "Démo interactive" : "Interactive Demo"}
+            </div>
+            <h2 className="font-display font-bold text-[clamp(1.8rem,3.5vw,2.8rem)] leading-[1.15] text-gray-900 mb-4">
+              {lang === "fr" ? "Voyez Rateflow en action" : "See Rateflow in Action"}
+            </h2>
+            <p className="text-lg text-slate-500 max-w-[560px] mx-auto">
+              {lang === "fr"
+                ? "Choisissez votre profil et découvrez comment Rateflow transforme votre quotidien."
+                : "Choose your profile and see how Rateflow transforms your daily workflow."}
+            </p>
+          </div>
+          <InteractiveDemo />
         </div>
       </section>
 
