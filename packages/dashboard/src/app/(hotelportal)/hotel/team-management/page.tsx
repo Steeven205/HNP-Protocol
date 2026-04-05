@@ -18,10 +18,10 @@ export default function TeamManagementPage() {
   return (
     <>
       {/* Header */}
-      <header className="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Team Management</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Manage your team members and permissions</p>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Team Management</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage your team members and permissions</p>
         </div>
         <button className="btn-emerald px-4 py-2 rounded-lg text-sm font-medium">
           <i className="fa-solid fa-user-plus mr-2" />
@@ -33,33 +33,33 @@ export default function TeamManagementPage() {
       <main className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* Summary */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-up">
-          <div className="glass-card rounded-xl p-4 flex items-center gap-4">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center">
               <i className="fa-solid fa-users text-emerald" />
             </div>
             <div>
-              <p className="text-xs text-slate-400">Total Members</p>
-              <p className="text-xl font-bold text-white font-mono">{hotelTeamMembers.length}</p>
+              <p className="text-xs text-slate-500">Total Members</p>
+              <p className="text-xl font-bold text-slate-900 font-mono">{hotelTeamMembers.length}</p>
             </div>
           </div>
-          <div className="glass-card rounded-xl p-4 flex items-center gap-4">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center">
               <i className="fa-solid fa-circle-check text-emerald" />
             </div>
             <div>
-              <p className="text-xs text-slate-400">Active</p>
-              <p className="text-xl font-bold text-white font-mono">
+              <p className="text-xs text-slate-500">Active</p>
+              <p className="text-xl font-bold text-slate-900 font-mono">
                 {hotelTeamMembers.filter((m) => m.status === "active").length}
               </p>
             </div>
           </div>
-          <div className="glass-card rounded-xl p-4 flex items-center gap-4">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
             <div className="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
               <i className="fa-solid fa-shield text-amber" />
             </div>
             <div>
-              <p className="text-xs text-slate-400">Admins</p>
-              <p className="text-xl font-bold text-white font-mono">
+              <p className="text-xs text-slate-500">Admins</p>
+              <p className="text-xl font-bold text-slate-900 font-mono">
                 {hotelTeamMembers.filter((m) => m.permissions === "admin").length}
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function TeamManagementPage() {
         </div>
 
         {/* Team Table */}
-        <div className="glass-panel rounded-2xl overflow-hidden animate-fade-up delay-100">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden animate-fade-up delay-100">
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left">
               <thead>
@@ -92,12 +92,12 @@ export default function TeamManagementPage() {
                             .map((n) => n[0])
                             .join("")}
                         </div>
-                        <span className="text-white font-medium">{member.name}</span>
+                        <span className="text-slate-900 font-medium">{member.name}</span>
                       </div>
                     </td>
-                    <td className="text-slate-300">{member.role}</td>
+                    <td className="text-slate-600">{member.role}</td>
                     <td>
-                      <span className="font-mono text-sm text-slate-400">{member.email}</span>
+                      <span className="font-mono text-sm text-slate-500">{member.email}</span>
                     </td>
                     <td>
                       <span
@@ -113,7 +113,7 @@ export default function TeamManagementPage() {
                         {member.status}
                       </span>
                     </td>
-                    <td className="text-sm text-slate-400">{member.lastActive}</td>
+                    <td className="text-sm text-slate-500">{member.lastActive}</td>
                     <td>
                       <span
                         className={`badge ${permissionsColor[member.permissions] || "badge-slate"}`}

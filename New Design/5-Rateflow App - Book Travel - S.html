@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 h-full">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateflow - Book Travel (Step 1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Form specific */
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .form-input-glass::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Step indicator */
+        .step-active {
+            background: #10B981;
+            border-color: #10B981;
+            color: white;
+        }
+        .step-completed {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10B981;
+            color: #10B981;
+        }
+        .step-pending {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <!-- Background Gradient & Mesh -->
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow<br><span class="text-xs font-mono text-emerald font-normal">Corporate</span></span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search bookings..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/book" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group mt-4">
+                <div class="w-full flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-plane-departure w-5 text-center text-emerald"></i>
+                        <span>Book Travel</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-suitcase w-5 text-center"></i>
+                <span>My Bookings</span>
+            </a>
+            <a href="/team-bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Team Bookings</span>
+            </a>
+            <a href="/policy" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-file-contract w-5 text-center"></i>
+                <span>Travel Policy</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-bar w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/reports/shadow" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-flask w-5 text-center"></i>
+                <span>Shadow Reports</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Sophie Martin" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Sophie Martin</div>
+                    <div class="text-xs text-slate-400">Sales Manager • TechCorp</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <!-- Top Header -->
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Book Travel</h1>
+                    <p class="text-xs text-slate-400 font-mono">Step 1/4 - Trip Details</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <!-- Alerts / Notifications -->
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-xl text-slate-300 hover:text-white transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red rounded-full flex items-center justify-center text-[9px] font-bold text-white border-2 border-navy-deep">3</span>
+                </div>
+                
+                <div class="hidden sm:block text-right">
+                    <div class="text-sm font-medium text-white">May 12, 2026</div>
+                    <div class="text-xs text-slate-400">09:41 AM</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <!-- Wizard Progress Header -->
+                <div class="glass-panel rounded-2xl p-6 border border-white/10 flex items-center justify-between animate-fade-up delay-100">
+                    <div class="flex items-center gap-4 flex-1">
+                        <!-- Step 1: Active -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full step-active flex items-center justify-center font-bold text-sm border-2">1</div>
+                            <div class="hidden sm:block">
+                                <div class="text-sm font-semibold text-white">Trip Details</div>
+                                <div class="text-xs text-emerald">Current Step</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-px bg-white/10 mx-2 hidden sm:block"></div>
+                        
+                        <!-- Step 2: Pending -->
+                        <div class="flex items-center gap-3 opacity-50">
+                            <div class="w-10 h-10 rounded-full step-pending flex items-center justify-center font-bold text-sm border-2">2</div>
+                            <div class="hidden sm:block">
+                                <div class="text-sm font-semibold text-white">AI Negotiation</div>
+                                <div class="text-xs text-slate-400">Pending</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 h-px bg-white/10 mx-2 hidden md:block"></div>
+                        
+                        <!-- Step 3: Pending -->
+                        <div class="flex items-center gap-3 opacity-50 hidden md:flex">
+                            <div class="w-10 h-10 rounded-full step-pending flex items-center justify-center font-bold text-sm border-2">3</div>
+                            <div class="hidden lg:block">
+                                <div class="text-sm font-semibold text-white">Compare Offers</div>
+                                <div class="text-xs text-slate-400">Pending</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 h-px bg-white/10 mx-2 hidden lg:block"></div>
+                        
+                        <!-- Step 4: Pending -->
+                        <div class="flex items-center gap-3 opacity-50 hidden lg:flex">
+                            <div class="w-10 h-10 rounded-full step-pending flex items-center justify-center font-bold text-sm border-2">4</div>
+                            <div class="hidden xl:block">
+                                <div class="text-sm font-semibold text-white">Confirm</div>
+                                <div class="text-xs text-slate-400">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Form Section (Left 2/3) -->
+                    <div class="lg:col-span-2 space-y-6 animate-fade-up delay-200">
+                        <div class="glass-panel rounded-2xl p-6 border border-white/10">
+                            <h2 class="font-display text-2xl font-bold text-white mb-6 pb-4 border-b border-white/10">Trip Basics</h2>
+                            
+                            <form class="space-y-6">
+                                <!-- Traveler Section -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Who is traveling?</label>
+                                    <div class="relative">
+                                        <select class="w-full form-input-glass rounded-xl py-3 pl-4 pr-10 appearance-none">
+                                            <option value="sophie.martin">Sophie Martin (Me)</option>
+                                            <option value="other">Someone else</option>
+                                            <option value="multiple">Multiple travelers</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Destination & Dates Grid -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Destination -->
+                                    <div class="md:col-span-2">
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Destination</label>
+                                        <div class="relative">
+                                            <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <input type="text" placeholder="e.g. Paris, France" value="Paris" class="w-full form-input-glass rounded-xl py-3 pl-11 pr-4 focus:border-emerald focus:ring-1 focus:ring-emerald transition-all">
+                                            <!-- Autocomplete dropdown simulation -->
+                                            <div class="absolute top-full left-0 right-0 mt-1 glass-card rounded-xl border border-white/10 overflow-hidden z-20 hidden">
+                                                <div class="px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3">
+                                                    <i class="fa-solid fa-city text-slate-400"></i>
+                                                    <div>
+                                                        <div class="text-white font-medium">Paris</div>
+                                                        <div class="text-xs text-slate-400">Île-de-France, France</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Dates -->
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Check-in</label>
+                                        <div class="relative">
+                                            <i class="fa-regular fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <input type="date" value="2026-05-12" class="w-full form-input-glass rounded-xl py-3 pl-11 pr-4 text-white [color-scheme:dark]">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Check-out</label>
+                                        <div class="relative">
+                                            <i class="fa-regular fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                            <input type="date" value="2026-05-15" class="w-full form-input-glass rounded-xl py-3 pl-11 pr-4 text-white [color-scheme:dark]">
+                                        </div>
+                                        <div class="text-xs text-emerald mt-2 text-right">3 nights</div>
+                                    </div>
+                                </div>
+
+                                <!-- Room Details Grid -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Rooms</label>
+                                        <div class="flex items-center form-input-glass rounded-xl overflow-hidden">
+                                            <button type="button" class="w-12 h-12 flex items-center justify-center hover:bg-white/5 transition-colors text-slate-300"><i class="fa-solid fa-minus"></i></button>
+                                            <input type="text" value="1" class="flex-1 text-center bg-transparent border-none text-white font-medium focus:ring-0 focus:outline-none" readonly>
+                                            <button type="button" class="w-12 h-12 flex items-center justify-center hover:bg-white/5 transition-colors text-slate-300"><i class="fa-solid fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Room Type</label>
+                                        <div class="relative">
+                                            <select class="w-full form-input-glass rounded-xl py-3 pl-4 pr-10 appearance-none">
+                                                <option>Standard</option>
+                                                <option selected>Superior</option>
+                                                <option>Suite</option>
+                                            </select>
+                                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Purpose -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Trip Purpose (Optional)</label>
+                                    <input type="text" placeholder="e.g. Client meeting" value="Client meeting" class="w-full form-input-glass rounded-xl py-3 px-4">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Side Panel (Right 1/3) -->
+                    <div class="space-y-6 animate-fade-up delay-300">
+                        <!-- Policy Preview -->
+                        <div class="glass-panel rounded-2xl p-6 border border-white/10 sticky top-6">
+                            <div class="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                                <h3 class="font-display text-xl font-bold text-white">Policy Preview</h3>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald/10 text-emerald text-xs font-medium border border-emerald/20">
+                                    <i class="fa-solid fa-check"></i> Compliant
+                                </span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Checks -->
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full bg-emerald/20 text-emerald flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">Budget OK</div>
+                                        <div class="text-xs text-slate-400">Paris max: €180/night</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full bg-emerald/20 text-emerald flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">Category limits</div>
+                                        <div class="text-xs text-slate-400">Min 3-star required</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full bg-emerald/20 text-emerald flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-check text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">Trip length</div>
+                                        <div class="text-xs text-slate-400">3 nights (Max 7 allowed)</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Warning Example (commented out or conditionally shown)
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full bg-amber/20 text-amber flex items-center justify-center flex-shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-exclamation text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">International Travel</div>
+                                        <div class="text-xs text-slate-400">May require additional approval</div>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-white/10">
+                                <button class="w-full btn-emerald py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald/20 transition-all">
+                                    Next: Find Hotels <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                                <button class="w-full mt-3 py-2 text-slate-400 hover:text-white text-xs font-medium transition-colors">
+                                    Cancel Booking
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="mt-12 py-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
+                <div>&copy; 2026 Rateflow Inc. Corporate Portal.</div>
+                <div class="flex items-center gap-6">
+                    <a href="#" class="hover:text-emerald transition-colors">Support</a>
+                    <a href="#" class="hover:text-emerald transition-colors">Travel Policy Docs</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 h-full">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateflow - Negotiation Detail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .btn-destructive {
+            background-color: #EF4444;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-destructive:hover {
+            background-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        /* Table Styles */
+        .data-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 600;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-table td {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.875rem;
+        }
+        .data-table tr:hover td {
+            background-color: rgba(26, 41, 66, 0.5);
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .badge-emerald { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-amber { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        /* Form specific */
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .chat-bubble-left {
+            border-bottom-left-radius: 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-bubble-right {
+            border-bottom-right-radius: 0;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <!-- Background Gradient & Mesh -->
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow<br><span class="text-xs font-mono text-emerald font-normal">Hotel Agent</span></span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Global negotiation search..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/hotels" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-hotel w-5 text-center"></i>
+                <span>Hotels</span>
+            </a>
+            <a href="/negotiations" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-handshake w-5 text-center text-emerald"></i>
+                <span>Negotiations</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/audit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                <span>Audit Trail</span>
+            </a>
+            <div class="pt-4 mt-4 border-t border-white/10">
+                <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                    <i class="fa-solid fa-cog w-5 text-center"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Marie Dupont</div>
+                    <div class="text-xs text-slate-400">Revenue Manager</div>
+                    <div class="text-xs text-slate-500">Le Marais Group</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <!-- Top Header -->
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400 mb-1">
+                        <a href="/negotiations" class="hover:text-emerald transition-colors">Negotiations</a>
+                        <span>/</span>
+                        <span class="text-slate-300">REQ-8924</span>
+                    </div>
+                    <h1 class="font-display text-2xl font-bold text-white">Negotiation Detail</h1>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-bell text-slate-300 hover:text-white cursor-pointer text-lg"></i>
+                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red rounded-full border-2 border-navy-deep"></span>
+                </div>
+                <div class="text-sm text-slate-300 font-medium hidden md:block">
+                    05 Apr 2026, 14:32
+                </div>
+                <button class="btn-outline px-4 py-2 rounded-lg text-sm font-medium ml-4">
+                    <i class="fa-solid fa-download mr-2"></i>Export PDF
+                </button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-[1600px] mx-auto space-y-6">
+                
+                <!-- Header Card -->
+                <div class="glass-panel rounded-2xl border border-white/10 p-6 animate-fade-up delay-100 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-6 w-full lg:w-auto">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h2 class="font-display text-3xl font-bold text-white">REQ-8924</h2>
+                                <span class="badge badge-amber"><i class="fa-solid fa-hourglass-half"></i> In Progress — Round 2/2</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-4 text-sm text-slate-300">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-hotel text-slate-400"></i>
+                                    <span>Le Marais Boutique</span>
+                                </div>
+                                <div class="w-1 h-1 rounded-full bg-slate-600"></div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-building text-slate-400"></i>
+                                    <span>TechCorp SAS</span>
+                                </div>
+                                <div class="w-1 h-1 rounded-full bg-slate-600"></div>
+                                <div class="flex items-center gap-2">
+                                    <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" class="w-5 h-5 rounded-full" alt="Traveler">
+                                    <span>Sophie Martin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto bg-white/5 rounded-xl p-4 border border-white/5">
+                        <div>
+                            <div class="text-xs text-slate-400 mb-1 uppercase tracking-wider">Trip Details</div>
+                            <div class="text-sm text-white font-medium">12-15 May 2026 (3 nights)</div>
+                            <div class="text-xs text-slate-300">3× Superior rooms</div>
+                        </div>
+                        <div class="h-10 w-px bg-white/10 hidden sm:block"></div>
+                        <div class="text-center sm:text-right w-full sm:w-auto">
+                            <div class="text-xs text-amber mb-1 uppercase tracking-wider font-semibold">Offer expires in</div>
+                            <div class="font-mono text-2xl font-bold text-amber" id="countdown-timer">18:42</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Left Column: Chat Timeline & Actions -->
+                    <div class="lg:col-span-2 space-y-6 flex flex-col h-full">
+                        
+                        <!-- Timeline Panel -->
+                        <div class="glass-panel rounded-2xl border border-white/10 flex flex-col flex-1 min-h-[500px] animate-fade-up delay-200">
+                            <div class="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                <h3 class="font-display text-lg font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-comments text-emerald"></i> AI-to-AI Transcript
+                                </h3>
+                                <button class="text-xs text-slate-400 hover:text-white transition-colors">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Messages Area -->
+                            <div class="flex-1 p-6 overflow-y-auto space-y-6" id="chat-container">
+                                
+                                <!-- Message 1 -->
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-navy-mid flex items-center justify-center flex-shrink-0 border border-white/10">
+                                        <i class="fa-solid fa-robot text-slate-300 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-sm font-medium text-slate-200">Corporate Agent</span>
+                                            <span class="text-xs text-slate-500">14:30:12</span>
+                                            <span class="badge badge-slate text-[10px] py-0.5 ml-2">TRAVEL_INTENT</span>
+                                        </div>
+                                        <div class="chat-bubble-left p-4 rounded-2xl text-sm text-slate-300 leading-relaxed max-w-2xl">
+                                            3× Superior rooms, 12-15 May 2026. Budget: €160/night max. Requirements: breakfast included, 24h free cancellation.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message 2 -->
+                                <div class="flex gap-4 flex-row-reverse">
+                                    <div class="w-10 h-10 rounded-full bg-emerald/20 flex items-center justify-center flex-shrink-0 border border-emerald/30">
+                                        <i class="fa-solid fa-bolt text-emerald text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 flex flex-col items-end">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="badge badge-emerald text-[10px] py-0.5 mr-2">HOTEL_OFFER</span>
+                                            <span class="text-xs text-slate-500">14:30:45</span>
+                                            <span class="text-sm font-medium text-emerald">Hotel Agent</span>
+                                        </div>
+                                        <div class="chat-bubble-right p-4 rounded-2xl text-sm text-slate-100 leading-relaxed max-w-2xl">
+                                            <div class="mb-3">
+                                                Offer: <span class="font-display text-xl font-bold text-white">€152</span>/night per room
+                                            </div>
+                                            <ul class="space-y-1 mb-3">
+                                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald text-xs"></i> Breakfast included</li>
+                                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald text-xs"></i> Free WiFi</li>
+                                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald text-xs"></i> 24h free cancellation</li>
+                                            </ul>
+                                            <div class="text-xs text-emerald/80 bg-emerald/10 p-2 rounded border border-emerald/20 inline-block">
+                                                <i class="fa-solid fa-clock mr-1"></i> Valid until 15:00
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message 3 -->
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-navy-mid flex items-center justify-center flex-shrink-0 border border-white/10">
+                                        <i class="fa-solid fa-robot text-slate-300 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-sm font-medium text-slate-200">Corporate Agent</span>
+                                            <span class="text-xs text-slate-500">14:31:18</span>
+                                            <span class="badge badge-amber text-[10px] py-0.5 ml-2">COUNTER_PROPOSAL</span>
+                                        </div>
+                                        <div class="chat-bubble-left p-4 rounded-2xl text-sm text-slate-300 leading-relaxed max-w-2xl">
+                                            Rate accepted (€152). Additional request: Late checkout until 14:00.<br><br>
+                                            <span class="text-xs text-slate-400">Justification: Gold loyalty tier (58 nights YTD with your group).</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message 4 -->
+                                <div class="flex gap-4 flex-row-reverse">
+                                    <div class="w-10 h-10 rounded-full bg-emerald/20 flex items-center justify-center flex-shrink-0 border border-emerald/30">
+                                        <i class="fa-solid fa-bolt text-emerald text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 flex flex-col items-end">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="badge badge-emerald text-[10px] py-0.5 mr-2">HOTEL_OFFER (Final)</span>
+                                            <span class="text-xs text-slate-500">14:32:05</span>
+                                            <span class="text-sm font-medium text-emerald">Hotel Agent</span>
+                                        </div>
+                                        <div class="chat-bubble-right p-4 rounded-2xl text-sm text-slate-100 leading-relaxed max-w-2xl">
+                                            <div class="mb-3">
+                                                Final offer: <span class="font-display text-xl font-bold text-white">€152</span>/night
+                                            </div>
+                                            <div class="flex flex-wrap gap-2 mb-3">
+                                                <span class="px-2 py-1 bg-black/20 rounded text-xs border border-white/10">+ Breakfast</span>
+                                                <span class="px-2 py-1 bg-black/20 rounded text-xs border border-white/10">+ Late checkout 14:00</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-xs text-amber bg-amber/10 p-2 rounded border border-amber/20">
+                                                <i class="fa-solid fa-circle-notch fa-spin"></i> Awaiting Corporate Agent confirmation...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="glass-panel rounded-2xl border border-white/10 p-4 animate-fade-up delay-300 flex flex-wrap gap-4 items-center justify-between">
+                            <div class="flex flex-wrap gap-3">
+                                <button class="btn-emerald px-6 py-2.5 rounded-lg text-sm font-medium shadow-lg">
+                                    <i class="fa-solid fa-check mr-2"></i> Accept Offer Immediately
+                                </button>
+                                <button class="btn-outline border-amber/50 text-amber hover:bg-amber/10 hover:border-amber px-6 py-2.5 rounded-lg text-sm font-medium">
+                                    <i class="fa-solid fa-hand-paper mr-2"></i> Override & Intervene Manually
+                                </button>
+                            </div>
+                            <button class="btn-destructive px-4 py-2.5 rounded-lg text-sm font-medium opacity-80 hover:opacity-100">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Escalate to Human
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Intelligence & Details -->
+                    <div class="space-y-6">
+                        
+                        <!-- Yield Engine Reasoning -->
+                        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-200">
+                            <div class="px-6 py-4 border-b border-white/10 bg-white/5">
+                                <h3 class="font-display text-lg font-bold text-white">Yield Engine Reasoning</h3>
+                            </div>
+                            <div class="p-4 space-y-2">
+                                <div class="bg-white/5 border border-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/10 transition-colors group">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3 text-sm text-slate-200">
+                                            <i class="fa-solid fa-chart-bar text-slate-400 w-4"></i>
+                                            <span>Occupancy Analysis</span>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
+                                    </div>
+                                    <div class="mt-2 text-xs text-emerald pl-7">68% projected &rarr; discount viable</div>
+                                </div>
+                                
+                                <div class="bg-white/5 border border-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/10 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3 text-sm text-slate-200">
+                                            <i class="fa-solid fa-trophy text-amber w-4"></i>
+                                            <span>Loyalty Signal</span>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
+                                    </div>
+                                    <div class="mt-2 text-xs text-amber pl-7">Gold tier, 58 nights YTD &rarr; strong leverage</div>
+                                </div>
+
+                                <div class="bg-white/5 border border-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/10 transition-colors">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3 text-sm text-slate-200">
+                                            <i class="fa-solid fa-money-bill text-slate-400 w-4"></i>
+                                            <span>Cost Analysis</span>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down text-slate-500 text-xs"></i>
+                                    </div>
+                                    <div class="mt-2 text-xs text-slate-400 pl-7">Late checkout cost: €0 (housekeeping buffer exists)</div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-emerald/10 border border-emerald/20 rounded-lg text-center">
+                                    <span class="text-emerald text-sm font-medium"><i class="fa-solid fa-check-circle mr-2"></i> Recommendation: Accept €152 + late checkout</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deal Value Analysis -->
+                        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-300">
+                            <div class="px-6 py-4 border-b border-white/10 bg-white/5">
+                                <h3 class="font-display text-lg font-bold text-white">Deal Value Analysis</h3>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex justify-between items-end mb-4 pb-4 border-b border-white/10">
+                                    <div>
+                                        <div class="text-xs text-slate-400 mb-1">Total Value (3 nights)</div>
+                                        <div class="font-display text-3xl font-bold text-white">€456</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xs text-slate-400 mb-1">Rate</div>
+                                        <div class="text-lg text-slate-200">€152/night</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>BAR rate (€185/night)</span>
+                                        <span>€555</span>
+                                    </div>
+                                    <div class="flex justify-between text-emerald">
+                                        <span>Corporate saves (17.8%)</span>
+                                        <span>-€99</span>
+                                    </div>
+                                    <div class="h-px bg-white/10 my-2"></div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>If sold via OTA (18% comm.)</span>
+                                        <span>Net €157/night</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-300">
+                                        <span>OTA commission avoided</span>
+                                        <span>+€99</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Rateflow fee (3.5%)</span>
+                                        <span>-€16</span>
+                                    </div>
+                                    <div class="flex justify-between font-medium text-emerald pt-2 border-t border-white/10">
+                                        <span>Net gain vs OTA</span>
+                                        <span>+€83</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Corporate Profile -->
+                        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-400">
+                            <div class="p-5 flex items-center gap-4 border-b border-white/10 bg-white/5">
+                                <div class="w-12 h-12 rounded bg-navy-mid flex items-center justify-center border border-white/10">
+                                    <i class="fa-solid fa-building text-xl text-slate-300"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white">TechCorp SAS</h3>
+                                    <div class="text-xs text-amber font-medium"><i class="fa-solid fa-trophy mr-1"></i> Gold Tier</div>
+                                </div>
+                            </div>
+                            <div class="p-5 grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-1">Nights YTD</div>
+                                    <div class="font-medium text-white">58</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-1">Spend YTD</div>
+                                    <div class="font-medium text-white">€8,240</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-1">Avg Rate</div>
+                                    <div class="font-medium text-white">€142</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-1">Policy Max</div>
+                                    <div class="font-medium text-white">€180 (Paris)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Audit Snippet -->
+                        <div class="glass-panel rounded-2xl border border-white/10 p-5 animate-fade-up delay-400 bg-navy-deep/80">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-400"><i class="fa-solid fa-shield-halved mr-2 text-emerald"></i>Cryptographic Audit</h4>
+                                <span class="badge badge-emerald text-[10px] py-0">Verified</span>
+                            </div>
+                            <div class="font-mono text-[10px] text-slate-500 break-all bg-black/30 p-2 rounded border border-white/5">
+                                Hash: d7b2e9c4f8a1...<br>
+                                Chain: Valid
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple countdown timer simulation
+        window.addEventListener('load', function() {
+            let minutes = 18;
+            let seconds = 42;
+            const timerElement = document.getElementById('countdown-timer');
+            
+            if(timerElement) {
+                setInterval(() => {
+                    seconds--;
+                    if(seconds < 0) {
+                        seconds = 59;
+                        minutes--;
+                    }
+                    if(minutes < 0) {
+                        timerElement.textContent = "00:00";
+                        timerElement.classList.replace('text-amber', 'text-red');
+                        return;
+                    }
+                    
+                    const minStr = minutes < 10 ? '0' + minutes : minutes;
+                    const secStr = seconds < 10 ? '0' + seconds : seconds;
+                    timerElement.textContent = `${minStr}:${secStr}`;
+                    
+                    if(minutes < 5) {
+                        timerElement.classList.add('animate-pulse');
+                    }
+                }, 1000);
+            }
+
+            // Auto-scroll chat to bottom
+            const chatContainer = document.getElementById('chat-container');
+            if(chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>

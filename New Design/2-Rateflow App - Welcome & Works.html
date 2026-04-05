@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 h-full">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateflow - Welcome & Workspace Selector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        .nav-link:hover {
+            color: #10B981;
+        }
+        .input-glass {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .input-glass::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col overflow-x-hidden">
+    
+    <!-- Background Gradient & Mesh -->
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- Header Navigation -->
+    <header id="header" class="relative z-10 w-full h-20 flex items-center justify-between px-8 lg:px-16 border-b border-white/10 glass-panel">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-2xl font-semibold tracking-wide text-white">Rateflow</span>
+        </div>
+        
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+            <a href="#" class="nav-link">Platform</a>
+            <a href="#" class="nav-link">Solutions</a>
+            <a href="#" class="nav-link">Integrations</a>
+            <a href="#" class="nav-link">Security</a>
+        </nav>
+        
+        <div class="flex items-center gap-4">
+            <a href="#" class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Sign In</a>
+            <button class="btn-emerald px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm">
+                Request Demo
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="relative z-10 flex-grow flex flex-col items-center justify-center px-4 py-12 lg:py-20 w-full max-w-7xl mx-auto">
+        
+        <!-- Hero Section -->
+        <section id="hero-intro" class="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-emerald text-xs font-semibold uppercase tracking-wider mb-6">
+                <span class="w-2 h-2 rounded-full bg-emerald animate-pulse"></span>
+                AI-Powered Negotiation Protocol
+            </div>
+            <h1 class="font-display text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                Welcome to <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald to-teal-400">Rateflow</span>
+            </h1>
+            <p class="text-lg lg:text-xl text-slate-400 font-mono max-w-2xl mx-auto leading-relaxed">
+                Select your workspace to access the platform. Automate corporate travel bookings through real-time AI-to-AI negotiations.
+            </p>
+        </section>
+
+        <!-- Workspace Selector Cards -->
+        <section id="workspace-cards" class="w-full grid md:grid-cols-2 gap-6 lg:gap-10 max-w-5xl mx-auto mb-16 px-4">
+            
+            <!-- Hotel Agent Card -->
+            <div class="glass-card rounded-[14px] p-8 lg:p-10 flex flex-col h-full animate-fade-up delay-100 group cursor-pointer" onclick="window.location.href='/hotel/dashboard'">
+                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-navy-mid to-navy-deep border border-white/10 flex items-center justify-center mb-8 group-hover:border-emerald/50 transition-colors">
+                    <i class="fa-solid fa-hotel text-2xl text-emerald"></i>
+                </div>
+                
+                <h2 class="font-display text-3xl font-bold text-white mb-3 group-hover:text-emerald transition-colors">Hotel Agent</h2>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
+                    For Revenue Managers and Property Groups. Automate yield rules, respond to RFPs instantly, and optimize RevPAR across your network.
+                </p>
+                
+                <div class="space-y-3 mb-8 text-sm text-slate-300">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>AI Yield Configuration</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>Real-time Negotiations</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>PMS Integrations</span>
+                    </div>
+                </div>
+
+                <button class="w-full btn-outline py-3 rounded-lg font-semibold flex items-center justify-center gap-2 group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-all">
+                    Enter Hotel Workspace
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Corporate Agent Card -->
+            <div class="glass-card rounded-[14px] p-8 lg:p-10 flex flex-col h-full animate-fade-up delay-200 group cursor-pointer" onclick="window.location.href='/corporate/dashboard'">
+                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-navy-mid to-navy-deep border border-white/10 flex items-center justify-center mb-8 group-hover:border-emerald/50 transition-colors">
+                    <i class="fa-solid fa-building text-2xl text-emerald"></i>
+                </div>
+                
+                <h2 class="font-display text-3xl font-bold text-white mb-3 group-hover:text-emerald transition-colors">Corporate Agent</h2>
+                <p class="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
+                    For Travel Managers and Employees. Self-book travel with AI negotiating the best rates in real-time, ensuring 100% policy compliance.
+                </p>
+                
+                <div class="space-y-3 mb-8 text-sm text-slate-300">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>Self-service Booking Wizard</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>Automated Policy Enforcement</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-check text-emerald text-xs"></i>
+                        <span>Savings Analytics</span>
+                    </div>
+                </div>
+
+                <button class="w-full btn-outline py-3 rounded-lg font-semibold flex items-center justify-center gap-2 group-hover:bg-emerald group-hover:text-white group-hover:border-emerald transition-all">
+                    Enter Corporate Workspace
+                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- Domain Entry & SSO -->
+        <section id="domain-entry" class="w-full max-w-md mx-auto mb-16 animate-fade-up delay-300">
+            <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald to-transparent opacity-50"></div>
+                
+                <h3 class="text-sm font-semibold text-white mb-4 text-center">Enterprise Single Sign-On</h3>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-2 uppercase tracking-wide">Company Domain</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-globe absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input type="text" placeholder="company.com" class="w-full input-glass rounded-lg py-3 pl-11 pr-4 text-sm font-mono focus:ring-1 focus:ring-emerald">
+                        </div>
+                    </div>
+                    <button type="button" class="w-full btn-emerald py-3 rounded-lg text-sm font-semibold shadow-sm flex items-center justify-center gap-2">
+                        Continue with SSO
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+                
+                <div class="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
+                    <i class="fa-solid fa-lock text-slate-600"></i>
+                    Secure authentication via SAML/OAuth2
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust & Security Callouts -->
+        <section id="trust-bar" class="w-full max-w-4xl mx-auto border-t border-white/10 pt-10 animate-fade-up delay-400">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-300">SOC2 Certified</div>
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-link"></i>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-300">Immutable Audit Trail</div>
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-300">99.9% Uptime</div>
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400">
+                        <i class="fa-solid fa-plug"></i>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-300">PMS & HRIS Integrations</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer" class="relative z-10 w-full py-8 border-t border-white/10 mt-auto glass-panel">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
+            <div>&copy; 2026 Rateflow Inc. All rights reserved.</div>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hover:text-emerald transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-emerald transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-emerald transition-colors">Support</a>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald"></span>
+                System Status: Operational
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

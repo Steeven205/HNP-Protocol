@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-emerald:disabled {
+            background-color: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .btn-destructive {
+            background-color: #EF4444;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-destructive:hover {
+            background-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .badge-emerald { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-amber { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .badge-navy { background: rgba(26, 41, 66, 0.3); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .data-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 600;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-table td {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.875rem;
+        }
+        .data-table tr:hover td {
+            background-color: rgba(26, 41, 66, 0.5);
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: rgba(10, 22, 40, 0.98);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar-track {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #10B981, #0d9668);
+            height: 100%;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 9999px;
+        }
+
+        .pricing-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .pricing-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pricing-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.875rem;
+        }
+        .pricing-table tr:last-child td {
+            border-bottom: none;
+        }
+        .pricing-table .highlight-column {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 2px solid #10B981;
+            border-right: 2px solid #10B981;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow</span>
+        </div>
+
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search settings..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/hotels" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-hotel w-5 text-center"></i>
+                <span>Hotels</span>
+            </a>
+            <a href="/negotiations" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span>Negotiations</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/audit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                <span>Audit Trail</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center text-emerald"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Marie Dupont</div>
+                    <div class="text-xs text-slate-400">Revenue Manager</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Billing & Subscription</h1>
+                    <p class="text-xs text-slate-400 font-mono">Manage your plan and payment details</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-xl text-slate-300 hover:text-white transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald rounded-full flex items-center justify-center text-[9px] font-bold text-navy-deep border-2 border-navy-deep">2</span>
+                </div>
+                
+                <div class="hidden sm:block text-right">
+                    <div class="text-sm font-medium text-white">May 15, 2026</div>
+                    <div class="text-xs text-slate-400">09:45 AM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div id="current-plan-panel" class="lg:col-span-2 glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-100">
+                        <div class="p-6 border-b border-white/10 bg-emerald/5">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h3 class="font-display text-2xl font-bold text-white">Professional Plan</h3>
+                                        <span class="badge badge-emerald">
+                                            <i class="fa-solid fa-star"></i>
+                                            Current Plan
+                                        </span>
+                                    </div>
+                                    <p class="text-slate-300 text-sm">Perfect for growing hotel groups</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-display text-3xl font-bold text-emerald">€199</div>
+                                    <div class="text-xs text-slate-400">/month + 3.5% per booking</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-infinity text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">Unlimited Negotiations</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">No limits on AI-powered negotiations</p>
+                                </div>
+
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-chart-line text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">Advanced Analytics</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Deep insights & custom reports</p>
+                                </div>
+
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-plug text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">API Access</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Full REST API integration</p>
+                                </div>
+
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-users text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">5 Team Members</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Collaborative workspace</p>
+                                </div>
+
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-headset text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">Priority Support</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">24/7 email & chat support</p>
+                                </div>
+
+                                <div class="glass-card rounded-lg p-4">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                            <i class="fa-solid fa-lock text-emerald"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-white">Audit Trail</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">Immutable cryptographic logs</p>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-white/10 pt-4 mb-4">
+                                <div class="flex items-center justify-between text-sm mb-2">
+                                    <span class="text-slate-400">Next billing date:</span>
+                                    <span class="text-white font-medium">May 15, 2026</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Payment method:</span>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-brands fa-cc-visa text-xl text-slate-300"></i>
+                                        <span class="text-white font-mono">•••• 4242</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3">
+                                <button class="btn-emerald px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                    Upgrade to Enterprise
+                                </button>
+                                <button class="btn-outline px-6 py-2.5 rounded-lg text-sm font-medium">
+                                    Change Plan
+                                </button>
+                                <button class="btn-destructive px-6 py-2.5 rounded-lg text-sm font-medium">
+                                    Cancel Subscription
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="usage-panel" class="glass-panel rounded-2xl border border-white/10 p-6 animate-fade-up delay-200">
+                        <div class="flex items-start gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-navy-mid/50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-chart-bar text-emerald text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-xl font-bold text-white mb-1">Usage This Month</h3>
+                                <p class="text-xs text-slate-400">April 2026</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="glass-card rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-slate-300">Base Subscription</span>
+                                    <span class="font-display text-xl font-bold text-white">€199</span>
+                                </div>
+                                <p class="text-xs text-slate-400">Professional plan fee</p>
+                            </div>
+
+                            <div class="glass-card rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-slate-300">Negotiations</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono text-lg font-bold text-emerald">127</span>
+                                        <i class="fa-solid fa-check text-emerald text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-track mb-2">
+                                    <div class="progress-bar-fill" style="width: 100%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400">Unlimited included ✅</p>
+                            </div>
+
+                            <div class="glass-card rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-slate-300">Confirmed Bookings</span>
+                                    <span class="font-mono text-lg font-bold text-white">42</span>
+                                </div>
+                                <div class="progress-bar-track mb-2">
+                                    <div class="progress-bar-fill" style="width: 42%"></div>
+                                </div>
+                                <p class="text-xs text-slate-400">@ 3.5% commission</p>
+                            </div>
+
+                            <div class="glass-card rounded-lg p-4 border-t-2 border-emerald/30">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-slate-300">Commission</span>
+                                    <span class="font-display text-xl font-bold text-emerald">€210</span>
+                                </div>
+                                <p class="text-xs text-slate-400">42 bookings × avg €120/booking</p>
+                            </div>
+
+                            <div class="glass-card rounded-lg p-5 bg-emerald/10 border-emerald/20">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-semibold text-white">Total This Month</span>
+                                    <span class="font-display text-3xl font-bold text-emerald">€409</span>
+                                </div>
+                                <p class="text-xs text-emerald">Base €199 + Commission €210</p>
+                            </div>
+
+                            <div class="glass-card rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-sm text-slate-300">Team Members</span>
+                                    <span class="font-mono text-lg font-bold text-white">3/5</span>
+                                </div>
+                                <div class="progress-bar-track">
+                                    <div class="progress-bar-fill" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pricing-comparison-panel" class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-300">
+                    <div class="p-6 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                <i class="fa-solid fa-layer-group text-emerald text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-xl font-bold text-white">Pricing Plans Comparison</h3>
+                                <p class="text-xs text-slate-400">Compare features across all plans</p>
+                            </div>
+                        </div>
+                        <button onclick="togglePricingTable()" class="text-slate-300 hover:text-white transition-colors">
+                            <i id="pricing-toggle-icon" class="fa-solid fa-chevron-down text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div id="pricing-table-content" class="overflow-x-auto" style="display: none;">
+                        <table class="pricing-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Feature</th>
+                                    <th class="text-center">
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="text-slate-400">Starter</span>
+                                            <span class="font-display text-lg text-white">€99</span>
+                                            <span class="text-xs text-slate-500">/month</span>
+                                        </div>
+                                    </th>
+                                    <th class="text-center highlight-column">
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="text-emerald">Professional</span>
+                                            <span class="font-display text-lg text-white">€199</span>
+                                            <span class="text-xs text-slate-500">/month</span>
+                                            <span class="badge badge-emerald text-[10px] mt-1">Current</span>
+                                        </div>
+                                    </th>
+                                    <th class="text-center">
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="text-slate-400">Enterprise</span>
+                                            <span class="font-display text-lg text-white">€299</span>
+                                            <span class="text-xs text-slate-500">/month</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-white font-medium">Negotiations/month</td>
+                                    <td class="text-center text-slate-300">100</td>
+                                    <td class="text-center text-emerald highlight-column">Unlimited</td>
+                                    <td class="text-center text-slate-300">Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Commission Rate</td>
+                                    <td class="text-center text-slate-300">5%</td>
+                                    <td class="text-center text-emerald highlight-column">3.5%</td>
+                                    <td class="text-center text-slate-300">3%</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Properties</td>
+                                    <td class="text-center text-slate-300">1</td>
+                                    <td class="text-center text-emerald highlight-column">5</td>
+                                    <td class="text-center text-slate-300">Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Team Members</td>
+                                    <td class="text-center text-slate-300">2</td>
+                                    <td class="text-center text-emerald highlight-column">5</td>
+                                    <td class="text-center text-slate-300">Unlimited</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Analytics</td>
+                                    <td class="text-center text-slate-300">Basic</td>
+                                    <td class="text-center text-emerald highlight-column">Advanced</td>
+                                    <td class="text-center text-slate-300">Custom</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">API Access</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-check text-emerald"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Audit Trail</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-check text-emerald"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Priority Support</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-check text-emerald"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Dedicated Account Manager</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">Custom Integrations</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-white font-medium">White Label Option</td>
+                                    <td class="text-center"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center highlight-column"><i class="fa-solid fa-xmark text-red"></i></td>
+                                    <td class="text-center"><i class="fa-solid fa-check text-emerald"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="invoices-panel" class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-400">
+                    <div class="p-6 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-emerald/20 flex items-center justify-center">
+                                <i class="fa-solid fa-file-invoice text-emerald text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-display text-xl font-bold text-white">Invoices</h3>
+                                <p class="text-xs text-slate-400">Download past invoices</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full data-table text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="pl-6 pt-6">Date</th>
+                                    <th class="pt-6">Invoice #</th>
+                                    <th class="pt-6">Amount</th>
+                                    <th class="pt-6">Status</th>
+                                    <th class="pr-6 pt-6 text-right">Download</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="group transition-colors">
+                                    <td class="pl-6">
+                                        <div class="text-white text-sm">April 15, 2026</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-mono text-sm text-slate-300">INV-2026-004</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-display text-lg font-bold text-white">€409</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-emerald">
+                                            <i class="fa-solid fa-check"></i>
+                                            Paid
+                                        </span>
+                                    </td>
+                                    <td class="pr-6 text-right">
+                                        <button class="btn-outline px-4 py-1.5 rounded text-xs flex items-center gap-2 ml-auto">
+                                            <i class="fa-solid fa-download"></i>
+                                            PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="group transition-colors">
+                                    <td class="pl-6">
+                                        <div class="text-white text-sm">March 15, 2026</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-mono text-sm text-slate-300">INV-2026-003</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-display text-lg font-bold text-white">€387</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-emerald">
+                                            <i class="fa-solid fa-check"></i>
+                                            Paid
+                                        </span>
+                                    </td>
+                                    <td class="pr-6 text-right">
+                                        <button class="btn-outline px-4 py-1.5 rounded text-xs flex items-center gap-2 ml-auto">
+                                            <i class="fa-solid fa-download"></i>
+                                            PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="group transition-colors">
+                                    <td class="pl-6">
+                                        <div class="text-white text-sm">February 15, 2026</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-mono text-sm text-slate-300">INV-2026-002</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-display text-lg font-bold text-white">€356</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-emerald">
+                                            <i class="fa-solid fa-check"></i>
+                                            Paid
+                                        </span>
+                                    </td>
+                                    <td class="pr-6 text-right">
+                                        <button class="btn-outline px-4 py-1.5 rounded text-xs flex items-center gap-2 ml-auto">
+                                            <i class="fa-solid fa-download"></i>
+                                            PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="group transition-colors">
+                                    <td class="pl-6">
+                                        <div class="text-white text-sm">January 15, 2026</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-mono text-sm text-slate-300">INV-2026-001</div>
+                                    </td>
+                                    <td>
+                                        <div class="font-display text-lg font-bold text-white">€342</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-emerald">
+                                            <i class="fa-solid fa-check"></i>
+                                            Paid
+                                        </span>
+                                    </td>
+                                    <td class="pr-6 text-right">
+                                        <button class="btn-outline px-4 py-1.5 rounded text-xs flex items-center gap-2 ml-auto">
+                                            <i class="fa-solid fa-download"></i>
+                                            PDF
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-t border-white/10 flex items-center justify-between text-sm text-slate-400 bg-white/5">
+                        <span>Showing 1-4 of 4 invoices</span>
+                    </div>
+                </div>
+
+                <div id="payment-method-panel" class="glass-panel rounded-2xl border border-white/10 p-6 animate-fade-up delay-400">
+                    <div class="flex items-start gap-3 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-emerald/20 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-credit-card text-emerald text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display text-xl font-bold text-white mb-1">Payment Method</h3>
+                            <p class="text-xs text-slate-400">Manage your payment details</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-lg p-6 mb-4">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 rounded-lg bg-navy-mid/50 flex items-center justify-center">
+                                    <i class="fa-brands fa-cc-visa text-3xl text-slate-300"></i>
+                                </div>
+                                <div>
+                                    <div class="text-white font-medium mb-1">Visa ending in 4242</div>
+                                    <div class="text-sm text-slate-400">Expires 12/2028</div>
+                                </div>
+                            </div>
+                            <span class="badge badge-emerald">
+                                <i class="fa-solid fa-check"></i>
+                                Active
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-2 text-xs text-slate-400 mb-4">
+                            <i class="fa-solid fa-shield-halved text-emerald"></i>
+                            <span>Your payment information is encrypted and secure</span>
+                        </div>
+
+                        <button onclick="openUpdateCardModal()" class="btn-emerald px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-credit-card"></i>
+                            Update Card
+                        </button>
+                    </div>
+
+                    <div class="glass-card rounded-lg p-4">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-info-circle text-emerald text-lg mt-0.5"></i>
+                            <div class="text-sm text-slate-300">
+                                <p class="font-medium text-white mb-1">Automatic Billing</p>
+                                <p class="text-xs text-slate-400">Your card will be charged automatically on the 15th of each month. You'll receive an email receipt after each successful payment.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="update-card-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-white/10">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-white mb-1">Update Payment Method</h3>
+                        <p class="text-sm text-slate-400">Enter your new card details</p>
+                    </div>
+                    <button onclick="closeUpdateCardModal()" class="text-slate-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Card Number</label>
+                    <div class="relative">
+                        <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" class="form-input-glass rounded-lg py-3 pl-4 pr-12 text-sm w-full font-mono">
+                        <i class="fa-brands fa-cc-visa absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Expiry Date</label>
+                        <input type="text" placeholder="MM/YY" maxlength="5" class="form-input-glass rounded-lg py-3 px-4 text-sm w-full font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">CVV</label>
+                        <input type="text" placeholder="123" maxlength="4" class="form-input-glass rounded-lg py-3 px-4 text-sm w-full font-mono">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Cardholder Name</label>
+                    <input type="text" placeholder="Marie Dupont" class="form-input-glass rounded-lg py-3 px-4 text-sm w-full">
+                </div>
+
+                <div class="glass-card rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-shield-halved text-emerald text-lg mt-0.5"></i>
+                        <div class="text-xs text-slate-300">
+                            <p class="font-medium text-white mb-1">Secure Payment Processing</p>
+                            <p class="text-slate-400">Your payment information is encrypted using industry-standard SSL technology and never stored on our servers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-white/10 flex items-center justify-end gap-3">
+                <button onclick="closeUpdateCardModal()" class="btn-outline px-6 py-2.5 rounded-lg text-sm font-medium">
+                    Cancel
+                </button>
+                <button onclick="updateCard()" class="btn-emerald px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2">
+                    <i class="fa-solid fa-credit-card"></i>
+                    Update Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePricingTable() {
+            const content = document.getElementById('pricing-table-content');
+            const icon = document.getElementById('pricing-toggle-icon');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+
+        function openUpdateCardModal() {
+            document.getElementById('update-card-modal').classList.add('active');
+        }
+
+        function closeUpdateCardModal() {
+            document.getElementById('update-card-modal').classList.remove('active');
+        }
+
+        function updateCard() {
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+            
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Processing...';
+            button.disabled = true;
+            
+            setTimeout(function() {
+                button.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Card Updated!';
+                
+                setTimeout(function() {
+                    closeUpdateCardModal();
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }, 1500);
+            }, 2000);
+        }
+
+        document.getElementById('update-card-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUpdateCardModal();
+            }
+        });
+    </script>
+</body>
+</html>

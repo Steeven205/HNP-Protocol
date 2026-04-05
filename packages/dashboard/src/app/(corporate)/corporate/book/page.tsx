@@ -37,10 +37,10 @@ export default function BookTripDetailsPage() {
   return (
     <div className="flex flex-col h-full">
       {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-20 flex items-center justify-between px-8 border-b border-white/10 glass-panel flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Book Travel</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Step 1/4 &mdash; Trip Details</p>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Book Travel</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Step 1/4 &mdash; Trip Details</p>
         </div>
       </header>
 
@@ -59,7 +59,7 @@ export default function BookTripDetailsPage() {
                 {s.label}
               </div>
               {i < steps.length - 1 && (
-                <div className="w-8 h-px bg-white/10" />
+                <div className="w-8 h-px bg-[#E2E8F0]" />
               )}
             </div>
           ))}
@@ -68,19 +68,19 @@ export default function BookTripDetailsPage() {
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {/* Left: Form (2/3) */}
-          <div className="lg:col-span-2 glass-panel rounded-2xl p-8">
-            <h2 className="font-display text-lg font-semibold text-white mb-6">Trip Details</h2>
+          <div className="lg:col-span-2 bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-8">
+            <h2 className="font-display text-lg font-semibold text-slate-900 mb-6">Trip Details</h2>
 
             <div className="space-y-5">
               {/* Traveler */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   Who is traveling?
                 </label>
                 <select
                   value={traveler}
                   onChange={(e) => setTraveler(e.target.value)}
-                  className="form-input-glass w-full rounded-lg px-4 py-3 text-sm"
+                  className="form-input w-full rounded-lg px-4 py-3 text-sm"
                 >
                   <option value="">Select traveler...</option>
                   {travelers.map((t) => (
@@ -91,7 +91,7 @@ export default function BookTripDetailsPage() {
 
               {/* Destination */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   Destination
                 </label>
                 <div className="relative">
@@ -101,7 +101,7 @@ export default function BookTripDetailsPage() {
                     placeholder="Paris, Lyon, Berlin..."
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    className="form-input-glass w-full rounded-lg pl-11 pr-4 py-3 text-sm"
+                    className="form-input w-full rounded-lg pl-11 pr-4 py-3 text-sm"
                   />
                 </div>
               </div>
@@ -109,25 +109,25 @@ export default function BookTripDetailsPage() {
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                     Check-in
                   </label>
                   <input
                     type="date"
                     value={checkIn}
                     onChange={(e) => setCheckIn(e.target.value)}
-                    className="form-input-glass w-full rounded-lg px-4 py-3 text-sm"
+                    className="form-input w-full rounded-lg px-4 py-3 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                     Check-out
                   </label>
                   <input
                     type="date"
                     value={checkOut}
                     onChange={(e) => setCheckOut(e.target.value)}
-                    className="form-input-glass w-full rounded-lg px-4 py-3 text-sm"
+                    className="form-input w-full rounded-lg px-4 py-3 text-sm"
                   />
                 </div>
               </div>
@@ -135,33 +135,33 @@ export default function BookTripDetailsPage() {
               {/* Rooms & Type */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                     Rooms
                   </label>
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setRooms(Math.max(1, rooms - 1))}
-                      className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                      className="w-10 h-10 rounded-lg bg-slate-50 border border-[#E2E8F0] flex items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors"
                     >
                       <i className="fa-solid fa-minus text-xs" />
                     </button>
-                    <span className="text-lg font-semibold text-white w-8 text-center">{rooms}</span>
+                    <span className="text-lg font-semibold text-slate-900 w-8 text-center">{rooms}</span>
                     <button
                       onClick={() => setRooms(rooms + 1)}
-                      className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                      className="w-10 h-10 rounded-lg bg-slate-50 border border-[#E2E8F0] flex items-center justify-center text-slate-900 hover:bg-slate-100 transition-colors"
                     >
                       <i className="fa-solid fa-plus text-xs" />
                     </button>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                     Room Type
                   </label>
                   <select
                     value={roomType}
                     onChange={(e) => setRoomType(e.target.value)}
-                    className="form-input-glass w-full rounded-lg px-4 py-3 text-sm"
+                    className="form-input w-full rounded-lg px-4 py-3 text-sm"
                   >
                     {roomTypes.map((rt) => (
                       <option key={rt} value={rt}>{rt}</option>
@@ -172,7 +172,7 @@ export default function BookTripDetailsPage() {
 
               {/* Trip Purpose */}
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                   Trip Purpose
                 </label>
                 <input
@@ -180,7 +180,7 @@ export default function BookTripDetailsPage() {
                   placeholder="Client meeting, conference, team offsite..."
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  className="form-input-glass w-full rounded-lg px-4 py-3 text-sm"
+                  className="form-input w-full rounded-lg px-4 py-3 text-sm"
                 />
               </div>
             </div>
@@ -188,8 +188,8 @@ export default function BookTripDetailsPage() {
 
           {/* Right: Policy Preview (1/3) */}
           <div className="lg:col-span-1">
-            <div className="glass-panel rounded-2xl p-6 sticky top-8">
-              <h3 className="font-display text-base font-semibold text-white mb-4">
+            <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 sticky top-8">
+              <h3 className="font-display text-base font-semibold text-slate-900 mb-4">
                 <i className="fa-solid fa-shield-halved text-emerald mr-2" />
                 Policy Preview
               </h3>
@@ -200,8 +200,8 @@ export default function BookTripDetailsPage() {
                     <i className="fa-solid fa-check text-emerald text-[9px]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-300">Budget</p>
-                    <p className="text-xs text-white font-medium">
+                    <p className="text-xs text-slate-500">Budget</p>
+                    <p className="text-xs text-slate-900 font-medium">
                       Max &euro;{maxRate}/night for {destination || "destination"}
                     </p>
                   </div>
@@ -212,8 +212,8 @@ export default function BookTripDetailsPage() {
                     <i className="fa-solid fa-check text-emerald text-[9px]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-300">Category</p>
-                    <p className="text-xs text-white font-medium">Min. 3-star required</p>
+                    <p className="text-xs text-slate-500">Category</p>
+                    <p className="text-xs text-slate-900 font-medium">Min. 3-star required</p>
                   </div>
                 </div>
 
@@ -222,8 +222,8 @@ export default function BookTripDetailsPage() {
                     <i className="fa-solid fa-check text-emerald text-[9px]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-300">Cancellation</p>
-                    <p className="text-xs text-white font-medium">24h free cancellation required</p>
+                    <p className="text-xs text-slate-500">Cancellation</p>
+                    <p className="text-xs text-slate-900 font-medium">24h free cancellation required</p>
                   </div>
                 </div>
 
@@ -232,13 +232,13 @@ export default function BookTripDetailsPage() {
                     <i className="fa-solid fa-check text-emerald text-[9px]" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-300">Max stay</p>
-                    <p className="text-xs text-white font-medium">{travelPolicy.maxNights} nights max</p>
+                    <p className="text-xs text-slate-500">Max stay</p>
+                    <p className="text-xs text-slate-900 font-medium">{travelPolicy.maxNights} nights max</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 pt-5 border-t border-white/10">
+              <div className="mt-6 pt-5 border-t border-[#E2E8F0]">
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Preferred chains</p>
                 <div className="flex flex-wrap gap-1.5">
                   {travelPolicy.preferredChains.map((c) => (
@@ -252,7 +252,7 @@ export default function BookTripDetailsPage() {
                 className={`mt-6 w-full py-3 rounded-xl text-sm font-semibold transition-all ${
                   isFormValid
                     ? "btn-emerald"
-                    : "bg-white/5 text-slate-500 cursor-not-allowed"
+                    : "bg-slate-50 text-slate-500 cursor-not-allowed"
                 }`}
               >
                 Next: Find Hotels

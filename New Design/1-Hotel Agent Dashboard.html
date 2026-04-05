@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <script>
+        window.FontAwesomeConfig = {
+          autoReplaceSvg: 'nest'
+        };
+      </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Rateflow Hotel Agent</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    boxShadow: {
+                        'glass': '0 1px 3px rgba(0,0,0,0.05)',
+                        'glass-hover': '0 8px 24px rgba(0,0,0,0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0A1628;
+            color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover, .glass-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        
+        /* Layout specific */
+        #main-content {
+            background-color: #F8F9FA;
+            color: #1E293B;
+        }
+        
+        .dark-mode-override {
+            background-color: #0A1628 !important;
+            color: #FFFFFF !important;
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-navy-deep text-white font-mono antialiased overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="w-64 bg-navy-deep border-r border-white/10 flex flex-col h-full flex-shrink-0 z-20 transition-all duration-300">
+        <!-- Logo Area -->
+        <div class="h-16 flex items-center px-6 border-b border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-white">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <span class="font-display font-bold text-xl tracking-wide">Rateflow</span>
+            </div>
+        </div>
+
+        <!-- Global Search -->
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-emerald text-sm"></i>
+                <input type="text" placeholder="Search negotiations..." class="w-full bg-navy-mid border border-white/10 rounded-md py-2 pl-9 pr-3 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-md bg-emerald/10 text-emerald font-medium transition-colors">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/hotels" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                <i class="fa-solid fa-hotel w-5 text-center"></i>
+                <span>Hotels</span>
+            </a>
+            <a href="/negotiations" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span>Negotiations</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/audit" class="flex items-center gap-3 px-3 py-2.5 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                <span>Audit Trail</span>
+            </a>
+            
+            <div class="pt-4 mt-4 border-t border-white/10">
+                <div class="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Settings</div>
+                <a href="/settings/yield" class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm">
+                    <i class="fa-solid fa-sliders w-5 text-center"></i>
+                    <span>Yield Config</span>
+                </a>
+                <a href="/settings/integrations" class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm">
+                    <i class="fa-solid fa-plug w-5 text-center"></i>
+                    <span>Integrations</span>
+                </a>
+                <a href="/settings/team" class="flex items-center gap-3 px-3 py-2 rounded-md text-slate-300 hover:bg-white/5 hover:text-white transition-colors text-sm">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Team</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/10">
+            <div class="flex items-center gap-3 glass-card p-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full object-cover border border-white/20">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white truncate">Marie Dupont</p>
+                    <p class="text-xs text-slate-400 truncate">Revenue Manager</p>
+                    <p class="text-xs text-emerald truncate mt-0.5">Le Marais Group</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-navy-deep relative">
+        
+        <!-- Background Effects -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+            <div class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-emerald/5 blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-navy-mid/40 blur-[100px]"></div>
+        </div>
+
+        <!-- TOP HEADER -->
+        <header id="header" class="h-16 glass-card border-x-0 border-t-0 border-b border-white/10 flex items-center justify-between px-6 z-10 sticky top-0 rounded-none bg-navy-deep/80">
+            <div class="flex items-center gap-4">
+                <h1 class="font-display text-2xl text-white font-semibold tracking-wide">Dashboard Overview</h1>
+            </div>
+            
+            <div class="flex items-center gap-5">
+                <div class="text-sm text-slate-300 hidden md:block">
+                    <i class="fa-regular fa-calendar mr-2 text-emerald"></i>
+                    05 Apr 2026, 14:30
+                </div>
+                
+                <button class="relative p-2 text-slate-300 hover:text-white transition-colors">
+                    <i class="fa-regular fa-bell text-lg"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red rounded-full border border-navy-deep"></span>
+                </button>
+                
+                <button class="bg-emerald hover:bg-emerald/90 text-white px-4 py-2 rounded-md text-sm font-medium transition-all shadow-lg shadow-emerald/20 flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> New Negotiation
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN SCROLLABLE CONTENT -->
+        <main class="flex-1 overflow-y-auto p-6 z-10 relative scroll-smooth">
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <!-- KPI GRID -->
+                <section id="kpi-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
+                    <!-- Card 1: RevPAR -->
+                    <div class="glass-card p-5 animate-fade-in stagger-1 relative overflow-hidden group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">REVPAR RÉSEAU</span>
+                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300 group-hover:text-emerald transition-colors">
+                                <i class="fa-solid fa-building"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline gap-3">
+                            <h2 class="font-display text-3xl font-bold text-white">€142.50</h2>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2 text-sm">
+                            <span class="text-emerald flex items-center gap-1 bg-emerald/10 px-2 py-0.5 rounded-full">
+                                <i class="fa-solid fa-arrow-up text-xs"></i> +8.3%
+                            </span>
+                            <span class="text-slate-500 text-xs">vs LY</span>
+                        </div>
+                        <!-- Decorative mini chart line -->
+                        <div class="absolute bottom-0 left-0 w-full h-10 opacity-30">
+                             <svg viewBox="0 0 100 30" preserveAspectRatio="none" class="w-full h-full stroke-emerald fill-none stroke-2">
+                                <path d="M0,25 C20,25 30,10 50,15 C70,20 80,5 100,2" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Occupancy -->
+                    <div class="glass-card p-5 animate-fade-in stagger-2 relative flex flex-col justify-between group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">Taux d'Occupation</span>
+                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300 group-hover:text-emerald transition-colors">
+                                <i class="fa-solid fa-bed"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div>
+                                <h2 class="font-display text-3xl font-bold text-white">78.2%</h2>
+                                <div class="mt-2 flex items-center gap-2 text-sm">
+                                    <span class="text-emerald flex items-center gap-1 bg-emerald/10 px-2 py-0.5 rounded-full">
+                                        <i class="fa-solid fa-arrow-up text-xs"></i> +4.1%
+                                    </span>
+                                    <span class="text-slate-500 text-xs">vs LY</span>
+                                </div>
+                            </div>
+                            <!-- Mini Circular Progress -->
+                            <div class="relative w-14 h-14">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-white/10" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                    <path class="text-emerald" stroke-dasharray="78.2, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: ADR -->
+                    <div class="glass-card p-5 animate-fade-in stagger-3 group">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">ADR Moyen</span>
+                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300 group-hover:text-emerald transition-colors">
+                                <i class="fa-solid fa-tags"></i>
+                            </div>
+                        </div>
+                        <h2 class="font-display text-3xl font-bold text-white">€182.30</h2>
+                        <div class="mt-3 flex flex-col gap-1 text-sm">
+                            <div class="flex items-center gap-2">
+                                <span class="text-emerald flex items-center gap-1">
+                                    <i class="fa-solid fa-arrow-up text-xs"></i> +3.9%
+                                </span>
+                                <span class="text-slate-500 text-xs">vs LY</span>
+                            </div>
+                            <div class="text-xs text-slate-400">vs Budget: <span class="text-emerald">+2.1%</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Corporate Revenue (Warning) -->
+                    <div class="glass-card p-5 animate-fade-in stagger-4 border-t-2 border-t-amber relative group bg-amber/5">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-amber/80 tracking-wider uppercase">Revenue Corporate</span>
+                            <div class="w-8 h-8 rounded bg-amber/10 flex items-center justify-center text-amber">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                        <h2 class="font-display text-3xl font-bold text-white">€156.80</h2>
+                        <div class="mt-3 flex items-center gap-2 text-sm">
+                            <span class="text-amber flex items-center gap-1 bg-amber/10 px-2 py-0.5 rounded-full">
+                                <i class="fa-solid fa-arrow-down text-xs"></i> -2.1%
+                            </span>
+                            <span class="text-slate-500 text-xs">vs Budget</span>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- REVENUE TREND CHART PANEL -->
+                <section id="revenue-trend" class="glass-panel p-6 animate-fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-lg font-medium text-white">Évolution Revenus <span class="text-sm text-slate-400 font-normal ml-2">(30 derniers jours)</span></h3>
+                        </div>
+                        <button class="text-sm text-emerald hover:text-emerald/80 flex items-center gap-2 transition-colors">
+                            Voir détails <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div id="chart-revenue" class="w-full h-[300px]"></div>
+                </section>
+
+                <!-- TWO COLUMN GRID: TABLE & GAUGE -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- LEFT: Hotel Performance Table (2/3) -->
+                    <section id="hotel-performance" class="lg:col-span-2 glass-panel p-0 overflow-hidden flex flex-col animate-fade-in">
+                        <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-white">Performance par Établissement</h3>
+                            <button class="text-sm text-slate-400 hover:text-white transition-colors">
+                                Rapport complet →
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="bg-white/5 text-slate-400 text-xs uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 font-medium">Établissement</th>
+                                        <th class="px-6 py-4 font-medium">Occupancy</th>
+                                        <th class="px-6 py-4 font-medium">ADR</th>
+                                        <th class="px-6 py-4 font-medium">RevPAR</th>
+                                        <th class="px-6 py-4 font-medium text-right">vs Budget</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5">
+                                    <!-- Row 1 -->
+                                    <tr class="hover:bg-white/5 transition-colors cursor-pointer group">
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-white group-hover:text-emerald transition-colors">Le Marais Boutique</div>
+                                            <div class="text-xs text-slate-500 mt-1">Paris 3ème, 70 ch</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">82%</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 5%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">€195</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 3%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-display text-lg text-white font-semibold">€159.90</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald/10 text-emerald">
+                                                +8.2%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <!-- Row 2 -->
+                                    <tr class="hover:bg-white/5 transition-colors cursor-pointer group">
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-white group-hover:text-emerald transition-colors">Brussels Central</div>
+                                            <div class="text-xs text-slate-500 mt-1">Bruxelles, 120 ch</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">76%</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 2%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">€168</div>
+                                            <div class="text-xs text-amber mt-0.5"><i class="fa-solid fa-arrow-down text-[10px]"></i> 1%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-display text-lg text-white font-semibold">€127.68</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald/10 text-emerald">
+                                                +3.1%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <!-- Row 3 -->
+                                    <tr class="hover:bg-white/5 transition-colors cursor-pointer group">
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-white group-hover:text-emerald transition-colors">Lyon Confluence</div>
+                                            <div class="text-xs text-slate-500 mt-1">Lyon 2ème, 95 ch</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">71%</div>
+                                            <div class="text-xs text-amber mt-0.5"><i class="fa-solid fa-arrow-down text-[10px]"></i> 3%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">€152</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 4%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-display text-lg text-white font-semibold">€107.92</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber/10 text-amber">
+                                                -2.4%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <!-- Row 4 -->
+                                    <tr class="hover:bg-white/5 transition-colors cursor-pointer group">
+                                        <td class="px-6 py-4">
+                                            <div class="font-medium text-white group-hover:text-emerald transition-colors">Amsterdam Centrum</div>
+                                            <div class="text-xs text-slate-500 mt-1">Amsterdam, 85 ch</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">84%</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 7%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-white text-base">€178</div>
+                                            <div class="text-xs text-emerald mt-0.5"><i class="fa-solid fa-arrow-up text-[10px]"></i> 2%</div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="font-display text-lg text-white font-semibold">€149.52</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald/10 text-emerald">
+                                                +9.8%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- RIGHT: Gauge & Alerts (1/3) -->
+                    <div class="flex flex-col gap-6 lg:col-span-1 animate-fade-in">
+                        
+                        <!-- Gauge Panel -->
+                        <section id="occupancy-gauge" class="glass-panel p-6 flex flex-col items-center relative overflow-hidden">
+                            <h3 class="text-lg font-medium text-white w-full text-left mb-6">Taux d'Occupation Réseau</h3>
+                            
+                            <div class="relative w-[200px] h-[100px] flex justify-center items-end overflow-hidden mb-4">
+                                <!-- Half Circle Gauge CSS implementation for better styling control than Plotly for this specific look -->
+                                <div class="w-[200px] h-[200px] rounded-full border-[15px] border-white/5 absolute top-0"></div>
+                                <div class="w-[200px] h-[200px] rounded-full border-[15px] border-emerald absolute top-0" style="clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%); transform: rotate(78deg);"></div>
+                                <div class="absolute bottom-2 flex flex-col items-center">
+                                    <span class="font-display text-4xl font-bold text-white leading-none">78%</span>
+                                    <span class="text-xs text-slate-400 mt-1 uppercase tracking-wider">Occupé</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Alerts Section -->
+                        <section id="active-alerts" class="glass-panel p-6 flex-1 flex flex-col">
+                            <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-bell text-amber"></i> Alertes Actives (3)
+                            </h3>
+                            <div class="space-y-3 overflow-y-auto">
+                                <!-- Alert 1 -->
+                                <div class="bg-amber/5 border-l-4 border-amber rounded-r-md p-3 hover:bg-amber/10 transition-colors cursor-pointer">
+                                    <div class="flex items-start gap-2">
+                                        <i class="fa-solid fa-triangle-exclamation text-amber text-xs mt-1"></i>
+                                        <div>
+                                            <p class="text-sm text-white font-medium leading-tight">Paris Marais — Corporate rate</p>
+                                            <p class="text-xs text-slate-400 mt-1">-12% vs BAR → ajuster yield</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Alert 2 -->
+                                <div class="bg-amber/5 border-l-4 border-amber rounded-r-md p-3 hover:bg-amber/10 transition-colors cursor-pointer">
+                                    <div class="flex items-start gap-2">
+                                        <i class="fa-solid fa-triangle-exclamation text-amber text-xs mt-1"></i>
+                                        <div>
+                                            <p class="text-sm text-white font-medium leading-tight">Lyon — OCC 62% weekend prochain</p>
+                                            <p class="text-xs text-slate-400 mt-1">activer promotions</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Alert 3 -->
+                                <div class="bg-amber/5 border-l-4 border-amber rounded-r-md p-3 hover:bg-amber/10 transition-colors cursor-pointer">
+                                    <div class="flex items-start gap-2">
+                                        <i class="fa-solid fa-triangle-exclamation text-amber text-xs mt-1"></i>
+                                        <div>
+                                            <p class="text-sm text-white font-medium leading-tight">Amsterdam — 5 négociations</p>
+                                            <p class="text-xs text-slate-400 mt-1">escalated → review yield rules</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- BOTTOM GRID: 3 PANELS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
+                    
+                    <!-- Panel 1: Mix Segments -->
+                    <section id="mix-segments" class="glass-panel p-6 animate-fade-in">
+                        <h3 class="text-base font-medium text-white mb-5">Distribution Segments</h3>
+                        <div class="space-y-4">
+                            <!-- Row 1 -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-300">Corporate</span>
+                                    <span class="text-white font-medium">42%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-1.5">
+                                    <div class="bg-emerald h-1.5 rounded-full" style="width: 42%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 2 -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-300">Leisure</span>
+                                    <span class="text-white font-medium">35%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-1.5">
+                                    <div class="bg-blue-400 h-1.5 rounded-full" style="width: 35%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 3 -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-300">Groups</span>
+                                    <span class="text-white font-medium">18%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-1.5">
+                                    <div class="bg-amber h-1.5 rounded-full" style="width: 18%"></div>
+                                </div>
+                            </div>
+                            <!-- Row 4 -->
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-300">Other</span>
+                                    <span class="text-white font-medium">5%</span>
+                                </div>
+                                <div class="w-full bg-white/5 rounded-full h-1.5">
+                                    <div class="bg-slate-500 h-1.5 rounded-full" style="width: 5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Panel 2: Lead Time -->
+                    <section id="lead-time" class="glass-panel p-6 animate-fade-in">
+                        <h3 class="text-base font-medium text-white mb-5">Booking Window Moyen</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-emerald"></div>
+                                    <span class="text-sm text-slate-300">Corporate</span>
+                                </div>
+                                <span class="font-mono text-white font-medium">14j</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                                    <span class="text-sm text-slate-300">Leisure</span>
+                                </div>
+                                <span class="font-mono text-white font-medium">28j</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-amber"></div>
+                                    <span class="text-sm text-slate-300">Groups</span>
+                                </div>
+                                <span class="font-mono text-white font-medium">42j</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+                                    <span class="text-sm text-slate-300">Last Minute</span>
+                                </div>
+                                <span class="font-mono text-white font-medium">3j</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Panel 3: Channels -->
+                    <section id="channels" class="glass-panel p-6 animate-fade-in flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-medium text-white mb-5">Mix Canaux</h3>
+                            <div class="space-y-4">
+                                <!-- Row 1 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Direct</span>
+                                        <span class="text-white font-medium">38%</span>
+                                    </div>
+                                    <div class="w-full bg-white/5 rounded-full h-1.5">
+                                        <div class="bg-emerald h-1.5 rounded-full" style="width: 38%"></div>
+                                    </div>
+                                </div>
+                                <!-- Row 2 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-amber">OTA</span>
+                                        <span class="text-white font-medium">31%</span>
+                                    </div>
+                                    <div class="w-full bg-white/5 rounded-full h-1.5">
+                                        <div class="bg-amber h-1.5 rounded-full" style="width: 31%"></div>
+                                    </div>
+                                </div>
+                                <!-- Row 3 -->
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-slate-300">Corporate RFP</span>
+                                        <span class="text-white font-medium">24%</span>
+                                    </div>
+                                    <div class="w-full bg-white/5 rounded-full h-1.5">
+                                        <div class="bg-blue-400 h-1.5 rounded-full" style="width: 24%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-amber/5 border border-amber/20 rounded-md text-xs text-amber/90 flex items-start gap-2">
+                            <i class="fa-regular fa-lightbulb mt-0.5"></i>
+                            <span>Commission OTA estimée: <strong class="font-mono">€6,768 MTD</strong></span>
+                        </div>
+                    </section>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts for Charts and Interactivity -->
+    <script>
+        // Initialize Plotly Charts
+        function initializeCharts() {
+            // Revenue Trend Chart (Dual Line)
+            const revenueChartContainer = document.getElementById('chart-revenue');
+            if (revenueChartContainer) {
+                const xLabels = ['S1', 'S2', 'S3', 'S4'];
+                
+                const traceActual = {
+                    x: xLabels,
+                    y: [120, 135, 125, 150],
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Actual Revenue',
+                    line: {
+                        color: '#1A2942', // Using a lighter navy for visibility against dark bg, or a bright accent
+                        width: 3,
+                        shape: 'spline',
+                        smoothing: 1.3
+                    },
+                    fill: 'tozeroy',
+                    fillcolor: 'rgba(26, 41, 66, 0.3)', // Light navy fill
+                    hovertemplate: 'Actual: €%{y}K<extra></extra>'
+                };
+
+                const traceTarget = {
+                    x: xLabels,
+                    y: [125, 130, 135, 140],
+                    type: 'scatter',
+                    mode: 'lines',
+                    name: 'Target Forecast',
+                    line: {
+                        color: '#10B981', // Emerald
+                        width: 2,
+                        dash: 'dash',
+                        shape: 'spline',
+                        smoothing: 1.3
+                    },
+                    hovertemplate: 'Target: €%{y}K<extra></extra>'
+                };
+
+                const layout = {
+                    margin: { t: 10, r: 10, b: 40, l: 40 },
+                    plot_bgcolor: 'transparent',
+                    paper_bgcolor: 'transparent',
+                    showlegend: true,
+                    legend: {
+                        orientation: 'h',
+                        yanchor: 'bottom',
+                        y: 1.02,
+                        xanchor: 'right',
+                        x: 1,
+                        font: { color: '#94a3b8' }
+                    },
+                    xaxis: {
+                        showgrid: true,
+                        gridcolor: 'rgba(255, 255, 255, 0.05)',
+                        tickfont: { color: '#94a3b8', family: '"IBM Plex Mono", monospace' }
+                    },
+                    yaxis: {
+                        title: { text: 'Revenue (€K)', font: { color: '#94a3b8', size: 12 } },
+                        showgrid: true,
+                        gridcolor: 'rgba(255, 255, 255, 0.05)',
+                        tickfont: { color: '#94a3b8', family: '"IBM Plex Mono", monospace' }
+                    },
+                    hovermode: 'x unified',
+                    hoverlabel: {
+                        bgcolor: '#0A1628',
+                        bordercolor: 'rgba(255,255,255,0.1)',
+                        font: { family: '"IBM Plex Mono", monospace', color: '#fff' }
+                    }
+                };
+
+                const config = {
+                    responsive: true,
+                    displayModeBar: false,
+                    displaylogo: false
+                };
+
+                // Override colors for dark theme explicitly
+                traceActual.line.color = '#3b82f6'; // Bright blue for better contrast
+
+                try {
+                    Plotly.newPlot(revenueChartContainer, [traceActual, traceTarget], layout, config);
+                } catch (e) {
+                    console.error('Error rendering Plotly chart:', e);
+                }
+            }
+        }
+
+        // Run when page loads
+        window.addEventListener('load', initializeCharts);
+        // Fallback
+        setTimeout(initializeCharts, 1200);
+    </script>
+</body>
+</html>

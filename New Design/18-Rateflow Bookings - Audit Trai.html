@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Trail</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .badge-navy { background: rgba(26, 41, 66, 0.3); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-amber { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .data-table th {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 600;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-table td {
+            padding: 0.875rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8125rem;
+        }
+        .data-table tr:hover td {
+            background-color: rgba(26, 41, 66, 0.5);
+            cursor: pointer;
+        }
+        .data-table tr.expanded td {
+            background-color: rgba(26, 41, 66, 0.7);
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .expandable-row {
+            display: none;
+        }
+        .expandable-row.active {
+            display: table-row;
+        }
+        .expandable-content {
+            background: rgba(10, 22, 40, 0.8);
+            border-left: 3px solid #10B981;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .json-viewer {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .json-key { color: #60A5FA; }
+        .json-string { color: #34D399; }
+        .json-number { color: #FBBF24; }
+        .json-boolean { color: #F472B6; }
+
+        .hash-display {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 0.75rem;
+            color: #94A3B8;
+            letter-spacing: 0.05em;
+        }
+        .hash-full {
+            display: none;
+            position: absolute;
+            background: rgba(10, 22, 40, 0.98);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            margin-top: 0.5rem;
+            left: 0;
+        }
+        .hash-display:hover .hash-full {
+            display: block;
+        }
+
+        .chain-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+        }
+        .chain-arrow {
+            color: #10B981;
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: rgba(10, 22, 40, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verify-icon {
+            color: #10B981;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .verify-icon:hover {
+            color: #34D399;
+            transform: scale(1.2);
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-left: 4px solid #3B82F6;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow</span>
+        </div>
+
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search audit logs..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/hotels" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-hotel w-5 text-center"></i>
+                <span>Hotels</span>
+            </a>
+            <a href="/negotiations" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span>Negotiations</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/audit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center text-emerald"></i>
+                <span>Audit Trail</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Marie Dupont</div>
+                    <div class="text-xs text-slate-400">Revenue Manager</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Cryptographic Audit Trail</h1>
+                    <p class="text-xs text-slate-400 font-mono">Immutable HNP Protocol message log</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-xl text-slate-300 hover:text-white transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-amber rounded-full flex items-center justify-center text-[9px] font-bold text-navy-deep border-2 border-navy-deep">0</span>
+                </div>
+                
+                <div class="hidden sm:block text-right">
+                    <div class="text-sm font-medium text-white">April 5, 2026</div>
+                    <div class="text-xs text-slate-400">22:08 PM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto">
+            <div class="flex h-full">
+                <div class="flex-1 p-6 lg:p-8 overflow-y-auto">
+                    <div class="max-w-full space-y-6">
+                        
+                        <div id="info-banner" class="info-banner rounded-2xl p-5 animate-fade-up delay-100">
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                    <i class="fa-solid fa-lock text-blue-400 text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-display text-lg font-bold text-white mb-2">🔒 Immutable Audit Trail</h3>
+                                    <p class="text-sm text-slate-300 leading-relaxed">All HNP Protocol messages are cryptographically signed with SHA-256 hashes. This log cannot be altered or deleted. Each message references the previous message hash, creating an immutable blockchain-style chain of custody.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="filters-bar" class="glass-panel rounded-2xl p-5 border border-white/10 animate-fade-up delay-200">
+                            <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                                <div class="flex flex-wrap items-center gap-3 flex-1 w-full">
+                                    <div class="relative flex-1 min-w-[280px]">
+                                        <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                        <input type="text" placeholder="Request ID, Actor, Action..." class="w-full form-input-glass rounded-lg py-2.5 pl-9 pr-3 text-sm">
+                                    </div>
+                                    
+                                    <div class="relative">
+                                        <select class="form-input-glass rounded-lg py-2.5 pl-4 pr-10 text-sm appearance-none cursor-pointer min-w-[160px]">
+                                            <option>Property: All</option>
+                                            <option>Le Marais Boutique</option>
+                                            <option>Brussels Central</option>
+                                            <option>Lyon Confluence</option>
+                                            <option>Amsterdam Centrum</option>
+                                            <option>Madrid Sol</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                    </div>
+
+                                    <div class="relative">
+                                        <select class="form-input-glass rounded-lg py-2.5 pl-4 pr-10 text-sm appearance-none cursor-pointer min-w-[160px]">
+                                            <option>Date: Last 30 days</option>
+                                            <option>Last 7 days</option>
+                                            <option>Last 90 days</option>
+                                            <option>Custom range</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                    </div>
+
+                                    <div class="relative">
+                                        <select class="form-input-glass rounded-lg py-2.5 pl-4 pr-10 text-sm appearance-none cursor-pointer min-w-[140px]">
+                                            <option>Actor: All</option>
+                                            <option>Hotel Agent</option>
+                                            <option>Corporate Agent</option>
+                                            <option>System</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                                    </div>
+
+                                    <button class="btn-emerald px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 whitespace-nowrap">
+                                        <i class="fa-solid fa-file-pdf"></i>
+                                        Export Compliance Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="audit-table-panel" class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-300">
+                            <div class="overflow-x-auto">
+                                <table class="w-full data-table text-left border-collapse">
+                                    <thead>
+                                        <tr>
+                                            <th class="pl-6 pt-6">Timestamp</th>
+                                            <th class="pt-6">Hotel</th>
+                                            <th class="pt-6">Request ID</th>
+                                            <th class="pt-6">Actor</th>
+                                            <th class="pt-6">Message Type</th>
+                                            <th class="pt-6">Action Summary</th>
+                                            <th class="pt-6">Hash (SHA-256)</th>
+                                            <th class="pr-6 pt-6 text-center">Verify</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="group transition-colors" onclick="toggleRow('row1')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 14:32:28</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8924" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8924</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Booking confirmed, payment processed, voucher sent...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">e4c8a1f2...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">e4c8a1f2d9b3e7a5c2f8d1b4e9c7a3f5d2b8e4c1a9f7d3b5e2c8a4f1d9b7e5c3</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('e4c8a1f2d9b3e7a5c2f8d1b4e9c7a3f5d2b8e4c1a9f7d3b5e2c8a4f1d9b7e5c3')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row1">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Message Details</h4>
+                                                            <div class="space-y-2 text-sm">
+                                                                <div><span class="text-slate-400">Timestamp:</span> <span class="text-white font-mono">2026-04-05 14:32:28.142 UTC</span></div>
+                                                                <div><span class="text-slate-400">Actor:</span> <span class="text-white">System (Automated)</span></div>
+                                                                <div><span class="text-slate-400">Message Type:</span> <span class="text-emerald">CONFIRMATION</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Cryptographic Chain</h4>
+                                                            <div class="space-y-2 text-sm">
+                                                                <div><span class="text-slate-400">Current Hash:</span> <span class="text-emerald font-mono text-xs">e4c8a1f2...</span></div>
+                                                                <div><span class="text-slate-400">Previous Hash:</span> <span class="text-amber font-mono text-xs">d7b2e9c4...</span></div>
+                                                                <div><span class="text-slate-400">Chain Position:</span> <span class="text-white">Message #1,247</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Full JSON Message</h4>
+                                                    <div class="json-viewer">
+<pre>{
+  <span class="json-key">"messageId"</span>: <span class="json-string">"MSG-8924-004"</span>,
+  <span class="json-key">"requestId"</span>: <span class="json-string">"REQ-8924"</span>,
+  <span class="json-key">"timestamp"</span>: <span class="json-string">"2026-04-05T14:32:28.142Z"</span>,
+  <span class="json-key">"actor"</span>: <span class="json-string">"system"</span>,
+  <span class="json-key">"messageType"</span>: <span class="json-string">"CONFIRMATION"</span>,
+  <span class="json-key">"payload"</span>: {
+    <span class="json-key">"bookingId"</span>: <span class="json-string">"BK-456789"</span>,
+    <span class="json-key">"status"</span>: <span class="json-string">"confirmed"</span>,
+    <span class="json-key">"paymentProcessed"</span>: <span class="json-boolean">true</span>,
+    <span class="json-key">"totalAmount"</span>: <span class="json-number">456.00</span>,
+    <span class="json-key">"currency"</span>: <span class="json-string">"EUR"</span>
+  },
+  <span class="json-key">"previousHash"</span>: <span class="json-string">"d7b2e9c4a3f8b1e5c9a7d2f4b8e3c1a6f9d5b2e8c4a1f7d3b9e6c2a5f8d1b4e7"</span>,
+  <span class="json-key">"hash"</span>: <span class="json-string">"e4c8a1f2d9b3e7a5c2f8d1b4e9c7a3f5d2b8e4c1a9f7d3b5e2c8a4f1d9b7e5c3"</span>
+}</pre>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row2')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 14:32:05</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8924" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8924</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">HOTEL_OFFER</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Final offer €152 + breakfast + late checkout...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">d7b2e9c4...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">d7b2e9c4a3f8b1e5c9a7d2f4b8e3c1a6f9d5b2e8c4a1f7d3b9e6c2a5f8d1b4e7</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('d7b2e9c4a3f8b1e5c9a7d2f4b8e3c1a6f9d5b2e8c4a1f7d3b9e6c2a5f8d1b4e7')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row2">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Message Details</h4>
+                                                            <div class="space-y-2 text-sm">
+                                                                <div><span class="text-slate-400">Timestamp:</span> <span class="text-white font-mono">2026-04-05 14:32:05.891 UTC</span></div>
+                                                                <div><span class="text-slate-400">Actor:</span> <span class="text-white">Hotel Agent (AI)</span></div>
+                                                                <div><span class="text-slate-400">Message Type:</span> <span class="text-amber">HOTEL_OFFER</span></div>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Cryptographic Chain</h4>
+                                                            <div class="space-y-2 text-sm">
+                                                                <div><span class="text-slate-400">Current Hash:</span> <span class="text-emerald font-mono text-xs">d7b2e9c4...</span></div>
+                                                                <div><span class="text-slate-400">Previous Hash:</span> <span class="text-amber font-mono text-xs">c1a9f8b3...</span></div>
+                                                                <div><span class="text-slate-400">Chain Position:</span> <span class="text-white">Message #1,246</span></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Full JSON Message</h4>
+                                                    <div class="json-viewer">
+<pre>{
+  <span class="json-key">"messageId"</span>: <span class="json-string">"MSG-8924-003"</span>,
+  <span class="json-key">"requestId"</span>: <span class="json-string">"REQ-8924"</span>,
+  <span class="json-key">"timestamp"</span>: <span class="json-string">"2026-04-05T14:32:05.891Z"</span>,
+  <span class="json-key">"actor"</span>: <span class="json-string">"hotel_agent"</span>,
+  <span class="json-key">"messageType"</span>: <span class="json-string">"HOTEL_OFFER"</span>,
+  <span class="json-key">"payload"</span>: {
+    <span class="json-key">"rate"</span>: <span class="json-number">152.00</span>,
+    <span class="json-key">"currency"</span>: <span class="json-string">"EUR"</span>,
+    <span class="json-key">"inclusions"</span>: [<span class="json-string">"breakfast"</span>, <span class="json-string">"wifi"</span>, <span class="json-string">"late_checkout_14h"</span>],
+    <span class="json-key">"cancellationPolicy"</span>: <span class="json-string">"24h_free"</span>
+  },
+  <span class="json-key">"previousHash"</span>: <span class="json-string">"c1a9f8b3e5d2a7c4f9b6e1d8a3c5f2b9e7d4a1c8f6b3e9d5a2c7f4b1e8d6a3c9"</span>,
+  <span class="json-key">"hash"</span>: <span class="json-string">"d7b2e9c4a3f8b1e5c9a7d2f4b8e3c1a6f9d5b2e8c4a1f7d3b9e6c2a5f8d1b4e7"</span>
+}</pre>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row3')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 14:31:18</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8924" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8924</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">COUNTER_PROPOSAL</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Accept rate, request late checkout (Gold tier leverage)...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">c1a9f8b3...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">c1a9f8b3e5d2a7c4f9b6e1d8a3c5f2b9e7d4a1c8f6b3e9d5a2c7f4b1e8d6a3c9</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('c1a9f8b3e5d2a7c4f9b6e1d8a3c5f2b9e7d4a1c8f6b3e9d5a2c7f4b1e8d6a3c9')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row3">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details for COUNTER_PROPOSAL...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row4')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 14:30:45</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8924" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8924</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">HOTEL_OFFER</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Initial offer €152/night with breakfast, WiFi, 24h cancel...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">b8e4c1a9...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">b8e4c1a9f7d3b5e2c8a4f1d9b7e5c3a8f6d2b9e5c1a7f4d8b3e6c9a2f5d1b7e4</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('b8e4c1a9f7d3b5e2c8a4f1d9b7e5c3a8f6d2b9e5c1a7f4d8b3e6c9a2f5d1b7e4')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row4">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details for initial HOTEL_OFFER...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row5')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 14:30:12</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8924" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8924</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">TRAVEL_INTENT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">3× Superior rooms, May 12-15, budget €160/night max...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">a5f2d9b6...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">a5f2d9b6e3c8a1f7d4b2e9c5a8f3d1b7e6c4a9f2d5b8e1c7a4f9d6b3e2c5a8f1</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('a5f2d9b6e3c8a1f7d4b2e9c5a8f3d1b7e6c4a9f2d5b8e1c7a4f9d6b3e2c5a8f1')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row5">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details for TRAVEL_INTENT...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row6')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 13:45:22</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Brussels Central</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8923" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8923</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Booking confirmed for Brussels Central, payment complete...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">f9d3b7e2...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">f9d3b7e2c5a8f1d6b4e9c3a7f2d5b1e8c6a4f9d2b7e5c1a8f3d9b6e4c2a5f7d1</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('f9d3b7e2c5a8f1d6b4e9c3a7f2d5b1e8c6a4f9d2b7e5c1a8f3d9b6e4c2a5f7d1')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row6">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row7')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 13:12:08</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Lyon Confluence</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8922" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8922</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">ESCALATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Rate below floor, escalating to revenue manager review...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">e1c7a4f8...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">e1c7a4f8d2b9e6c3a5f1d7b4e8c2a6f9d3b5e1c8a4f7d2b9e5c1a8f4d6b3e9c2</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('e1c7a4f8d2b9e6c3a5f1d7b4e8c2a6f9d3b5e1c8a4f7d2b9e5c1a8f4d6b3e9c2')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row7">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row8')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 12:58:45</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Amsterdam Centrum</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8921" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8921</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">TIMEOUT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Negotiation timeout after 30 minutes, no response...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">d6b2e9c5...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">d6b2e9c5a1f7d3b8e4c9a2f6d1b5e8c3a7f4d9b2e6c1a5f8d3b7e4c2a9f5d1b6</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('d6b2e9c5a1f7d3b8e4c9a2f6d1b5e8c3a7f4d9b2e6c1a5f8d3b7e4c2a9f5d1b6')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row8">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row9')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 12:22:15</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Madrid Sol</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8920" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8920</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Booking confirmed, voucher generated and sent...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">c3a8f5d1...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">c3a8f5d1b7e4c2a9f6d3b8e5c1a7f4d2b9e6c3a5f8d1b4e7c9a2f5d8b3e6c1a4</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('c3a8f5d1b7e4c2a9f6d3b8e5c1a7f4d2b9e6c3a5f8d1b4e7c9a2f5d8b3e6c1a4')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row9">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row10')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 11:55:33</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8919" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8919</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">TRAVEL_INTENT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">1× Standard room, May 20-22, budget €160/night...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">b9e5c2a6...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">b9e5c2a6f8d4b1e7c3a9f5d2b8e6c4a1f7d3b9e5c2a8f4d1b6e9c3a5f7d2b8e4</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('b9e5c2a6f8d4b1e7c3a9f5d2b8e6c4a1f7d3b9e5c2a8f4d1b6e9c3a5f7d2b8e4')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row10">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row11')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 11:28:19</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Brussels Central</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8918" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8918</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">HOTEL_OFFER</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Offer €165/night for 3× Superior, all inclusions...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">a7f3d9b5...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">a7f3d9b5e2c8a4f1d6b3e9c5a2f7d4b1e8c6a3f9d5b2e7c1a4f8d3b6e9c2a5f1</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('a7f3d9b5e2c8a4f1d6b3e9c5a2f7d4b1e8c6a3f9d5b2e7c1a4f8d3b6e9c2a5f1')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row11">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row12')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 10:45:52</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Amsterdam Centrum</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8917" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8917</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">2× Suite booking confirmed, payment processed...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">f4d1b8e6...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">f4d1b8e6c3a9f5d2b7e4c1a8f6d3b9e5c2a7f4d1b8e6c3a9f5d2b7e4c1a8f6d3</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('f4d1b8e6c3a9f5d2b7e4c1a8f6d3b9e5c2a7f4d1b8e6c3a9f5d2b7e4c1a8f6d3')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row12">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row13')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 10:18:27</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Lyon Confluence</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8916" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8916</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">COUNTER_PROPOSAL</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">Request lower rate, cite competitor pricing...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">e8c5a2f9...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">e8c5a2f9d6b3e1c7a4f8d5b2e9c6a3f1d7b4e8c5a2f9d6b3e1c7a4f8d5b2e9c6</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('e8c5a2f9d6b3e1c7a4f8d5b2e9c6a3f1d7b4e8c5a2f9d6b3e1c7a4f8d5b2e9c6')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row13">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row14')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 09:52:14</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Madrid Sol</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8915" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8915</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-amber">HOTEL_OFFER</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">€148/night for 4× Standard, breakfast included...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">d2b7e4c1...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">d2b7e4c1a8f5d3b9e6c2a7f4d1b8e5c3a9f6d2b7e4c1a8f5d3b9e6c2a7f4d1b8</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('d2b7e4c1a8f5d3b9e6c2a7f4d1b8e5c3a9f6d2b7e4c1a8f5d3b9e6c2a7f4d1b8')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row14">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row15')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 09:25:38</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8914" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8914</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">TRAVEL_INTENT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">2× Superior rooms, Jun 18-21, budget €170/night...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">c6a3f8d5...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">c6a3f8d5b2e9c1a7f4d6b3e8c5a2f9d1b7e4c6a3f8d5b2e9c1a7f4d6b3e8c5a2</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('c6a3f8d5b2e9c1a7f4d6b3e8c5a2f9d1b7e4c6a3f8d5b2e9c1a7f4d6b3e8c5a2')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row15">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row16')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 08:58:42</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Brussels Central</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8913" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8913</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">1× Standard booking confirmed, auto-approved...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">b1e7c4a9...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">b1e7c4a9f6d3b8e5c2a7f4d1b9e6c3a8f5d2b7e4c1a9f6d3b8e5c2a7f4d1b9e6</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('b1e7c4a9f6d3b8e5c2a7f4d1b9e6c3a8f5d2b7e4c1a9f6d3b8e5c2a7f4d1b9e6')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row16">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row17')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 08:31:55</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Amsterdam Centrum</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8912" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8912</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge-slate">TIMEOUT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">No response received within timeout window...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">a5f2d8b6...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">a5f2d8b6e3c9a1f7d4b2e8c5a9f3d1b7e6c4a2f9d5b8e1c7a4f2d9b6e3c8a5f1</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('a5f2d8b6e3c9a1f7d4b2e8c5a9f3d1b7e6c4a2f9d5b8e1c7a4f2d9b6e3c8a5f1')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row17">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row18')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 08:05:21</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Lyon Confluence</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8911" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8911</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-slate">
+                                                    <i class="fa-solid fa-server"></i>
+                                                    System
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge-emerald">CONFIRMATION</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">2× Standard booking confirmed for TechCorp SAS...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">f9d3b7e1...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">f9d3b7e1c5a8f2d6b4e9c3a7f1d5b2e8c6a4f9d3b7e5c1a8f2d9b6e4c3a5f7d2</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('f9d3b7e1c5a8f2d6b4e9c3a7f1d5b2e8c6a4f9d3b7e5c1a8f2d9b6e4c3a5f7d2')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row18">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row19')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 07:38:47</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Madrid Sol</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8910" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8910</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-navy">
+                                                    <i class="fa-solid fa-hotel"></i>
+                                                    Hotel Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge-amber">HOTEL_OFFER</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">€162/night for 1× Superior, all inclusions...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">e2c8a5f1...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">e2c8a5f1d7b4e9c6a3f8d2b5e1c7a4f9d6b3e8c5a2f7d1b4e9c6a3f8d5b2e7c1</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('e2c8a5f1d7b4e9c6a3f8d2b5e1c7a4f9d6b3e8c5a2f7d1b4e9c6a3f8d5b2e7c1')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row19">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="group transition-colors" onclick="toggleRow('row20')">
+                                            <td class="pl-6">
+                                                <div class="font-mono text-xs text-slate-300">2026-04-05 07:12:33</div>
+                                            </td>
+                                            <td>
+                                                <div class="text-white text-sm">Le Marais</div>
+                                            </td>
+                                            <td>
+                                                <a href="/negotiations/8909" class="font-mono text-emerald hover:underline font-medium text-sm">REQ-8909</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-emerald">
+                                                    <i class="fa-solid fa-building"></i>
+                                                    Corp Agent
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge-emerald">TRAVEL_INTENT</span>
+                                            </td>
+                                            <td>
+                                                <div class="text-slate-300 text-sm truncate max-w-[300px]">1× Suite, May 25-28, budget €200/night max...</div>
+                                            </td>
+                                            <td>
+                                                <div class="hash-display relative">
+                                                    <span class="text-emerald">d1b6e9c3...</span>
+                                                    <div class="hash-full">
+                                                        <div class="text-xs text-slate-400 mb-1">Full SHA-256 Hash:</div>
+                                                        <div class="text-emerald">d1b6e9c3a7f4d8b5e2c9a6f3d1b7e4c8a5f2d9b6e3c1a7f4d8b5e2c9a6f3d1b7</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="pr-6 text-center">
+                                                <i class="fa-solid fa-check-circle verify-icon" onclick="event.stopPropagation(); openVerifyModal('d1b6e9c3a7f4d8b5e2c9a6f3d1b7e4c8a5f2d9b6e3c1a7f4d8b5e2c9a6f3d1b7')"></i>
+                                            </td>
+                                        </tr>
+                                        <tr class="expandable-row" id="row20">
+                                            <td colspan="8" class="p-0">
+                                                <div class="expandable-content m-4">
+                                                    <div class="text-sm text-slate-300">Full message details...</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="p-4 border-t border-white/10 flex items-center justify-between text-sm text-slate-400 bg-white/5">
+                                <span class="font-mono">Showing 1-20 of 1,247 messages</span>
+                                <div class="flex items-center gap-2">
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/5 disabled:opacity-50" disabled>
+                                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                                    </button>
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center bg-emerald/20 text-emerald border-emerald/30">1</button>
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">2</button>
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">3</button>
+                                    <span class="px-2">...</span>
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">63</button>
+                                    <button class="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:bg-white/5">
+                                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <aside class="w-96 border-l border-white/10 glass-panel flex-shrink-0 overflow-y-auto p-6 hidden lg:block animate-fade-up delay-400">
+                    <div class="space-y-6">
+                        
+                        <div id="chain-integrity-panel" class="glass-card rounded-2xl p-5 border border-emerald/20">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-display text-lg font-bold text-white">Chain Integrity</h3>
+                                <i class="fa-solid fa-link text-emerald text-xl"></i>
+                            </div>
+
+                            <div class="space-y-4 mb-6">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Total Messages:</span>
+                                    <span class="text-white font-mono font-medium">1,247</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Verified:</span>
+                                    <span class="text-emerald font-mono font-medium">1,247 (100%)</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Chain Breaks:</span>
+                                    <span class="text-emerald font-mono font-medium">0</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Last Verified:</span>
+                                    <span class="text-white font-mono text-xs">2 min ago</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h4 class="text-xs font-semibold text-slate-400 uppercase mb-3">Blockchain Chain</h4>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="chain-box w-full">
+                                        <div class="text-xs text-slate-400 mb-1">Block #1,247</div>
+                                        <div class="font-mono text-xs text-emerald">e4c8a1f2...</div>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-down chain-arrow"></i>
+                                    <div class="chain-box w-full">
+                                        <div class="text-xs text-slate-400 mb-1">Block #1,246</div>
+                                        <div class="font-mono text-xs text-emerald">d7b2e9c4...</div>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-down chain-arrow"></i>
+                                    <div class="chain-box w-full">
+                                        <div class="text-xs text-slate-400 mb-1">Block #1,245</div>
+                                        <div class="font-mono text-xs text-emerald">c1a9f8b3...</div>
+                                    </div>
+                                    <div class="text-slate-500 text-xs mt-2">... 1,244 more blocks</div>
+                                </div>
+                            </div>
+
+                            <button class="w-full btn-emerald py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                Verify Entire Chain
+                            </button>
+                        </div>
+
+                        <div class="glass-card rounded-2xl p-5 border border-white/10">
+                            <h3 class="font-display text-lg font-bold text-white mb-4">Quick Stats</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Today's Messages:</span>
+                                    <span class="text-white font-mono font-medium">87</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">This Week:</span>
+                                    <span class="text-white font-mono font-medium">542</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-slate-400">Avg. Response Time:</span>
+                                    <span class="text-white font-mono font-medium">2.3 min</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </aside>
+
+            </div>
+        </main>
+
+    </div>
+
+    <div id="verifyModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-white/10">
+                <div class="flex items-center justify-between">
+                    <h2 class="font-display text-2xl font-bold text-white">Hash Verification</h2>
+                    <button onclick="closeVerifyModal()" class="text-slate-400 hover:text-white text-2xl">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase mb-2">SHA-256 Hash</h3>
+                    <div class="bg-black/30 border border-emerald/20 rounded-lg p-3 font-mono text-xs text-emerald break-all" id="modalHash">
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase mb-2">Verification Status</h3>
+                    <div class="flex items-center gap-3 bg-emerald/10 border border-emerald/20 rounded-lg p-4">
+                        <i class="fa-solid fa-check-circle text-emerald text-2xl"></i>
+                        <div>
+                            <div class="text-emerald font-semibold">Verified</div>
+                            <div class="text-xs text-slate-400">Hash matches blockchain record</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-400 uppercase mb-2">Chain Position</h3>
+                    <div class="text-white text-sm">This message is part of an unbroken cryptographic chain with valid predecessor and successor hashes.</div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-white/10 flex justify-end gap-3">
+                <button onclick="closeVerifyModal()" class="btn-outline px-6 py-2.5 rounded-lg font-medium text-sm">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleRow(rowId) {
+            const expandableRow = document.getElementById(rowId);
+            const parentRow = expandableRow.previousElementSibling;
+            
+            if (expandableRow.classList.contains('active')) {
+                expandableRow.classList.remove('active');
+                parentRow.classList.remove('expanded');
+            } else {
+                document.querySelectorAll('.expandable-row').forEach(row => {
+                    row.classList.remove('active');
+                });
+                document.querySelectorAll('.data-table tr.expanded').forEach(row => {
+                    row.classList.remove('expanded');
+                });
+                expandableRow.classList.add('active');
+                parentRow.classList.add('expanded');
+            }
+        }
+
+        function openVerifyModal(hash) {
+            document.getElementById('modalHash').textContent = hash;
+            document.getElementById('verifyModal').classList.add('active');
+        }
+
+        function closeVerifyModal() {
+            document.getElementById('verifyModal').classList.remove('active');
+        }
+
+        document.getElementById('verifyModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVerifyModal();
+            }
+        });
+    </script>
+
+</body>
+</html>

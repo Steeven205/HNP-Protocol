@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .badge-emerald { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-amber { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .performance-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .performance-badge.top {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10B981;
+        }
+        .performance-badge.attention {
+            background: rgba(245, 158, 11, 0.2);
+            border: 2px solid #F59E0B;
+        }
+        .performance-badge.standard {
+            background: rgba(148, 163, 184, 0.2);
+            border: 2px solid #94A3B8;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow</span>
+        </div>
+
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search hotels..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/hotels" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-hotel w-5 text-center text-emerald"></i>
+                <span>Hotels</span>
+            </a>
+            <a href="/negotiations" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-handshake w-5 text-center"></i>
+                <span>Negotiations</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/audit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i>
+                <span>Audit Trail</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Marie Dupont</div>
+                    <div class="text-xs text-slate-400">Revenue Manager</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Hotel Portfolio</h1>
+                    <p class="text-xs text-slate-400 font-mono">Multi-property management & performance</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-xl text-slate-300 hover:text-white transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-emerald rounded-full flex items-center justify-center text-[9px] font-bold text-navy-deep border-2 border-navy-deep">2</span>
+                </div>
+                
+                <div class="hidden sm:block text-right">
+                    <div class="text-sm font-medium text-white">May 12, 2026</div>
+                    <div class="text-xs text-slate-400">09:45 AM</div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <div id="filters-bar" class="glass-panel rounded-2xl p-5 border border-white/10 animate-fade-up delay-100">
+                    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+                        <div class="flex flex-wrap items-center gap-3 flex-1">
+                            <div class="relative flex-1 min-w-[240px]">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" placeholder="Search by name, city, ID..." class="w-full form-input-glass rounded-lg py-2.5 pl-9 pr-3 text-sm">
+                            </div>
+                            
+                            <div class="relative">
+                                <select class="form-input-glass rounded-lg py-2.5 pl-4 pr-10 text-sm appearance-none cursor-pointer">
+                                    <option>Country: All</option>
+                                    <option>France</option>
+                                    <option>Belgium</option>
+                                    <option>Netherlands</option>
+                                    <option>Spain</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+
+                            <div class="relative">
+                                <select class="form-input-glass rounded-lg py-2.5 pl-4 pr-10 text-sm appearance-none cursor-pointer">
+                                    <option>Performance: All</option>
+                                    <option>Top Performers</option>
+                                    <option>Need Attention</option>
+                                    <option>Standard</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <button class="btn-emerald px-6 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 whitespace-nowrap">
+                            <i class="fa-solid fa-plus"></i>
+                            Add Hotel
+                        </button>
+                    </div>
+                </div>
+
+                <div id="hotels-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up delay-200">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/c7fb650d8a-58ca76efa3a587bf197e.png" alt="elegant boutique hotel facade in Le Marais Paris, 4-star, charming architecture, evening lighting" />
+                            <div class="performance-badge top">
+                                🏆
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Le Marais Boutique</h3>
+                                    <p class="text-xs text-slate-400">Paris, France</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-001</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-emerald font-semibold">82%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€195</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€159.90</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-emerald text-xs">
+                                    <i class="fa-solid fa-arrow-up"></i> +8.2% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up delay-300">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/ca6f2c08af-b55bc92285ede584517a.png" alt="modern business hotel in Brussels city center, 4-star, contemporary architecture, daytime" />
+                            <div class="performance-badge standard">
+                                ○
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Brussels Central</h3>
+                                    <p class="text-xs text-slate-400">Brussels, Belgium</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-002</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-emerald font-semibold">76%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€168</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€127.68</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-emerald text-xs">
+                                    <i class="fa-solid fa-arrow-up"></i> +3.1% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up delay-400">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/7db313f086-9300a16d0c415264d455.png" alt="contemporary hotel in Lyon Confluence district, 4-star, riverside location, modern design" />
+                            <div class="performance-badge attention">
+                                ⚠️
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Lyon Confluence</h3>
+                                    <p class="text-xs text-slate-400">Lyon, France</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-003</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-amber font-semibold">71%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€152</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€107.92</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-amber text-xs">
+                                    <i class="fa-solid fa-arrow-down"></i> -2.4% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up delay-500">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/aff41e02a8-a0702c9854e5bb48f526.png" alt="canal-side boutique hotel in Amsterdam city center, 4-star, Dutch architecture, charming facade" />
+                            <div class="performance-badge top">
+                                🏆
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Amsterdam Centrum</h3>
+                                    <p class="text-xs text-slate-400">Amsterdam, Netherlands</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-004</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-emerald font-semibold">84%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€178</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€149.52</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-emerald text-xs">
+                                    <i class="fa-solid fa-arrow-up"></i> +9.8% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up delay-600">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/fc2e755fdf-e26031796a4d5518b308.png" alt="stylish hotel in Madrid Sol district, 4-star, Spanish architecture, vibrant city center" />
+                            <div class="performance-badge top">
+                                🏆
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Madrid Sol</h3>
+                                    <p class="text-xs text-slate-400">Madrid, Spain</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-005</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-emerald font-semibold">79%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€165</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€130.35</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-emerald text-xs">
+                                    <i class="fa-solid fa-arrow-up"></i> +5.6% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up" style="animation-delay: 0.7s;">
+                        <div class="relative h-48 bg-navy-mid overflow-hidden">
+                            <img class="w-full h-full object-cover" src="https://storage.googleapis.com/uxpilot-auth.appspot.com/fcf84a37be-719445fec079b6cdb273.png" alt="boutique hotel in Barcelona Gothic Quarter, 4-star, historic charm, evening ambiance" />
+                            <div class="performance-badge standard">
+                                ○
+                            </div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-white mb-1">Barcelona Gothic</h3>
+                                    <p class="text-xs text-slate-400">Barcelona, Spain</p>
+                                </div>
+                                <div class="flex items-center gap-1 text-amber text-sm">
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="font-mono text-xs text-slate-500">HTL-006</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mb-4">
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">OCC</div>
+                                    <div class="font-mono text-emerald font-semibold">77%</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ADR</div>
+                                    <div class="font-mono text-white font-semibold">€158</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">RevPAR</div>
+                                    <div class="font-mono text-white font-semibold">€121.66</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span class="badge badge-emerald text-xs">
+                                    <i class="fa-solid fa-arrow-up"></i> +4.3% vs Budget
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-4 border-t border-white/10">
+                                <button class="btn-outline flex-1 px-4 py-2 rounded-lg text-xs font-medium">
+                                    View Details
+                                </button>
+                                <button class="btn-outline px-3 py-2 rounded-lg text-xs">
+                                    <i class="fa-solid fa-cog"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

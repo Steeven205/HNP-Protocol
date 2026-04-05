@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 h-full">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateflow - Shadow Mode Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .btn-destructive {
+            background-color: #EF4444;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-destructive:hover {
+            background-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        /* Table Styles */
+        .data-table th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #94A3B8;
+            font-weight: 600;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .data-table td {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.875rem;
+        }
+        .data-table tr:hover td {
+            background-color: rgba(26, 41, 66, 0.5);
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+        .badge-emerald { background: rgba(16, 185, 129, 0.1); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .badge-amber { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-red { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
+
+        /* Form specific */
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Side Panel */
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(16px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 50;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        .side-panel.active {
+            right: 0;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+        }
+        .panel-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .panel-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Checkbox */
+        .custom-checkbox {
+            appearance: none;
+            background-color: transparent;
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.15em;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            background-color: white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked {
+            background-color: #10B981;
+            border-color: #10B981;
+        }
+        .custom-checkbox:checked::before {
+            transform: scale(1);
+        }
+
+        /* Range Slider Customization */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #10B981;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        /* Custom UI Pills from Reference */
+        .ui-pill {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .ui-pill:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <!-- Background Gradient & Mesh -->
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow<br><span class="text-xs font-mono text-emerald font-normal">Corporate</span></span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search bookings..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/book" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group mt-4">
+                <div class="w-full flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                        <span>Book Travel</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-suitcase w-5 text-center"></i>
+                <span>My Bookings</span>
+            </a>
+            <a href="/team-bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Team Bookings</span>
+            </a>
+            <a href="/policy" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-file-contract w-5 text-center"></i>
+                <span>Travel Policy</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-bar w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/reports/shadow" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-flask w-5 text-center text-emerald"></i>
+                <span>Shadow Reports</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Marie Dupont" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Marie Dupont</div>
+                    <div class="text-xs text-slate-400">Travel Manager • TechCorp</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <!-- Top Header -->
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Shadow Mode Reports</h1>
+                    <p class="text-xs text-slate-400 font-mono">Pre-production validation tool</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 mr-4">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald"></span>
+                    </span>
+                    <span class="text-sm font-medium text-emerald">Live Simulation Active</span>
+                </div>
+                <button class="btn-outline px-4 py-2 rounded-lg text-sm font-medium">Download Full PDF</button>
+                <button class="btn-emerald px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50" disabled>Activate Production Mode</button>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-8">
+                
+                <!-- Info Banner -->
+                <div class="glass-panel rounded-xl border border-blue-500/30 p-4 flex items-start gap-4 bg-blue-900/20 animate-fade-up">
+                    <i class="fa-solid fa-circle-info text-blue-400 mt-1 text-lg"></i>
+                    <div>
+                        <h3 class="text-sm font-semibold text-white mb-1">Shadow Mode Active</h3>
+                        <p class="text-xs text-slate-300">Shadow Mode simulates Rateflow negotiations on your existing RFP bookings without disrupting contracts. Use this to validate savings before switching to production. <a href="#" class="text-emerald hover:underline">Learn more</a></p>
+                    </div>
+                </div>
+
+                <!-- Executive Savings Overview (KPIs) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="glass-card rounded-2xl p-6 animate-fade-up delay-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-slate-400">Total Simulations</h3>
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-300">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                        </div>
+                        <div class="font-display text-4xl font-bold text-white mb-2">450</div>
+                        <div class="text-xs text-slate-400">Bookings (Jan-Apr 2026)</div>
+                    </div>
+                    
+                    <div class="glass-card rounded-2xl p-6 border-emerald/20 bg-emerald/5 animate-fade-up delay-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-emerald">Avg Savings vs RFP</h3>
+                            <div class="w-8 h-8 rounded-full bg-emerald/10 flex items-center justify-center text-emerald">
+                                <i class="fa-solid fa-piggy-bank"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-end gap-3 mb-2">
+                            <div class="font-display text-4xl font-bold text-emerald">22%</div>
+                            <div class="text-sm font-medium text-emerald mb-1">€32,400 potential</div>
+                        </div>
+                        <div class="text-xs text-emerald/70">Consistently exceeding 15% target</div>
+                    </div>
+                    
+                    <div class="glass-card rounded-2xl p-6 animate-fade-up delay-300 relative overflow-hidden">
+                        <!-- Progress indicator logic: No step mentioned in key_instruction, so no progress indicator added -->
+                        <div class="flex items-center justify-between mb-4 relative z-10">
+                            <h3 class="text-sm font-medium text-slate-400">Production Readiness</h3>
+                            <div class="w-8 h-8 rounded-full bg-emerald/20 flex items-center justify-center text-emerald">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-3 relative z-10">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">Savings >10%</span>
+                                <i class="fa-solid fa-check text-emerald"></i>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">Win rate >80%</span>
+                                <i class="fa-solid fa-check text-emerald"></i>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">Compliance 95%</span>
+                                <i class="fa-solid fa-check text-emerald"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-white/10 relative z-10">
+                            <span class="badge badge-emerald w-full justify-center">✅ Ready for Production</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Policy vs Actual Performance Charts -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-400">
+                    <div class="px-6 py-5 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-area text-emerald text-xl"></i>
+                            <h2 class="font-display text-xl font-bold text-white">Savings Over Time: RFP vs Rateflow</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select class="form-input-glass rounded-lg px-3 py-1.5 text-sm">
+                                <option>Last 12 Weeks</option>
+                                <option>Last 6 Months</option>
+                                <option>Year to Date</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div id="savings-chart" class="w-full h-[400px]"></div>
+                    </div>
+                </div>
+
+                <!-- Leakage & Compliance Drill-down Table -->
+                <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden animate-fade-up delay-400">
+                    <div class="px-6 py-5 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/5">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-table-list text-emerald text-xl"></i>
+                            <h2 class="font-display text-xl font-bold text-white">Breakdown by City / Route</h2>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="relative">
+                                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" placeholder="Filter cities..." class="bg-navy-deep/50 border border-white/10 rounded-lg py-1.5 pl-8 pr-3 text-sm text-white focus:outline-none focus:border-emerald transition-colors w-48">
+                            </div>
+                            <button class="btn-outline px-3 py-1.5 rounded-lg text-sm"><i class="fa-solid fa-filter"></i></button>
+                        </div>
+                    </div>
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full data-table text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="pl-6 pt-4">City / Route</th>
+                                    <th class="pt-4">Simulations</th>
+                                    <th class="pt-4">Avg RFP Rate</th>
+                                    <th class="pt-4">Avg Rateflow</th>
+                                    <th class="pt-4">Savings/Night</th>
+                                    <th class="pt-4">Total Potential</th>
+                                    <th class="pr-6 pt-4 text-right">Compliance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="cursor-pointer hover:bg-white/5 transition-colors">
+                                    <td class="pl-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300">
+                                                <i class="fa-solid fa-city"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">Paris, France</div>
+                                                <div class="text-xs text-slate-400">High Volume Route</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="ui-pill">180 bookings</span></td>
+                                    <td class="font-mono text-slate-300">€165.00</td>
+                                    <td class="font-mono text-emerald font-semibold">€142.00</td>
+                                    <td>
+                                        <span class="badge badge-emerald">€23 (14%)</span>
+                                    </td>
+                                    <td class="font-mono text-white">€12,420</td>
+                                    <td class="pr-6 text-right">
+                                        <span class="text-emerald text-sm"><i class="fa-solid fa-shield-check mr-1"></i> 98%</span>
+                                    </td>
+                                </tr>
+                                <tr class="cursor-pointer hover:bg-white/5 transition-colors">
+                                    <td class="pl-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300">
+                                                <i class="fa-solid fa-city"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">Brussels, Belgium</div>
+                                                <div class="text-xs text-slate-400">EU HQ Route</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="ui-pill">95 bookings</span></td>
+                                    <td class="font-mono text-slate-300">€148.00</td>
+                                    <td class="font-mono text-emerald font-semibold">€132.00</td>
+                                    <td>
+                                        <span class="badge badge-emerald">€16 (11%)</span>
+                                    </td>
+                                    <td class="font-mono text-white">€4,560</td>
+                                    <td class="pr-6 text-right">
+                                        <span class="text-emerald text-sm"><i class="fa-solid fa-shield-check mr-1"></i> 95%</span>
+                                    </td>
+                                </tr>
+                                <tr class="cursor-pointer hover:bg-white/5 transition-colors">
+                                    <td class="pl-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300">
+                                                <i class="fa-solid fa-city"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">Lyon, France</div>
+                                                <div class="text-xs text-slate-400">Regional Route</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="ui-pill">65 bookings</span></td>
+                                    <td class="font-mono text-slate-300">€135.00</td>
+                                    <td class="font-mono text-emerald font-semibold">€118.00</td>
+                                    <td>
+                                        <span class="badge badge-emerald">€17 (12%)</span>
+                                    </td>
+                                    <td class="font-mono text-white">€3,315</td>
+                                    <td class="pr-6 text-right">
+                                        <span class="text-amber text-sm"><i class="fa-solid fa-shield-exclamation mr-1"></i> 88%</span>
+                                    </td>
+                                </tr>
+                                <tr class="cursor-pointer hover:bg-white/5 transition-colors">
+                                    <td class="pl-6">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center text-slate-300">
+                                                <i class="fa-solid fa-city"></i>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-white">Amsterdam, NL</div>
+                                                <div class="text-xs text-slate-400">Tech Hub Route</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="ui-pill">42 bookings</span></td>
+                                    <td class="font-mono text-slate-300">€185.00</td>
+                                    <td class="font-mono text-emerald font-semibold">€155.00</td>
+                                    <td>
+                                        <span class="badge badge-emerald">€30 (16%)</span>
+                                    </td>
+                                    <td class="font-mono text-white">€3,780</td>
+                                    <td class="pr-6 text-right">
+                                        <span class="text-emerald text-sm"><i class="fa-solid fa-shield-check mr-1"></i> 92%</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Monthly Reports & Activation Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-up delay-400">
+                    
+                    <!-- Monthly Reports List -->
+                    <div class="lg:col-span-2 glass-panel rounded-2xl border border-white/10 p-6">
+                        <h3 class="font-display text-lg font-bold text-white mb-4">Monthly Simulation Archives</h3>
+                        <div class="space-y-3">
+                            <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-300">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-white">March 2026</div>
+                                        <div class="text-xs text-slate-400">142 simulations • €8,200 savings (24%)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-slate-400 hover:text-white transition-colors text-sm font-medium">View Details</button>
+                                    <button class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors"><i class="fa-solid fa-download"></i></button>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-xl p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-300">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-white">February 2026</div>
+                                        <div class="text-xs text-slate-400">128 simulations • €7,800 savings (21%)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-slate-400 hover:text-white transition-colors text-sm font-medium">View Details</button>
+                                    <button class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors"><i class="fa-solid fa-download"></i></button>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-xl p-4 flex items-center justify-between opacity-70">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-300">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-white">January 2026</div>
+                                        <div class="text-xs text-slate-400">95 simulations • €5,100 savings (18%)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button class="text-slate-400 hover:text-white transition-colors text-sm font-medium">View Details</button>
+                                    <button class="w-8 h-8 rounded bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors"><i class="fa-solid fa-download"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activation Panel -->
+                    <div class="glass-panel rounded-2xl border border-emerald/30 p-6 bg-emerald/5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i class="fa-solid fa-rocket text-6xl text-emerald"></i>
+                        </div>
+                        <h3 class="font-display text-lg font-bold text-emerald mb-4 relative z-10">Ready to Go Live?</h3>
+                        <p class="text-sm text-slate-300 mb-6 relative z-10">Complete the checklist below to transition from Shadow Mode to live automated bookings.</p>
+                        
+                        <div class="space-y-3 mb-8 relative z-10">
+                            <label class="flex items-center gap-3 text-sm text-white cursor-pointer opacity-70">
+                                <input type="checkbox" class="custom-checkbox" checked disabled>
+                                <span>450 bookings validated</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-white cursor-pointer opacity-70">
+                                <input type="checkbox" class="custom-checkbox" checked disabled>
+                                <span>Savings >10% achieved</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-white cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" id="check-cfo" onchange="checkActivation()">
+                                <span>CFO approval secured</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-white cursor-pointer">
+                                <input type="checkbox" class="custom-checkbox" id="check-team" onchange="checkActivation()">
+                                <span>Team trained on new workflow</span>
+                            </label>
+                        </div>
+                        
+                        <button id="btn-activate" class="w-full btn-emerald py-3 rounded-xl font-bold text-sm shadow-lg shadow-emerald/20 transition-all opacity-50 cursor-not-allowed" disabled>
+                            Switch to Production
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Chart Initialization
+        window.addEventListener('load', function() {
+            try {
+                const savingsChart = document.getElementById('savings-chart');
+                if(savingsChart) {
+                    const weeks = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'];
+                    const rfpActual = [42, 45, 48, 41, 50, 55, 49, 52, 58, 60, 55, 62];
+                    const rateflowSimulated = [35, 38, 39, 34, 40, 44, 38, 41, 45, 48, 44, 49];
+                    
+                    const trace1 = {
+                        x: weeks,
+                        y: rfpActual,
+                        name: 'RFP Actual Spend (€K)',
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: {
+                            color: '#94A3B8',
+                            width: 2,
+                            dash: 'dash'
+                        },
+                        hoverinfo: 'y+name'
+                    };
+                    
+                    const trace2 = {
+                        x: weeks,
+                        y: rateflowSimulated,
+                        name: 'Rateflow Simulated (€K)',
+                        type: 'scatter',
+                        mode: 'lines',
+                        fill: 'tonexty',
+                        fillcolor: 'rgba(16, 185, 129, 0.1)',
+                        line: {
+                            color: '#10B981',
+                            width: 3,
+                            shape: 'spline',
+                            smoothing: 1.3
+                        },
+                        hoverinfo: 'y+name'
+                    };
+                    
+                    const layout = {
+                        margin: { t: 20, r: 20, b: 40, l: 40 },
+                        plot_bgcolor: 'transparent',
+                        paper_bgcolor: 'transparent',
+                        showlegend: true,
+                        legend: {
+                            orientation: 'h',
+                            y: 1.1,
+                            font: { color: '#F1F5F9' }
+                        },
+                        xaxis: {
+                            showgrid: true,
+                            gridcolor: 'rgba(255,255,255,0.05)',
+                            tickfont: { color: '#94A3B8' }
+                        },
+                        yaxis: {
+                            showgrid: true,
+                            gridcolor: 'rgba(255,255,255,0.05)',
+                            tickfont: { color: '#94A3B8' },
+                            title: { text: 'Spend (€K)', font: { color: '#94A3B8' } }
+                        },
+                        annotations: [
+                            {
+                                x: 'W10',
+                                y: 54,
+                                xref: 'x',
+                                yref: 'y',
+                                text: 'Peak Savings Event',
+                                showarrow: true,
+                                arrowhead: 2,
+                                arrowcolor: '#10B981',
+                                arrowsize: 1,
+                                arrowwidth: 1,
+                                ax: 0,
+                                ay: -40,
+                                font: { color: '#10B981', size: 10 },
+                                bgcolor: 'rgba(16, 185, 129, 0.1)',
+                                bordercolor: '#10B981',
+                                borderpad: 4,
+                                borderwidth: 1,
+                                borderpad: 2
+                            }
+                        ]
+                    };
+                    
+                    const config = { responsive: true, displayModeBar: false };
+                    Plotly.newPlot('savings-chart', [trace1, trace2], layout, config);
+                }
+            } catch(e) {
+                console.error("Chart initialization failed", e);
+            }
+        });
+
+        // Activation Logic
+        function checkActivation() {
+            const cfo = document.getElementById('check-cfo').checked;
+            const team = document.getElementById('check-team').checked;
+            const btn = document.getElementById('btn-activate');
+            
+            if(cfo && team) {
+                btn.removeAttribute('disabled');
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('hover:bg-emerald-600', 'hover:-translate-y-1');
+            } else {
+                btn.setAttribute('disabled', 'true');
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('hover:bg-emerald-600', 'hover:-translate-y-1');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en" class="m-0 p-0 h-full">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rateflow - Book Travel (Step 3/3 - Confirm & Approval)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Crimson Pro"', 'serif'],
+                        mono: ['"IBM Plex Mono"', 'monospace'],
+                    },
+                    colors: {
+                        'navy-deep': '#0A1628',
+                        'navy-mid': '#1A2942',
+                        'emerald': '#10B981',
+                        'amber': '#F59E0B',
+                        'red': '#EF4444',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #0A1628;
+            color: #F1F5F9;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1628;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        .btn-emerald {
+            background-color: #10B981;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald:hover {
+            background-color: #0d9668;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-outline:hover {
+            border-color: #10B981;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        /* Animation */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+
+        /* Form specific */
+        .form-input-glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .form-input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .form-input-glass::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Step indicator */
+        .step-active {
+            background: #10B981;
+            border-color: #10B981;
+            color: white;
+        }
+        .step-completed {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10B981;
+            color: #10B981;
+        }
+        .step-pending {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Checkbox styling */
+        .custom-checkbox {
+            appearance: none;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin: 0;
+            font: inherit;
+            color: currentColor;
+            width: 1.15em;
+            height: 1.15em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.25em;
+            display: grid;
+            place-content: center;
+            transition: all 0.2s ease;
+        }
+        .custom-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em white;
+            background-color: white;
+            transform-origin: center;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+        .custom-checkbox:checked {
+            background-color: #10B981;
+            border-color: #10B981;
+        }
+        .custom-checkbox:checked::before {
+            transform: scale(1);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            background: rgba(10, 22, 40, 0.8);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex overflow-hidden">
+    
+    <!-- Background Gradient & Mesh -->
+    <div class="fixed inset-0 z-0 bg-gradient-radial from-navy-mid to-navy-deep opacity-80 pointer-events-none"></div>
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#10B981 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="relative z-20 w-64 h-screen border-r border-white/10 glass-panel flex flex-col flex-shrink-0 hidden md:flex">
+        <!-- Logo -->
+        <div class="h-20 flex items-center px-6 border-b border-white/10">
+            <div class="w-8 h-8 rounded bg-emerald flex items-center justify-center text-navy-deep font-bold text-lg mr-3">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+            <span class="font-display text-xl font-semibold tracking-wide text-white">Rateflow<br><span class="text-xs font-mono text-emerald font-normal">Corporate</span></span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" placeholder="Search bookings..." class="w-full bg-navy-deep/50 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald transition-colors">
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 overflow-y-auto py-2 px-3 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/book" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-emerald/10 text-emerald font-medium text-sm transition-colors group mt-4">
+                <div class="w-full flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-plane-departure w-5 text-center text-emerald"></i>
+                        <span>Book Travel</span>
+                    </div>
+                </div>
+            </a>
+            <a href="/bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-suitcase w-5 text-center"></i>
+                <span>My Bookings</span>
+            </a>
+            <a href="/team-bookings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Team Bookings</span>
+            </a>
+            <a href="/policy" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-file-contract w-5 text-center"></i>
+                <span>Travel Policy</span>
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-chart-bar w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/reports/shadow" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-flask w-5 text-center"></i>
+                <span>Shadow Reports</span>
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/5 font-medium text-sm transition-colors group">
+                <i class="fa-solid fa-cog w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="p-4 border-t border-white/10 mt-auto">
+            <div class="flex items-center gap-3">
+                <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Sophie Martin" class="w-10 h-10 rounded-full border border-white/20">
+                <div>
+                    <div class="text-sm font-medium text-white">Sophie Martin</div>
+                    <div class="text-xs text-slate-400">Sales Manager • TechCorp</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
+        
+        <!-- Top Header -->
+        <header id="header" class="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                    <h1 class="font-display text-2xl font-bold text-white">Book Travel</h1>
+                    <p class="text-xs text-slate-400 font-mono">Step 3/3 - Confirm & Approval</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <!-- Alerts / Notifications -->
+                <div class="relative cursor-pointer">
+                    <i class="fa-regular fa-bell text-xl text-slate-300 hover:text-white transition-colors"></i>
+                    <span class="absolute -top-1 -right-1 w-4 h-4 bg-red rounded-full flex items-center justify-center text-[9px] font-bold text-white border-2 border-navy-deep">3</span>
+                </div>
+                
+                <div class="hidden sm:block text-right">
+                    <div class="text-sm font-medium text-white">May 12, 2026</div>
+                    <div class="text-xs text-slate-400">09:45 AM</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8 pb-32">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <!-- Wizard Progress Header -->
+                <div class="glass-panel rounded-2xl p-6 border border-white/10 flex items-center justify-between animate-fade-up delay-100">
+                    <div class="flex items-center gap-4 flex-1">
+                        <!-- Step 1: Completed -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full step-completed flex items-center justify-center font-bold text-sm border-2">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div class="hidden sm:block">
+                                <div class="text-sm font-semibold text-white">Trip Details</div>
+                                <div class="text-xs text-emerald">Completed</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-px bg-white/10 mx-2 hidden sm:block"></div>
+                        
+                        <!-- Step 2: Completed -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full step-completed flex items-center justify-center font-bold text-sm border-2">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <div class="hidden sm:block">
+                                <div class="text-sm font-semibold text-white">Search & Compare</div>
+                                <div class="text-xs text-emerald">Completed</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 h-px bg-white/10 mx-2 hidden md:block"></div>
+                        
+                        <!-- Step 3: Active -->
+                        <div class="flex items-center gap-3 hidden md:flex">
+                            <div class="w-10 h-10 rounded-full step-active flex items-center justify-center font-bold text-sm border-2">3</div>
+                            <div class="hidden lg:block">
+                                <div class="text-sm font-semibold text-white">Confirm & Approval</div>
+                                <div class="text-xs text-emerald">Current Step</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    
+                    <!-- Left Column: Summary & Traveler Details -->
+                    <div class="lg:col-span-2 space-y-8 animate-fade-up delay-200">
+                        
+                        <!-- Review & Confirm Booking Title -->
+                        <div>
+                            <h2 class="font-display text-3xl font-bold text-white mb-2">Review & Confirm Booking</h2>
+                            <p class="text-slate-400 text-sm">Please review the details below before finalizing your reservation.</p>
+                        </div>
+
+                        <!-- Booking Summary Card -->
+                        <div class="glass-panel rounded-2xl overflow-hidden border border-white/10">
+                            <div class="p-6 md:p-8 flex flex-col md:flex-row gap-8">
+                                <!-- Hotel Image & Basic Info -->
+                                <div class="w-full md:w-1/3 space-y-4">
+                                    <div class="h-40 rounded-xl overflow-hidden relative">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/387c149df4-fa3388230cc5b1d2fe5f.png" alt="Le Marais Boutique" class="w-full h-full object-cover">
+                                        <div class="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded border border-white/20 text-xs font-bold text-white">
+                                            <i class="fa-solid fa-star text-amber"></i> 4.6
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-display text-xl font-bold text-white leading-tight">Le Marais Boutique</h3>
+                                        <p class="text-sm text-slate-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i> Paris 3ème, France</p>
+                                        <a href="#" class="text-emerald text-xs mt-2 inline-block hover:underline"><i class="fa-solid fa-map"></i> View on Google Maps</a>
+                                    </div>
+                                </div>
+
+                                <!-- Booking Details Grid -->
+                                <div class="w-full md:w-2/3 grid grid-cols-2 gap-y-6 gap-x-4">
+                                    <div class="col-span-2 md:col-span-1">
+                                        <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Traveler</div>
+                                        <div class="flex items-center gap-2">
+                                            <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg" alt="Sophie Martin" class="w-6 h-6 rounded-full border border-white/20">
+                                            <span class="text-white font-medium text-sm">Sophie Martin</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-span-2 md:col-span-1">
+                                        <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Room</div>
+                                        <div class="text-white font-medium text-sm">1× Superior Room</div>
+                                    </div>
+
+                                    <div class="col-span-2 md:col-span-1">
+                                        <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Check-in</div>
+                                        <div class="text-white font-medium text-sm">Tue, May 12, 2026</div>
+                                        <div class="text-xs text-slate-500 mt-0.5">From 15:00</div>
+                                    </div>
+
+                                    <div class="col-span-2 md:col-span-1">
+                                        <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Check-out</div>
+                                        <div class="text-white font-medium text-sm">Fri, May 15, 2026</div>
+                                        <div class="text-xs text-slate-500 mt-0.5">Until 12:00</div>
+                                    </div>
+
+                                    <div class="col-span-2 bg-white/5 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                                        <div>
+                                            <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Rate / Night</div>
+                                            <div class="font-display text-2xl font-bold text-white">€142</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Total (3 Nights)</div>
+                                            <div class="font-display text-2xl font-bold text-emerald">€426</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-span-2 flex items-center justify-between bg-emerald/10 border border-emerald/20 rounded-lg p-3">
+                                        <span class="text-emerald text-sm font-medium"><i class="fa-solid fa-piggy-bank mr-2"></i>Savings vs RFP Contract</span>
+                                        <span class="text-emerald font-bold text-sm">€48 (10.1%)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment & Security Section -->
+                        <div class="glass-panel rounded-2xl p-6 md:p-8 border border-white/10 relative overflow-hidden">
+                            <!-- Decorative gradient -->
+                            <div class="absolute -right-20 -top-20 w-64 h-64 bg-emerald/20 rounded-full blur-3xl pointer-events-none"></div>
+                            
+                            <h3 class="font-display text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fa-solid fa-credit-card text-emerald mr-3"></i> Payment Method
+                            </h3>
+
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Billing Method</label>
+                                    <div class="relative">
+                                        <select class="w-full form-input-glass rounded-xl py-3 pl-4 pr-10 appearance-none font-medium" id="payment-method-select">
+                                            <option value="corporate" class="bg-navy-deep text-white">Corporate Amex •••• 4242</option>
+                                            <option value="personal" class="bg-navy-deep text-white">Personal Card</option>
+                                            <option value="new" class="bg-navy-deep text-white">Add New Card</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Corporate Card Display (Active State) -->
+                                <div class="bg-gradient-to-br from-navy-mid to-navy-deep p-6 rounded-xl border border-white/10 relative overflow-hidden shadow-lg" id="corporate-card-display">
+                                    <i class="fa-brands fa-cc-amex text-6xl text-white/10 absolute -right-2 -bottom-4"></i>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <div class="w-12 h-8 bg-slate-300/20 rounded flex items-center justify-center">
+                                            <div class="w-8 h-5 rounded-sm border border-slate-400/50 relative overflow-hidden">
+                                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent w-[200%] animate-[shimmer_2s_infinite]"></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Corporate</span>
+                                    </div>
+                                    <div class="font-mono text-xl tracking-[0.2em] text-white mb-4">
+                                        •••• •••• •••• 4242
+                                    </div>
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <div class="text-[10px] text-slate-400 uppercase mb-1">Cardholder</div>
+                                            <div class="text-sm font-medium text-white uppercase tracking-wider">TechCorp SAS</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] text-slate-400 uppercase mb-1">Expires</div>
+                                            <div class="text-sm font-medium text-white">12/28</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-xs text-slate-400 mt-4">
+                                    <i class="fa-solid fa-lock text-emerald"></i>
+                                    <span>Secure transaction encrypted via 256-bit SSL</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column: Rules, Policy & Actions -->
+                    <div class="space-y-6 animate-fade-up delay-300">
+                        
+                        <!-- Policy Status Module (Out of Policy Example) -->
+                        <div class="glass-panel rounded-2xl p-6 border border-amber/30 bg-amber/5 relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-amber"></div>
+                            
+                            <div class="flex items-start gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-full bg-amber/20 flex items-center justify-center text-amber mt-1 flex-shrink-0">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-display text-lg font-bold text-white">Approval Required</h4>
+                                    <p class="text-xs text-slate-300 mt-1">This booking exceeds the Paris nightly rate limit of €130.</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4 mt-6">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Approver</label>
+                                    <div class="bg-white/5 border border-white/10 rounded-lg p-3 flex items-center gap-3">
+                                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg" alt="Marie Dupont" class="w-8 h-8 rounded-full">
+                                        <div>
+                                            <div class="text-sm text-white font-medium">Marie Dupont</div>
+                                            <div class="text-xs text-slate-400">Travel Manager</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Justification Required <span class="text-red">*</span></label>
+                                    <textarea class="w-full form-input-glass rounded-xl p-3 text-sm h-24 resize-none" placeholder="Explain why this booking is necessary despite exceeding policy..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rate Rules & Cancellation -->
+                        <div class="glass-panel rounded-2xl p-6 border border-white/10">
+                            <h4 class="font-display text-lg font-bold text-white mb-4 border-b border-white/10 pb-3">Rate Rules & Terms</h4>
+                            
+                            <ul class="space-y-4 mb-6">
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-check text-emerald mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">Breakfast Included</div>
+                                        <div class="text-xs text-slate-400 mt-0.5">Buffet breakfast served from 06:30 to 10:30.</div>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-clock-rotate-left text-emerald mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">24h Free Cancellation</div>
+                                        <div class="text-xs text-slate-400 mt-0.5">Cancel before May 11, 2026, 15:00 (local hotel time) to avoid a 1-night penalty fee.</div>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa-solid fa-door-open text-emerald mt-1"></i>
+                                    <div>
+                                        <div class="text-sm font-medium text-white">Late Checkout</div>
+                                        <div class="text-xs text-slate-400 mt-0.5">Guaranteed late checkout until 14:00.</div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div class="space-y-3 pt-4 border-t border-white/10">
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox mt-0.5" id="term-1">
+                                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">I agree to the hotel's 24h cancellation policy.</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox mt-0.5" id="term-2">
+                                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">I confirm all trip details are correct.</span>
+                                </label>
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <input type="checkbox" class="custom-checkbox mt-0.5" id="term-3" checked>
+                                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Add trip to my calendar automatically.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Bottom Action Footer (Sticky) -->
+            <div class="fixed bottom-0 left-0 right-0 md:left-64 p-6 glass-panel border-t border-white/10 z-30 bg-navy-deep/90 backdrop-blur-xl">
+                <div class="max-w-6xl mx-auto flex items-center justify-between">
+                    <button class="px-6 py-3 rounded-xl btn-outline font-semibold text-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Options
+                    </button>
+                    <div class="flex items-center gap-4">
+                        <button class="px-4 py-3 text-slate-400 hover:text-white text-sm font-medium transition-colors">
+                            Cancel
+                        </button>
+                        <!-- Button changes state based on policy (amber for approval) -->
+                        <button class="px-8 py-3 rounded-xl bg-amber text-navy-deep hover:bg-amber/90 font-bold text-sm shadow-lg shadow-amber/20 transition-all" onclick="showSuccessModal()" id="main-cta">
+                            Submit for Approval <i class="fa-solid fa-paper-plane ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Modal Overlay -->
+            <div id="success-modal" class="fixed inset-0 z-50 modal-overlay flex items-center justify-center p-4">
+                <div class="modal-content max-w-md w-full glass-panel border border-white/10 rounded-2xl overflow-hidden bg-navy-deep/95 shadow-2xl">
+                    <div class="p-8 text-center relative overflow-hidden">
+                        <!-- Success decorative background -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-emerald/20 to-transparent opacity-50 pointer-events-none"></div>
+                        
+                        <div class="w-20 h-20 bg-emerald/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald/30 relative z-10">
+                            <i class="fa-solid fa-check text-3xl text-emerald"></i>
+                        </div>
+                        
+                        <h3 class="font-display text-2xl font-bold text-white mb-2 relative z-10">Request Submitted!</h3>
+                        <p class="text-slate-300 text-sm mb-6 relative z-10">Your booking request has been sent to Marie Dupont for approval. You will be notified once approved.</p>
+                        
+                        <div class="bg-black/20 rounded-xl p-4 border border-white/5 mb-8 relative z-10 text-left">
+                            <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Request Ref</div>
+                            <div class="font-mono text-lg font-bold text-white mb-3">REQ-8924</div>
+                            
+                            <div class="flex items-center justify-between text-sm border-t border-white/5 pt-3 mt-3">
+                                <span class="text-slate-400">Status</span>
+                                <span class="text-amber font-medium px-2 py-0.5 bg-amber/10 rounded border border-amber/20">Pending Approval</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 relative z-10">
+                            <button class="w-full btn-emerald py-3 rounded-xl font-semibold text-sm">
+                                View Request Details
+                            </button>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="btn-outline py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2">
+                                    <i class="fa-regular fa-file-pdf"></i> Receipt
+                                </button>
+                                <button class="btn-outline py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2">
+                                    <i class="fa-regular fa-calendar-plus"></i> Export
+                                </button>
+                            </div>
+                            <button class="w-full py-2 text-slate-400 hover:text-white text-sm transition-colors mt-2" onclick="hideSuccessModal()">
+                                Return to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Checkbox validation logic for CTA
+        document.addEventListener('DOMContentLoaded', function() {
+            const term1 = document.getElementById('term-1');
+            const term2 = document.getElementById('term-2');
+            const ctaBtn = document.getElementById('main-cta');
+            
+            function validateTerms() {
+                if(term1.checked && term2.checked) {
+                    ctaBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    ctaBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // Initially disabled if not checked
+            validateTerms();
+
+            term1.addEventListener('change', validateTerms);
+            term2.addEventListener('change', validateTerms);
+        });
+
+        // Modal Logic
+        function showSuccessModal() {
+            const term1 = document.getElementById('term-1');
+            const term2 = document.getElementById('term-2');
+            
+            if(term1.checked && term2.checked) {
+                document.getElementById('success-modal').classList.add('active');
+            }
+        }
+
+        function hideSuccessModal() {
+            document.getElementById('success-modal').classList.remove('active');
+        }
+        
+        // CSS Shimmer Animation for Card
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shimmer {
+                100% { transform: translateX(100%); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

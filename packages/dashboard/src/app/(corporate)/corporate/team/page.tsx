@@ -33,10 +33,10 @@ export default function TeamBookingsPage() {
   return (
     <div className="flex flex-col h-full">
       {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-20 flex items-center justify-between px-8 border-b border-white/10 glass-panel flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Team Bookings</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Manage and approve team travel</p>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Team Bookings</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Manage and approve team travel</p>
         </div>
       </header>
 
@@ -44,10 +44,10 @@ export default function TeamBookingsPage() {
       <main className="flex-1 overflow-y-auto p-8 space-y-6">
         {/* Mini KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="glass-card rounded-2xl p-5">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Pending Approvals</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Pending Approvals</p>
                 <p className="mt-1 text-2xl font-bold text-amber font-display">{pendingCount}</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-amber/10 flex items-center justify-center">
@@ -56,10 +56,10 @@ export default function TeamBookingsPage() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Active Trips</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Active Trips</p>
                 <p className="mt-1 text-2xl font-bold text-emerald font-display">{activeCount}</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-emerald/10 flex items-center justify-center">
@@ -68,11 +68,11 @@ export default function TeamBookingsPage() {
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Monthly Spend</p>
-                <p className="mt-1 text-2xl font-bold text-white font-display">&euro;{monthlySpend.toLocaleString()}</p>
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Monthly Spend</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900 font-display">&euro;{monthlySpend.toLocaleString()}</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-blue/10 flex items-center justify-center">
                 <i className="fa-solid fa-wallet text-blue" />
@@ -90,7 +90,7 @@ export default function TeamBookingsPage() {
               placeholder="Search by traveler, destination, or hotel..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-input-glass w-full rounded-lg pl-11 pr-4 py-2.5 text-sm"
+              className="form-input w-full rounded-lg pl-11 pr-4 py-2.5 text-sm"
             />
           </div>
           <button className="btn-outline px-4 py-2.5 rounded-lg text-xs font-semibold">
@@ -100,7 +100,7 @@ export default function TeamBookingsPage() {
         </div>
 
         {/* Data Table */}
-        <div className="glass-panel rounded-2xl overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left">
               <thead>
@@ -124,20 +124,20 @@ export default function TeamBookingsPage() {
                         <div className="w-7 h-7 rounded-full bg-emerald/20 flex items-center justify-center text-emerald text-[10px] font-bold flex-shrink-0">
                           {b.traveler.split(" ").map((n) => n[0]).join("")}
                         </div>
-                        <span className="text-white font-medium text-sm">{b.traveler}</span>
+                        <span className="text-slate-900 font-medium text-sm">{b.traveler}</span>
                       </div>
                     </td>
-                    <td className="text-slate-400 text-xs">{b.department}</td>
-                    <td className="text-slate-300">{b.destination}</td>
-                    <td className="text-slate-300 text-sm">{b.hotel}</td>
-                    <td className="text-slate-400 text-xs whitespace-nowrap">
+                    <td className="text-slate-500 text-xs">{b.department}</td>
+                    <td className="text-slate-600">{b.destination}</td>
+                    <td className="text-slate-600 text-sm">{b.hotel}</td>
+                    <td className="text-slate-500 text-xs whitespace-nowrap">
                       {b.checkIn} &rarr; {b.checkOut}
                     </td>
-                    <td className="text-right text-white font-semibold">&euro;{b.rate}/n</td>
+                    <td className="text-right text-slate-900 font-semibold">&euro;{b.rate}/n</td>
                     <td className="text-center">
                       <StatusBadge status={b.status} />
                     </td>
-                    <td className="text-slate-400 text-xs">{b.purpose}</td>
+                    <td className="text-slate-500 text-xs">{b.purpose}</td>
                     <td className="text-center">
                       {b.status === "pending_approval" ? (
                         <div className="flex items-center justify-center gap-2">

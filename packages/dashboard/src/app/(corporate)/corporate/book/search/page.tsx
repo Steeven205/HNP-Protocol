@@ -85,10 +85,10 @@ export default function BookSearchPage() {
   return (
     <div className="flex flex-col h-full">
       {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-20 flex items-center justify-between px-8 border-b border-white/10 glass-panel flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Book Travel</h1>
-          <p className="text-xs text-slate-400 mt-0.5">Step 2/4 &mdash; AI Negotiation &amp; Compare</p>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Book Travel</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Step 2/4 &mdash; AI Negotiation &amp; Compare</p>
         </div>
       </header>
 
@@ -113,7 +113,7 @@ export default function BookSearchPage() {
                 {s.label}
               </div>
               {i < steps.length - 1 && (
-                <div className={`w-8 h-px ${i === 0 ? "bg-emerald/50" : "bg-white/10"}`} />
+                <div className={`w-8 h-px ${i === 0 ? "bg-emerald/50" : "bg-[#E2E8F0]"}`} />
               )}
             </div>
           ))}
@@ -121,10 +121,10 @@ export default function BookSearchPage() {
 
         {/* Negotiation Status Panel */}
         {!showOffers && (
-          <div className="max-w-2xl mx-auto glass-panel rounded-2xl p-8 mb-8 animate-fade-up">
+          <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-8 mb-8 animate-fade-up">
             <div className="flex items-center gap-3 mb-6">
               <span className="w-3 h-3 rounded-full bg-emerald animate-pulse-dot" />
-              <h2 className="font-display text-lg font-semibold text-white">AI Agent is negotiating...</h2>
+              <h2 className="font-display text-lg font-semibold text-slate-900">AI Agent is negotiating...</h2>
             </div>
 
             <div className="space-y-3">
@@ -137,14 +137,14 @@ export default function BookSearchPage() {
                       <div className="w-2 h-2 rounded-full bg-emerald animate-pulse-dot" />
                     )}
                   </div>
-                  <span className="text-sm text-slate-300">{msg.text}</span>
+                  <span className="text-sm text-slate-600">{msg.text}</span>
                 </div>
               ))}
             </div>
 
             {/* Progress bar */}
             <div className="mt-6">
-              <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-emerald transition-all duration-700 ease-out"
                   style={{ width: `${(visibleMessages / negotiationMessages.length) * 100}%` }}
@@ -159,10 +159,10 @@ export default function BookSearchPage() {
           <div className="animate-fade-up">
             <div className="flex items-center justify-between mb-6 max-w-5xl mx-auto">
               <div>
-                <h2 className="font-display text-xl font-bold text-white">3 offers for Paris</h2>
-                <p className="text-xs text-slate-400 mt-1">May 12&ndash;15, 2026 &middot; 3 nights &middot; Superior room</p>
+                <h2 className="font-display text-xl font-bold text-slate-900">3 offers for Paris</h2>
+                <p className="text-xs text-slate-500 mt-1">May 12&ndash;15, 2026 &middot; 3 nights &middot; Superior room</p>
               </div>
-              <div className="flex items-center gap-2 text-xs text-slate-400">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
                 <i className="fa-solid fa-robot text-emerald" />
                 Negotiated by AI in 5.6s
               </div>
@@ -172,20 +172,20 @@ export default function BookSearchPage() {
               {hotelOffers.map((offer) => {
                 const savingsPct = Math.round(((offer.originalRate - offer.negotiatedRate) / offer.originalRate) * 100);
                 return (
-                  <div key={offer.id} className="glass-card rounded-2xl overflow-hidden relative">
+                  <div key={offer.id} className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden relative">
                     {/* Badge */}
                     <div className={`absolute top-3 left-3 z-10 ${offer.badge.color} text-white text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 flex items-center gap-1`}>
                       {offer.badge.label}
                     </div>
 
                     {/* Photo placeholder */}
-                    <div className="h-36 bg-gradient-to-br from-navy-mid to-navy-deep flex items-center justify-center">
-                      <i className="fa-solid fa-hotel text-3xl text-white/10" />
+                    <div className="h-36 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                      <i className="fa-solid fa-hotel text-3xl text-slate-300" />
                     </div>
 
                     {/* Content */}
                     <div className="p-5">
-                      <h3 className="text-base font-bold text-white mb-1">{offer.name}</h3>
+                      <h3 className="text-base font-bold text-slate-900 mb-1">{offer.name}</h3>
                       <div className="flex items-center gap-1.5 mb-3">
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: offer.stars }).map((_, i) => (
@@ -193,12 +193,12 @@ export default function BookSearchPage() {
                           ))}
                         </div>
                         <span className="text-xs text-slate-500">&middot;</span>
-                        <span className="text-xs text-slate-400">{offer.location}</span>
+                        <span className="text-xs text-slate-500">{offer.location}</span>
                       </div>
 
                       {/* Price */}
                       <div className="flex items-baseline gap-2 mb-3">
-                        <span className="text-2xl font-bold text-white">&euro;{offer.negotiatedRate}</span>
+                        <span className="text-2xl font-bold text-slate-900">&euro;{offer.negotiatedRate}</span>
                         <span className="text-xs text-slate-500">/night</span>
                         <span className="text-xs line-through text-slate-500 ml-auto">&euro;{offer.originalRate}</span>
                         <span className="text-xs font-bold text-emerald bg-emerald/10 px-2 py-0.5 rounded-full">
@@ -209,7 +209,7 @@ export default function BookSearchPage() {
                       {/* Inclusions */}
                       <div className="flex flex-wrap gap-1 mb-3">
                         {offer.inclusions.map((inc) => (
-                          <span key={inc} className="inline-flex items-center gap-1 bg-white/5 text-slate-300 text-[10px] font-medium rounded-md px-2 py-0.5 border border-white/10">
+                          <span key={inc} className="inline-flex items-center gap-1 bg-slate-50 text-slate-600 text-[10px] font-medium rounded-md px-2 py-0.5 border border-[#E2E8F0]">
                             <i className="fa-solid fa-check text-emerald text-[7px]" />
                             {inc}
                           </span>

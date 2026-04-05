@@ -14,13 +14,13 @@ export default function NegotiationsListPage() {
   return (
     <>
       {/* Header */}
-      <header className="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Negotiations Tracker</h1>
-          <p className="text-sm text-slate-400 mt-0.5">Real-time AI negotiation monitoring</p>
+          <h1 className="font-display text-2xl font-bold text-slate-900">Negotiations Tracker</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Real-time AI negotiation monitoring</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-slate-400 font-mono">
+          <span className="text-sm text-slate-500 font-mono">
             {hotelNegotiations.length} total
           </span>
         </div>
@@ -29,16 +29,16 @@ export default function NegotiationsListPage() {
       {/* Content */}
       <main className="flex-1 overflow-y-auto p-6 space-y-4">
         {/* Filter Bar */}
-        <div className="glass-panel rounded-xl p-4 flex flex-wrap items-center gap-3 animate-fade-up">
+        <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex flex-wrap items-center gap-3 animate-fade-up">
           <div className="relative flex-1 min-w-[200px]">
             <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
             <input
               type="text"
               placeholder="Search by ID, corporate, traveler..."
-              className="form-input-glass w-full rounded-lg py-2 pl-9 pr-3 text-sm"
+              className="form-input w-full rounded-lg py-2 pl-9 pr-3 text-sm"
             />
           </div>
-          <select className="form-input-glass rounded-lg py-2 px-3 text-sm min-w-[160px]">
+          <select className="form-input rounded-lg py-2 px-3 text-sm min-w-[160px]">
             <option value="">All Properties</option>
             {hotelProperties.map((p) => (
               <option key={p.id} value={p.id}>
@@ -46,7 +46,7 @@ export default function NegotiationsListPage() {
               </option>
             ))}
           </select>
-          <select className="form-input-glass rounded-lg py-2 px-3 text-sm min-w-[140px]">
+          <select className="form-input rounded-lg py-2 px-3 text-sm min-w-[140px]">
             <option value="">All Statuses</option>
             <option value="in_progress">In Progress</option>
             <option value="confirmed">Confirmed</option>
@@ -55,12 +55,12 @@ export default function NegotiationsListPage() {
           </select>
           <input
             type="date"
-            className="form-input-glass rounded-lg py-2 px-3 text-sm"
+            className="form-input rounded-lg py-2 px-3 text-sm"
           />
           <span className="text-slate-500">to</span>
           <input
             type="date"
-            className="form-input-glass rounded-lg py-2 px-3 text-sm"
+            className="form-input rounded-lg py-2 px-3 text-sm"
           />
           <button className="btn-outline px-4 py-2 rounded-lg text-sm">
             <i className="fa-solid fa-file-export mr-2" />
@@ -69,7 +69,7 @@ export default function NegotiationsListPage() {
         </div>
 
         {/* Data Table */}
-        <div className="glass-panel rounded-2xl overflow-hidden animate-fade-up delay-100">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden animate-fade-up delay-100">
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left">
               <thead>
@@ -93,19 +93,19 @@ export default function NegotiationsListPage() {
                     <td>
                       <span className="font-mono text-emerald">{n.id}</span>
                     </td>
-                    <td className="text-white">{n.corporate}</td>
-                    <td className="text-slate-300">{n.traveler}</td>
+                    <td className="text-slate-900">{n.corporate}</td>
+                    <td className="text-slate-600">{n.traveler}</td>
                     <td>
-                      <div className="text-white">{n.hotel}</div>
+                      <div className="text-slate-900">{n.hotel}</div>
                       <div className="text-xs text-slate-500">{n.destination}</div>
                     </td>
                     <td>
-                      <div className="text-sm text-white">{n.checkIn}</div>
+                      <div className="text-sm text-slate-900">{n.checkIn}</div>
                       <div className="text-xs text-slate-500">{n.checkOut}</div>
                     </td>
-                    <td className="text-center text-white">{n.rooms}</td>
-                    <td className="font-mono text-slate-400">{n.initialRate}</td>
-                    <td className="font-mono text-white font-bold">{n.currentRate}</td>
+                    <td className="text-center text-slate-900">{n.rooms}</td>
+                    <td className="font-mono text-slate-500">{n.initialRate}</td>
+                    <td className="font-mono text-slate-900 font-bold">{n.currentRate}</td>
                     <td>
                       <span className={`badge ${statusColor[n.status] || "badge-slate"}`}>
                         <i
@@ -122,7 +122,7 @@ export default function NegotiationsListPage() {
                         {n.status.replace("_", " ")}
                       </span>
                     </td>
-                    <td className="text-center text-slate-300">
+                    <td className="text-center text-slate-600">
                       {n.round}/{n.maxRounds}
                     </td>
                     <td>

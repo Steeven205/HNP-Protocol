@@ -125,7 +125,7 @@ export default function SignInPage() {
   const passwordHasValue = password.length > 0;
 
   return (
-    <div className="flex min-h-screen bg-navy-deep text-slate-100 font-mono" style={{ background: "radial-gradient(ellipse at center, #1A2942, #0A1628)" }}>
+    <div className="flex min-h-screen bg-white">
       {/* ================================================================
           LEFT HALF — Sign-in form
       ================================================================ */}
@@ -136,16 +136,16 @@ export default function SignInPage() {
             href="/"
             className="mb-10 inline-flex items-center gap-2.5 no-underline"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald/10 text-emerald">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald text-white">
               <i className="fa-solid fa-bolt text-lg" />
             </div>
           </Link>
 
           {/* Title */}
-          <h1 className="animate-fade-up font-display text-4xl font-bold text-white">
+          <h1 className="animate-fade-up font-display text-4xl font-bold text-slate-900">
             Welcome back
           </h1>
-          <p className="animate-fade-up delay-100 mt-2 text-sm text-white/50">
+          <p className="animate-fade-up delay-100 mt-2 text-sm text-slate-500">
             Enter your details to access the platform.
           </p>
 
@@ -164,15 +164,15 @@ export default function SignInPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setEmailFocused(true)}
                 onBlur={() => setEmailFocused(false)}
-                className="form-input-glass peer w-full rounded-xl py-3.5 pl-11 pr-4 text-sm"
+                className="peer w-full rounded-xl border border-[#E2E8F0] bg-white py-3.5 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald focus:ring-2 focus:ring-emerald/10 focus:outline-none"
               />
-              <i className="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-white/30 transition-colors peer-focus:text-emerald" />
+              <i className="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 transition-colors peer-focus:text-emerald" />
               <label
                 htmlFor="email"
                 className={`pointer-events-none absolute left-11 text-sm transition-all ${
                   emailFocused || emailHasValue
-                    ? "-top-2.5 text-xs text-emerald bg-navy-deep px-1"
-                    : "top-1/2 -translate-y-1/2 text-white/30"
+                    ? "-top-2.5 text-xs text-emerald bg-white px-1"
+                    : "top-1/2 -translate-y-1/2 text-slate-400"
                 }`}
               >
                 Email address
@@ -189,15 +189,15 @@ export default function SignInPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                className="form-input-glass peer w-full rounded-xl py-3.5 pl-11 pr-12 text-sm"
+                className="peer w-full rounded-xl border border-[#E2E8F0] bg-white py-3.5 pl-11 pr-12 text-sm text-slate-900 placeholder-slate-400 transition-colors focus:border-emerald focus:ring-2 focus:ring-emerald/10 focus:outline-none"
               />
-              <i className="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-white/30 transition-colors peer-focus:text-emerald" />
+              <i className="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400 transition-colors peer-focus:text-emerald" />
               <label
                 htmlFor="password"
                 className={`pointer-events-none absolute left-11 text-sm transition-all ${
                   passwordFocused || passwordHasValue
-                    ? "-top-2.5 text-xs text-emerald bg-navy-deep px-1"
-                    : "top-1/2 -translate-y-1/2 text-white/30"
+                    ? "-top-2.5 text-xs text-emerald bg-white px-1"
+                    : "top-1/2 -translate-y-1/2 text-slate-400"
                 }`}
               >
                 Password
@@ -206,7 +206,7 @@ export default function SignInPage() {
                 type="button"
                 tabIndex={-1}
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 border-none bg-transparent text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 border-none bg-transparent text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
               >
                 <i
                   className={`fa-solid ${showPassword ? "fa-eye-slash" : "fa-eye"} text-sm`}
@@ -216,18 +216,18 @@ export default function SignInPage() {
 
             {/* Remember device + Forgot password */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2.5 text-sm text-white/50 cursor-pointer">
+              <label className="flex items-center gap-2.5 text-sm text-slate-600 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={rememberDevice}
                   onChange={(e) => setRememberDevice(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/10 bg-white/5 text-emerald accent-emerald"
+                  className="h-4 w-4 rounded border-slate-300 bg-white text-emerald accent-emerald"
                 />
                 Remember device
               </label>
               <button
                 type="button"
-                className="border-none bg-transparent text-sm font-medium text-emerald hover:text-emerald-light transition-colors cursor-pointer"
+                className="border-none bg-transparent text-sm font-medium text-emerald hover:text-emerald-dark transition-colors cursor-pointer"
               >
                 Forgot password?
               </button>
@@ -235,7 +235,7 @@ export default function SignInPage() {
 
             {/* Error */}
             {error && (
-              <div className="rounded-xl border border-red/20 bg-red/5 px-4 py-3 text-sm text-red">
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
@@ -244,7 +244,7 @@ export default function SignInPage() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-emerald flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald py-3.5 text-sm font-semibold text-white transition-all hover:bg-emerald-dark hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none"
             >
               {loading ? (
                 <>
@@ -259,9 +259,9 @@ export default function SignInPage() {
 
           {/* ── Divider ───────────────────────────────────────────────── */}
           <div className="animate-fade-up delay-300 my-8 flex items-center gap-3">
-            <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs text-white/30">Or continue with</span>
-            <div className="h-px flex-1 bg-white/10" />
+            <div className="h-px flex-1 bg-slate-200" />
+            <span className="text-xs text-slate-400">Or continue with</span>
+            <div className="h-px flex-1 bg-slate-200" />
           </div>
 
           {/* ── SSO Buttons ───────────────────────────────────────────── */}
@@ -269,7 +269,7 @@ export default function SignInPage() {
             <button
               type="button"
               onClick={() => handleSSO("Azure AD")}
-              className="btn-outline flex flex-1 items-center justify-center gap-2.5 rounded-xl py-3 text-sm font-medium cursor-pointer"
+              className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white py-3 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 hover:border-emerald cursor-pointer"
             >
               <i className="fa-brands fa-microsoft" />
               Azure AD / Microsoft
@@ -277,7 +277,7 @@ export default function SignInPage() {
             <button
               type="button"
               onClick={() => handleSSO("SAML")}
-              className="btn-outline flex flex-1 items-center justify-center gap-2.5 rounded-xl py-3 text-sm font-medium cursor-pointer"
+              className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-[#E2E8F0] bg-white py-3 text-sm font-medium text-slate-700 transition-all hover:bg-slate-50 hover:border-emerald cursor-pointer"
             >
               <i className="fa-solid fa-key" />
               SSO / SAML
@@ -285,11 +285,11 @@ export default function SignInPage() {
           </div>
 
           {/* ── Bottom text ───────────────────────────────────────────── */}
-          <p className="animate-fade-up delay-400 mt-8 text-center text-sm text-white/40">
+          <p className="animate-fade-up delay-400 mt-8 text-center text-sm text-slate-500">
             Don&apos;t have an account?{" "}
             <button
               type="button"
-              className="border-none bg-transparent font-medium text-emerald hover:text-emerald-light transition-colors cursor-pointer"
+              className="border-none bg-transparent font-medium text-emerald hover:text-emerald-dark transition-colors cursor-pointer"
             >
               Request access
             </button>
@@ -315,14 +315,14 @@ export default function SignInPage() {
 
         {/* Glass overlay card */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="glass-panel rounded-2xl px-8 py-8 text-center max-w-xs">
+          <div className="rounded-2xl bg-white/90 backdrop-blur-sm px-8 py-8 text-center max-w-xs shadow-lg">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald/10 text-emerald">
               <i className="fa-solid fa-shield-halved text-2xl" />
             </div>
-            <h3 className="font-display text-xl font-bold text-white">
+            <h3 className="font-display text-xl font-bold text-slate-900">
               Enterprise Security
             </h3>
-            <p className="mt-2 text-sm leading-relaxed text-white/50">
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
               Bank-grade encryption protects every negotiation.
               Immutable audit trails, SOC2 certified, zero-trust
               architecture.

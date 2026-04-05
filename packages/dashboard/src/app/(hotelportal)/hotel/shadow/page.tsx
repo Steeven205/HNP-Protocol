@@ -8,10 +8,10 @@ export default function ShadowReportsPage() {
   return (
     <>
       {/* Header */}
-      <header className="h-20 border-b border-white/10 glass-panel flex items-center justify-between px-6 flex-shrink-0">
+      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white">Shadow Mode Analytics</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
+          <h1 className="font-display text-2xl font-bold text-slate-900">Shadow Mode Analytics</h1>
+          <p className="text-sm text-slate-500 mt-0.5">
             Compare Rateflow negotiated rates vs OTA channel rates
           </p>
         </div>
@@ -65,7 +65,7 @@ export default function ShadowReportsPage() {
           ].map((kpi, i) => (
             <div
               key={kpi.label}
-              className={`glass-card rounded-2xl p-5 delay-${(i + 1) * 100}`}
+              className={`bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5 delay-${(i + 1) * 100}`}
             >
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-9 h-9 rounded-lg bg-emerald/10 flex items-center justify-center">
@@ -74,19 +74,19 @@ export default function ShadowReportsPage() {
               </div>
               <p
                 className={`text-xl font-bold font-mono ${
-                  kpi.accent ? "text-emerald" : "text-white"
+                  kpi.accent ? "text-emerald" : "text-slate-900"
                 }`}
               >
                 {kpi.value}
               </p>
-              <p className="text-xs text-slate-400 mt-1">{kpi.label}</p>
+              <p className="text-xs text-slate-500 mt-1">{kpi.label}</p>
             </div>
           ))}
         </div>
 
         {/* Comparison Chart */}
-        <div className="glass-panel rounded-2xl p-6 animate-fade-up delay-200">
-          <h2 className="font-display text-lg font-semibold text-white mb-6">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 animate-fade-up delay-200">
+          <h2 className="font-display text-lg font-semibold text-slate-900 mb-6">
             <i className="fa-solid fa-chart-column text-emerald mr-2" />
             OTA Rate vs Rateflow Rate (Monthly)
           </h2>
@@ -100,7 +100,7 @@ export default function ShadowReportsPage() {
                   <div className="flex items-end gap-2 justify-center h-48">
                     {/* OTA bar */}
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-xs font-mono text-slate-400">{m.otaRate}</span>
+                      <span className="text-xs font-mono text-slate-500">{m.otaRate}</span>
                       <div
                         className="w-8 rounded-t bg-red/60 transition-all"
                         style={{ height: `${otaPct}%` }}
@@ -116,7 +116,7 @@ export default function ShadowReportsPage() {
                     </div>
                   </div>
                   <div className="text-center mt-3">
-                    <p className="text-sm text-white">{m.month}</p>
+                    <p className="text-sm text-slate-900">{m.month}</p>
                     <p className="text-xs text-slate-500">{m.bookings} bookings</p>
                   </div>
                 </div>
@@ -127,11 +127,11 @@ export default function ShadowReportsPage() {
           <div className="flex items-center justify-center gap-6 mt-6">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded bg-red/60" />
-              <span className="text-xs text-slate-400">OTA Rate</span>
+              <span className="text-xs text-slate-500">OTA Rate</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded bg-emerald" />
-              <span className="text-xs text-slate-400">Rateflow Rate</span>
+              <span className="text-xs text-slate-500">Rateflow Rate</span>
             </div>
           </div>
         </div>
@@ -139,20 +139,20 @@ export default function ShadowReportsPage() {
         {/* Win Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-up delay-300">
           {/* Win breakdown */}
-          <div className="glass-panel rounded-2xl p-6">
-            <h2 className="font-display text-lg font-semibold text-white mb-4">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
+            <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">
               <i className="fa-solid fa-chart-pie text-emerald mr-2" />
               Negotiation Outcomes
             </h2>
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-300">Won vs OTA</span>
+                  <span className="text-sm text-slate-600">Won vs OTA</span>
                   <span className="text-sm font-mono text-emerald font-bold">
                     {report.wonVsOTA} / {report.totalNegotiations}
                   </span>
                 </div>
-                <div className="w-full h-3 rounded-full bg-white/10 overflow-hidden">
+                <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-emerald"
                     style={{ width: `${report.winRate}%` }}
@@ -161,12 +161,12 @@ export default function ShadowReportsPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-slate-300">Lost to OTA</span>
+                  <span className="text-sm text-slate-600">Lost to OTA</span>
                   <span className="text-sm font-mono text-red font-bold">
                     {report.totalNegotiations - report.wonVsOTA} / {report.totalNegotiations}
                   </span>
                 </div>
-                <div className="w-full h-3 rounded-full bg-white/10 overflow-hidden">
+                <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-red/60"
                     style={{ width: `${100 - report.winRate}%` }}
@@ -177,59 +177,59 @@ export default function ShadowReportsPage() {
           </div>
 
           {/* Rate comparison */}
-          <div className="glass-panel rounded-2xl p-6">
-            <h2 className="font-display text-lg font-semibold text-white mb-4">
+          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
+            <h2 className="font-display text-lg font-semibold text-slate-900 mb-4">
               <i className="fa-solid fa-scale-balanced text-emerald mr-2" />
               Average Rate Comparison
             </h2>
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <div className="w-24 text-sm text-slate-400">OTA Avg</div>
-                <div className="flex-1 h-8 rounded-lg bg-white/5 overflow-hidden relative">
+                <div className="w-24 text-sm text-slate-500">OTA Avg</div>
+                <div className="flex-1 h-8 rounded-lg bg-slate-50 overflow-hidden relative">
                   <div
                     className="h-full bg-red/30 rounded-lg flex items-center px-3"
                     style={{ width: "100%" }}
                   >
-                    <span className="text-sm font-mono text-white font-bold">
+                    <span className="text-sm font-mono text-slate-900 font-bold">
                       {report.avgRateVsOTA.ota}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-24 text-sm text-slate-400">Rateflow</div>
-                <div className="flex-1 h-8 rounded-lg bg-white/5 overflow-hidden relative">
+                <div className="w-24 text-sm text-slate-500">Rateflow</div>
+                <div className="flex-1 h-8 rounded-lg bg-slate-50 overflow-hidden relative">
                   <div
                     className="h-full bg-emerald/30 rounded-lg flex items-center px-3"
                     style={{
                       width: `${(report.avgRateVsOTA.rateflow / report.avgRateVsOTA.ota) * 100}%`,
                     }}
                   >
-                    <span className="text-sm font-mono text-white font-bold">
+                    <span className="text-sm font-mono text-slate-900 font-bold">
                       {report.avgRateVsOTA.rateflow}
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-white/10 text-center">
+              <div className="mt-4 pt-4 border-t border-[#E2E8F0] text-center">
                 <span className="text-emerald font-mono font-bold text-lg">
                   -{report.avgRateVsOTA.savings}/night
                 </span>
-                <p className="text-xs text-slate-400 mt-1">average savings per booking</p>
+                <p className="text-xs text-slate-500 mt-1">average savings per booking</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Summary */}
-        <div className="glass-panel rounded-2xl p-6 border border-emerald/20 animate-fade-up delay-400">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6 border-emerald/20 animate-fade-up delay-400">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-xl bg-emerald/10 flex items-center justify-center flex-shrink-0">
               <i className="fa-solid fa-lightbulb text-emerald text-xl" />
             </div>
             <div>
-              <h3 className="font-display text-lg font-semibold text-white">Shadow Mode Insight</h3>
-              <p className="text-sm text-slate-300 mt-2 leading-relaxed">
+              <h3 className="font-display text-lg font-semibold text-slate-900">Shadow Mode Insight</h3>
+              <p className="text-sm text-slate-600 mt-2 leading-relaxed">
                 Rateflow achieves{" "}
                 <span className="text-emerald font-bold">
                   {Math.round(
