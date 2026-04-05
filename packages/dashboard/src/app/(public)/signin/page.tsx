@@ -125,7 +125,7 @@ export default function SignInPage() {
   const passwordHasValue = password.length > 0;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-navy-deep text-slate-100 font-mono" style={{ background: "radial-gradient(ellipse at center, #1A2942, #0A1628)" }}>
       {/* ================================================================
           LEFT HALF — Sign-in form
       ================================================================ */}

@@ -1,52 +1,81 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 @theme {
-  --font-sans: "IBM Plex Mono", ui-monospace, monospace;
-  --font-display: "Crimson Pro", ui-serif, Georgia, serif;
+  /* ── Landing page fonts (Syne + DM Sans) ─────────────────────────── */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Syne", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
-  /* Navy palette (dark theme) */
+  /* ── Landing page navy palette (original) ────────────────────────── */
+  --color-navy: #00007A;
+  --color-navy-50: #f0f0ff;
+  --color-navy-100: #d9d9ff;
+  --color-navy-200: #b3b3ff;
+  --color-navy-600: #0000A0;
+  --color-navy-700: #000066;
+  --color-navy-800: #00007A;
+  --color-navy-900: #000055;
+  --color-navy-dark: #000055;
+  --color-navy-light: #0000A0;
+
+  /* ── Landing page sky palette ────────────────────────────────────── */
+  --color-sky: #87CEFA;
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #C8E8FD;
+  --color-sky-200: #bae6fd;
+  --color-sky-400: #4AADEE;
+  --color-sky-500: #4AADEE;
+  --color-sky-dark: #4AADEE;
+  --color-sky-light: #C8E8FD;
+
+  /* ── Landing page brand palette ──────────────────────────────────── */
+  --color-brand-50: #f0f5ff;
+  --color-brand-100: #d9e5ff;
+  --color-brand-200: #b3cbff;
+  --color-brand-300: #809fff;
+  --color-brand-500: #3b6fff;
+  --color-brand-600: #1e3a8a;
+  --color-brand-700: #172f73;
+  --color-brand-900: #0a1236;
+
+  --color-off-white: #F7F9FC;
+  --color-gray-900: #0F1225;
+  --color-surface: #f8fafc;
+
+  /* ── Dashboard dark theme palette ────────────────────────────────── */
   --color-navy-deep: #0A1628;
   --color-navy-mid: #1A2942;
-  --color-navy-800: #0A1628;
-  --color-navy-700: #0F1E35;
-  --color-navy-600: #1A2942;
 
-  /* Emerald accent */
   --color-emerald: #10B981;
   --color-emerald-light: #34D399;
   --color-emerald-dark: #0d9668;
 
-  /* Status colors */
   --color-amber: #F59E0B;
   --color-red: #EF4444;
   --color-blue: #3B82F6;
   --color-cyan: #0ea5e9;
   --color-purple: #8B5CF6;
 
-  /* Surfaces */
-  --color-surface: #0A1628;
-  --color-surface-raised: rgba(255, 255, 255, 0.03);
-  --color-surface-hover: rgba(255, 255, 255, 0.08);
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-light: rgba(255, 255, 255, 0.05);
-  --color-border-strong: rgba(255, 255, 255, 0.15);
-
-  /* Shadows */
+  /* ── Shadows ─────────────────────────────────────────────────────── */
+  --shadow-soft: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 40px -10px rgba(59, 130, 246, 0.3);
+  --shadow-offer-glow: 0 0 20px -5px rgba(135, 206, 250, 0.6);
+  --shadow-card: 0 1px 3px rgba(0,0,80,0.06), 0 1px 2px rgba(0,0,80,0.04);
+  --shadow-card-md: 0 4px 16px rgba(0,0,80,0.08), 0 2px 6px rgba(0,0,80,0.04);
+  --shadow-card-lg: 0 12px 40px rgba(0,0,80,0.12), 0 4px 12px rgba(0,0,80,0.06);
   --shadow-glass: 0 4px 30px rgba(0, 0, 0, 0.1);
   --shadow-glass-hover: 0 12px 30px rgba(0, 0, 0, 0.3);
   --shadow-emerald: 0 4px 12px rgba(16, 185, 129, 0.3);
 
+  --color-border: #e2e8f0;
   --radius-card: 16px;
 }
 
+/* ── Base body: neutral (each route group overrides) ───────────────── */
 body {
   margin: 0;
   padding: 0;
-  background-color: #0A1628;
-  color: #F1F5F9;
-  font-family: "IBM Plex Mono", monospace;
 }
 
 /* Custom scrollbar */
@@ -55,14 +84,24 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A1628;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #cbd5e1;
   border-radius: 10px;
 }
 
-/* Glass morphism utilities */
+/* ══════════════════════════════════════════════════════════════════════
+   Landing page badges (light theme)
+   ══════════════════════════════════════════════════════════════════════ */
+.badge-confirmed { background: #dcfce7; color: #15803d; }
+.badge-progress  { background: #fef9c3; color: #a16207; }
+.badge-escalated { background: #fee2e2; color: #dc2626; }
+.badge-timeout   { background: #f1f5f9; color: #64748b; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Dashboard glass morphism (dark theme)
+   ══════════════════════════════════════════════════════════════════════ */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
@@ -157,7 +196,7 @@ body {
   border-bottom: none;
 }
 
-/* Status badges */
+/* Status badges (dark theme) */
 .badge {
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
@@ -173,7 +212,9 @@ body {
 .badge-slate { background: rgba(148, 163, 184, 0.1); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.2); }
 .badge-blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; border: 1px solid rgba(59, 130, 246, 0.2); }
 
-/* Animations */
+/* ══════════════════════════════════════════════════════════════════════
+   Shared animations
+   ══════════════════════════════════════════════════════════════════════ */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -187,7 +228,6 @@ body {
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 
-/* Typing indicator */
 @keyframes bounce-dot {
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1); }
@@ -198,7 +238,6 @@ body {
 .typing-dot:nth-child(1) { animation-delay: -0.32s; }
 .typing-dot:nth-child(2) { animation-delay: -0.16s; }
 
-/* Pulse animation */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.3); }
@@ -208,21 +247,9 @@ body {
 }
 
 /* Step indicators */
-.step-active {
-  background: #10B981;
-  border-color: #10B981;
-  color: white;
-}
-.step-completed {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: #10B981;
-  color: #10B981;
-}
-.step-pending {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.5);
-}
+.step-active { background: #10B981; border-color: #10B981; color: white; }
+.step-completed { background: rgba(16, 185, 129, 0.2); border-color: #10B981; color: #10B981; }
+.step-pending { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5); }
 
 /* Background mesh */
 .bg-mesh {
@@ -231,42 +258,11 @@ body {
 }
 
 /* Range slider */
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-  background: transparent;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: #10B981;
-  cursor: pointer;
-  margin-top: -6px;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-}
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-}
-input[type=range]:focus {
-  outline: none;
-}
+input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #10B981; cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+input[type=range]:focus { outline: none; }
 
-/* Loading spinner */
-.spinner {
-  border: 2px solid rgba(255,255,255,0.1);
-  border-left-color: #fff;
-  border-radius: 50%;
-  width: 1.25rem;
-  height: 1.25rem;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* Spinner */
+.spinner { border: 2px solid rgba(255,255,255,0.1); border-left-color: #fff; border-radius: 50%; width: 1.25rem; height: 1.25rem; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
