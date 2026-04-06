@@ -16,58 +16,41 @@ const permissionsIcon: Record<string, string> = {
 
 export default function TeamManagementPage() {
   return (
-    <>
-      {/* Header */}
-      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">Team Management</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Manage your team members and permissions</p>
+          <h1 className="text-2xl font-semibold text-[#222]">Team Management</h1>
+          <p className="text-[#717171] mt-1">Manage your team members and permissions</p>
         </div>
         <button className="btn-emerald px-4 py-2 rounded-lg text-sm font-medium">
           <i className="fa-solid fa-user-plus mr-2" />
           Invite Member
         </button>
-      </header>
+      </div>
 
-      {/* Content */}
-      <main className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="space-y-8">
         {/* Summary */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-up">
-          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center">
-              <i className="fa-solid fa-users text-emerald" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Total Members</p>
-              <p className="text-xl font-bold text-slate-900 font-mono">{hotelTeamMembers.length}</p>
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Total Members</p>
+            <p className="text-3xl font-semibold text-[#222] font-mono mt-2">{hotelTeamMembers.length}</p>
           </div>
-          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-emerald/10 flex items-center justify-center">
-              <i className="fa-solid fa-circle-check text-emerald" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Active</p>
-              <p className="text-xl font-bold text-slate-900 font-mono">
-                {hotelTeamMembers.filter((m) => m.status === "active").length}
-              </p>
-            </div>
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Active</p>
+            <p className="text-3xl font-semibold text-[#222] font-mono mt-2">
+              {hotelTeamMembers.filter((m) => m.status === "active").length}
+            </p>
           </div>
-          <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center">
-              <i className="fa-solid fa-shield text-amber" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">Admins</p>
-              <p className="text-xl font-bold text-slate-900 font-mono">
-                {hotelTeamMembers.filter((m) => m.permissions === "admin").length}
-              </p>
-            </div>
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 border-l-4 border-l-amber hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Admins</p>
+            <p className="text-3xl font-semibold text-[#222] font-mono mt-2">
+              {hotelTeamMembers.filter((m) => m.permissions === "admin").length}
+            </p>
           </div>
         </div>
 
         {/* Team Table */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden animate-fade-up delay-100">
+        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left">
               <thead>
@@ -86,18 +69,18 @@ export default function TeamManagementPage() {
                   <tr key={member.email}>
                     <td>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-emerald/20 flex items-center justify-center text-emerald font-bold text-xs">
+                        <div className="w-8 h-8 rounded-full bg-[#F7F7F7] flex items-center justify-center text-[#222] font-semibold text-xs">
                           {member.name
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
                         </div>
-                        <span className="text-slate-900 font-medium">{member.name}</span>
+                        <span className="text-[#222] font-medium">{member.name}</span>
                       </div>
                     </td>
-                    <td className="text-slate-600">{member.role}</td>
+                    <td className="text-[#484848]">{member.role}</td>
                     <td>
-                      <span className="font-mono text-sm text-slate-500">{member.email}</span>
+                      <span className="font-mono text-sm text-[#717171]">{member.email}</span>
                     </td>
                     <td>
                       <span
@@ -113,7 +96,7 @@ export default function TeamManagementPage() {
                         {member.status}
                       </span>
                     </td>
-                    <td className="text-sm text-slate-500">{member.lastActive}</td>
+                    <td className="text-sm text-[#717171]">{member.lastActive}</td>
                     <td>
                       <span
                         className={`badge ${permissionsColor[member.permissions] || "badge-slate"}`}
@@ -142,7 +125,7 @@ export default function TeamManagementPage() {
             </table>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+    </div>
   );
 }

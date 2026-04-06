@@ -31,72 +31,52 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function CorporateDashboardPage() {
   return (
-    <div className="flex flex-col h-full">
-      {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-xs text-slate-500 mt-0.5">Overview &amp; Savings</p>
-        </div>
-        <div className="flex items-center gap-5">
-          <span className="text-xs text-slate-500 font-mono">
-            <i className="fa-regular fa-calendar mr-1.5" />
-            April 6, 2026
-          </span>
-          <button className="relative w-9 h-9 rounded-lg bg-slate-50 border border-[#E2E8F0] flex items-center justify-center hover:bg-slate-100 transition-colors">
-            <i className="fa-regular fa-bell text-slate-400 text-sm" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald text-white text-[9px] font-bold flex items-center justify-center">3</span>
-          </button>
-        </div>
-      </header>
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* Page Title */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-[#222]">Dashboard</h1>
+        <p className="text-[#717171] mt-1">Overview &amp; Savings</p>
+      </div>
 
-      {/* ── Scrollable Content ──────────────────────────────────────────── */}
-      <main className="flex-1 overflow-y-auto p-8 space-y-8">
+      <div className="space-y-8">
         {/* KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {kpiCards.map((kpi) => (
-            <div key={kpi.label} className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{kpi.label}</p>
-                  <p className="mt-2 text-3xl font-bold text-slate-900 font-display">{kpi.value}</p>
-                  <p className={`mt-1 text-xs font-medium flex items-center gap-1 ${kpi.trendUp ? "text-emerald" : "text-red-400"}`}>
-                    <i className={`fa-solid ${kpi.trendUp ? "fa-arrow-up" : "fa-arrow-down"} text-[9px]`} />
-                    {kpi.trend} vs last quarter
-                  </p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-emerald/10 flex items-center justify-center">
-                  <i className={`${kpi.icon} text-emerald`} />
-                </div>
-              </div>
+            <div key={kpi.label} className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+              <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">{kpi.label}</p>
+              <p className="mt-2 text-3xl font-semibold text-[#222]">{kpi.value}</p>
+              <p className={`mt-1.5 text-xs font-medium flex items-center gap-1 ${kpi.trendUp ? "text-emerald" : "text-red-400"}`}>
+                <i className={`fa-solid ${kpi.trendUp ? "fa-arrow-up" : "fa-arrow-down"} text-[9px]`} />
+                {kpi.trend} vs last quarter
+              </p>
             </div>
           ))}
         </div>
 
         {/* Spending Chart Placeholder */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-lg font-semibold text-slate-900">Monthly Spend vs Budget</h2>
+        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-[#222]">Monthly Spend vs Budget</h2>
             <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5 text-xs text-slate-500">
+              <span className="flex items-center gap-1.5 text-xs text-[#717171]">
                 <span className="w-2.5 h-2.5 rounded-sm bg-emerald" />
                 Actual Spend
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                <span className="w-2.5 h-2.5 rounded-sm bg-slate-200" />
+              <span className="flex items-center gap-1.5 text-xs text-[#717171]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#EBEBEB]" />
                 Budget
               </span>
             </div>
           </div>
-          <div id="chart" className="h-48 rounded-xl bg-slate-50 border border-[#F1F5F9] flex items-center justify-center">
-            <p className="text-sm text-slate-500">Chart placeholder</p>
+          <div className="h-48 rounded-xl bg-[#F7F7F7] border border-[#EBEBEB] flex items-center justify-center">
+            <p className="text-sm text-[#717171]">Chart placeholder</p>
           </div>
         </div>
 
         {/* Recent Bookings Table */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-slate-900">Recent Bookings</h2>
+        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
+          <div className="px-6 py-5 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-[#222]">Recent Bookings</h2>
             <span className="flex items-center gap-1.5 text-xs text-emerald">
               <span className="w-2 h-2 rounded-full bg-emerald animate-pulse-dot" />
               Live
@@ -120,13 +100,13 @@ export default function CorporateDashboardPage() {
                 {recentBookings.map((b) => (
                   <tr key={b.id}>
                     <td className="font-mono text-emerald text-xs">{b.id}</td>
-                    <td className="text-slate-900 font-medium">{b.traveler}</td>
-                    <td className="text-slate-600">{b.destination}</td>
-                    <td className="text-slate-600">{b.hotel}</td>
-                    <td className="text-slate-500 text-xs">
+                    <td className="text-[#222] font-medium">{b.traveler}</td>
+                    <td className="text-[#484848]">{b.destination}</td>
+                    <td className="text-[#484848]">{b.hotel}</td>
+                    <td className="text-[#717171] text-xs">
                       {b.checkIn} &rarr; {b.checkOut}
                     </td>
-                    <td className="text-right text-slate-900 font-semibold">&euro;{b.rate}/n</td>
+                    <td className="text-right text-[#222] font-semibold">&euro;{b.rate}/n</td>
                     <td className="text-center">
                       <StatusBadge status={b.status} />
                     </td>
@@ -134,7 +114,7 @@ export default function CorporateDashboardPage() {
                       {b.savings > 0 ? (
                         <span className="text-emerald font-semibold">&euro;{b.savings}</span>
                       ) : (
-                        <span className="text-slate-500">&mdash;</span>
+                        <span className="text-[#B0B0B0]">&mdash;</span>
                       )}
                     </td>
                   </tr>
@@ -143,7 +123,7 @@ export default function CorporateDashboardPage() {
             </table>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

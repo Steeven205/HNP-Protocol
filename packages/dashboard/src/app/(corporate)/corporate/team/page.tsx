@@ -31,60 +31,36 @@ export default function TeamBookingsPage() {
     : teamBookings;
 
   return (
-    <div className="flex flex-col h-full">
-      {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">Team Bookings</h1>
-          <p className="text-xs text-slate-500 mt-0.5">Manage and approve team travel</p>
-        </div>
-      </header>
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* Page Title */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-[#222]">Team Bookings</h1>
+        <p className="text-[#717171] mt-1">Manage and approve team travel</p>
+      </div>
 
-      {/* ── Scrollable Content ──────────────────────────────────────────── */}
-      <main className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="space-y-8">
         {/* Mini KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Pending Approvals</p>
-                <p className="mt-1 text-2xl font-bold text-amber font-display">{pendingCount}</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-amber/10 flex items-center justify-center">
-                <i className="fa-solid fa-clock text-amber" />
-              </div>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Pending Approvals</p>
+            <p className="mt-2 text-3xl font-semibold text-amber">{pendingCount}</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Active Trips</p>
-                <p className="mt-1 text-2xl font-bold text-emerald font-display">{activeCount}</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-emerald/10 flex items-center justify-center">
-                <i className="fa-solid fa-plane text-emerald" />
-              </div>
-            </div>
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Active Trips</p>
+            <p className="mt-2 text-3xl font-semibold text-emerald">{activeCount}</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Monthly Spend</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900 font-display">&euro;{monthlySpend.toLocaleString()}</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-blue/10 flex items-center justify-center">
-                <i className="fa-solid fa-wallet text-blue" />
-              </div>
-            </div>
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow">
+            <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">Monthly Spend</p>
+            <p className="mt-2 text-3xl font-semibold text-[#222]">&euro;{monthlySpend.toLocaleString()}</p>
           </div>
         </div>
 
-        {/* Filter / Search Bar */}
+        {/* Search Bar */}
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
-            <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
+            <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#B0B0B0] text-sm" />
             <input
               type="text"
               placeholder="Search by traveler, destination, or hotel..."
@@ -93,14 +69,14 @@ export default function TeamBookingsPage() {
               className="form-input w-full rounded-lg pl-11 pr-4 py-2.5 text-sm"
             />
           </div>
-          <button className="btn-outline px-4 py-2.5 rounded-lg text-xs font-semibold">
+          <button className="rounded-lg px-5 py-2.5 text-sm font-semibold border border-[#EBEBEB] text-[#222] hover:bg-[#F7F7F7] transition-colors">
             <i className="fa-solid fa-filter mr-1.5" />
             Filters
           </button>
         </div>
 
         {/* Data Table */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="data-table w-full text-left">
               <thead>
@@ -121,37 +97,37 @@ export default function TeamBookingsPage() {
                   <tr key={b.id}>
                     <td>
                       <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-emerald/20 flex items-center justify-center text-emerald text-[10px] font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] flex items-center justify-center text-[#484848] text-xs font-semibold flex-shrink-0">
                           {b.traveler.split(" ").map((n) => n[0]).join("")}
                         </div>
-                        <span className="text-slate-900 font-medium text-sm">{b.traveler}</span>
+                        <span className="text-[#222] font-medium text-sm">{b.traveler}</span>
                       </div>
                     </td>
-                    <td className="text-slate-500 text-xs">{b.department}</td>
-                    <td className="text-slate-600">{b.destination}</td>
-                    <td className="text-slate-600 text-sm">{b.hotel}</td>
-                    <td className="text-slate-500 text-xs whitespace-nowrap">
+                    <td className="text-[#717171] text-xs">{b.department}</td>
+                    <td className="text-[#484848]">{b.destination}</td>
+                    <td className="text-[#484848] text-sm">{b.hotel}</td>
+                    <td className="text-[#717171] text-xs whitespace-nowrap">
                       {b.checkIn} &rarr; {b.checkOut}
                     </td>
-                    <td className="text-right text-slate-900 font-semibold">&euro;{b.rate}/n</td>
+                    <td className="text-right text-[#222] font-semibold">&euro;{b.rate}/n</td>
                     <td className="text-center">
                       <StatusBadge status={b.status} />
                     </td>
-                    <td className="text-slate-500 text-xs">{b.purpose}</td>
+                    <td className="text-[#717171] text-xs">{b.purpose}</td>
                     <td className="text-center">
                       {b.status === "pending_approval" ? (
                         <div className="flex items-center justify-center gap-2">
-                          <button className="btn-emerald px-3 py-1.5 rounded-md text-[10px] font-semibold">
+                          <button className="bg-[#222] text-white hover:bg-black px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-colors">
                             <i className="fa-solid fa-check mr-1" />
                             Approve
                           </button>
-                          <button className="px-3 py-1.5 rounded-md text-[10px] font-semibold border border-red-400/20 text-red-400 hover:bg-red-400/5 transition-colors">
+                          <button className="px-3 py-1.5 rounded-lg text-[10px] font-semibold border border-red-300 text-red-500 hover:bg-red-50 transition-colors">
                             <i className="fa-solid fa-xmark mr-1" />
                             Reject
                           </button>
                         </div>
                       ) : (
-                        <button className="btn-outline px-3 py-1.5 rounded-md text-[10px] font-semibold">
+                        <button className="px-3 py-1.5 rounded-lg text-[10px] font-semibold border border-[#EBEBEB] text-[#484848] hover:bg-[#F7F7F7] transition-colors">
                           <i className="fa-solid fa-eye mr-1" />
                           View
                         </button>
@@ -163,7 +139,7 @@ export default function TeamBookingsPage() {
             </table>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

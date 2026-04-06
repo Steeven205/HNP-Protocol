@@ -20,25 +20,24 @@ export default function TravelPolicyPage() {
   const [chains, setChains] = useState(travelPolicy.preferredChains);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* ── Header Bar ──────────────────────────────────────────────────── */}
-      <header className="h-16 border-b border-[#E2E8F0] bg-white flex items-center justify-between px-6 lg:px-8 flex-shrink-0">
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      {/* Page Title */}
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">Travel Policy Configuration</h1>
-          <p className="text-xs text-slate-500 mt-0.5">TechCorp SAS &mdash; Corporate Travel Rules</p>
+          <h1 className="text-2xl font-semibold text-[#222]">Travel Policy</h1>
+          <p className="text-[#717171] mt-1">TechCorp SAS — Corporate Travel Rules</p>
         </div>
-        <button className="btn-emerald px-5 py-2.5 rounded-lg text-xs font-semibold">
+        <button className="bg-[#222] text-white hover:bg-black rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors">
           <i className="fa-solid fa-floppy-disk mr-1.5" />
           Save Changes
         </button>
-      </header>
+      </div>
 
-      {/* ── Scrollable Content ──────────────────────────────────────────── */}
-      <main className="flex-1 overflow-y-auto p-8 space-y-6">
+      <div className="space-y-8">
         {/* Rate Limits Section */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#E2E8F0]">
-            <h2 className="font-display text-lg font-semibold text-slate-900">
+        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
+          <div className="px-6 py-5">
+            <h2 className="text-lg font-semibold text-[#222]">
               <i className="fa-solid fa-euro-sign text-emerald mr-2" />
               Rate Limits by City
             </h2>
@@ -56,14 +55,14 @@ export default function TravelPolicyPage() {
               <tbody>
                 {cityRates.map((cr) => (
                   <tr key={cr.city}>
-                    <td className="text-slate-900 font-medium">{cr.city}</td>
+                    <td className="text-[#222] font-medium">{cr.city}</td>
                     <td className="text-right">
                       <span className="text-emerald font-semibold">&euro;{cr.max}</span>
                     </td>
-                    <td className="text-right text-slate-600">&euro;{cr.avg}</td>
+                    <td className="text-right text-[#484848]">&euro;{cr.avg}</td>
                     <td className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="w-16 h-1.5 rounded-full bg-[#F7F7F7] overflow-hidden">
                           <div
                             className={`h-full rounded-full ${cr.compliance >= 95 ? "bg-emerald" : cr.compliance >= 90 ? "bg-amber" : "bg-red"}`}
                             style={{ width: `${cr.compliance}%` }}
@@ -83,15 +82,15 @@ export default function TravelPolicyPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Category & ESG */}
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-            <h3 className="font-display text-base font-semibold text-slate-900 mb-5">
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
+            <h3 className="text-base font-semibold text-[#222] mb-5">
               <i className="fa-solid fa-building text-emerald mr-2" />
               Category &amp; ESG Requirements
             </h3>
 
             <div className="space-y-5">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                <label className="block text-sm font-medium text-[#222] mb-1.5">
                   Minimum Hotel Category
                 </label>
                 <select
@@ -107,7 +106,7 @@ export default function TravelPolicyPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                <label className="block text-sm font-medium text-[#222] mb-1.5">
                   ESG Requirement
                 </label>
                 <select
@@ -125,8 +124,8 @@ export default function TravelPolicyPage() {
           </div>
 
           {/* Cancellation Rules */}
-          <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-            <h3 className="font-display text-base font-semibold text-slate-900 mb-5">
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
+            <h3 className="text-base font-semibold text-[#222] mb-5">
               <i className="fa-solid fa-shield-halved text-emerald mr-2" />
               Cancellation &amp; Approval
             </h3>
@@ -135,13 +134,13 @@ export default function TravelPolicyPage() {
               {/* Cancellation toggle */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-900 font-medium">24h Free Cancellation Required</p>
-                  <p className="text-xs text-slate-500 mt-0.5">All bookings must include free cancellation</p>
+                  <p className="text-sm text-[#222] font-medium">24h Free Cancellation Required</p>
+                  <p className="text-xs text-[#717171] mt-0.5">All bookings must include free cancellation</p>
                 </div>
                 <button
                   onClick={() => setCancellationRequired(!cancellationRequired)}
                   className={`w-12 h-6 rounded-full relative transition-colors ${
-                    cancellationRequired ? "bg-emerald" : "bg-slate-200"
+                    cancellationRequired ? "bg-[#222]" : "bg-[#EBEBEB]"
                   }`}
                 >
                   <span
@@ -154,7 +153,7 @@ export default function TravelPolicyPage() {
 
               {/* Approval threshold */}
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                <label className="block text-sm font-medium text-[#222] mb-1.5">
                   Approval Required Above
                 </label>
                 <div className="flex items-center gap-4">
@@ -165,40 +164,40 @@ export default function TravelPolicyPage() {
                     step={10}
                     value={approvalThreshold}
                     onChange={(e) => setApprovalThreshold(Number(e.target.value))}
-                    className="flex-1"
+                    className="flex-1 accent-[#222]"
                   />
-                  <span className="text-lg font-bold text-emerald w-20 text-right">&euro;{approvalThreshold}</span>
+                  <span className="text-lg font-semibold text-[#222] w-20 text-right">&euro;{approvalThreshold}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Bookings above this rate require manager approval</p>
+                <p className="text-xs text-[#717171] mt-1">Bookings above this rate require manager approval</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Preferred Chains */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-          <h3 className="font-display text-base font-semibold text-slate-900 mb-4">
+        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
+          <h3 className="text-base font-semibold text-[#222] mb-2">
             <i className="fa-solid fa-heart text-emerald mr-2" />
             Preferred Hotel Chains
           </h3>
-          <p className="text-xs text-slate-500 mb-4">Hotels from preferred chains are prioritized during negotiation</p>
+          <p className="text-sm text-[#717171] mb-5">Hotels from preferred chains are prioritized during negotiation</p>
 
           <div className="flex flex-wrap gap-2">
             {chains.map((chain) => (
               <span
                 key={chain}
-                className="inline-flex items-center gap-2 bg-emerald/10 text-emerald text-sm font-medium rounded-lg px-4 py-2 border border-emerald/20"
+                className="inline-flex items-center gap-2 bg-[#F7F7F7] text-[#222] text-sm font-medium rounded-full px-4 py-2 border border-[#EBEBEB]"
               >
                 {chain}
                 <button
                   onClick={() => setChains(chains.filter((c) => c !== chain))}
-                  className="w-4 h-4 rounded-full bg-emerald/20 flex items-center justify-center hover:bg-emerald/40 transition-colors"
+                  className="w-4 h-4 rounded-full bg-[#EBEBEB] flex items-center justify-center hover:bg-[#B0B0B0] transition-colors"
                 >
-                  <i className="fa-solid fa-xmark text-[8px]" />
+                  <i className="fa-solid fa-xmark text-[8px] text-[#484848]" />
                 </button>
               </span>
             ))}
-            <button className="inline-flex items-center gap-1.5 bg-slate-50 text-slate-500 text-sm font-medium rounded-lg px-4 py-2 border border-[#E2E8F0] hover:bg-slate-100 hover:text-slate-900 transition-colors">
+            <button className="inline-flex items-center gap-1.5 text-[#717171] text-sm font-medium rounded-full px-4 py-2 border border-dashed border-[#EBEBEB] hover:border-[#222] hover:text-[#222] transition-colors">
               <i className="fa-solid fa-plus text-xs" />
               Add Chain
             </button>
@@ -206,31 +205,31 @@ export default function TravelPolicyPage() {
         </div>
 
         {/* Additional Settings Summary */}
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] shadow-sm p-6">
-          <h3 className="font-display text-base font-semibold text-slate-900 mb-4">
+        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
+          <h3 className="text-base font-semibold text-[#222] mb-5">
             <i className="fa-solid fa-gear text-emerald mr-2" />
             Additional Settings
           </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-50 rounded-xl border border-[#F1F5F9] p-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Max Stay</p>
-              <p className="text-sm text-slate-900 font-medium">{travelPolicy.maxNights} nights</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-[#F7F7F7] rounded-xl p-4">
+              <p className="text-xs text-[#717171] mb-1">Max Stay</p>
+              <p className="text-sm text-[#222] font-medium">{travelPolicy.maxNights} nights</p>
             </div>
-            <div className="bg-slate-50 rounded-xl border border-[#F1F5F9] p-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Meal Policy</p>
-              <p className="text-sm text-slate-900 font-medium">{travelPolicy.mealPolicy}</p>
+            <div className="bg-[#F7F7F7] rounded-xl p-4">
+              <p className="text-xs text-[#717171] mb-1">Meal Policy</p>
+              <p className="text-sm text-[#222] font-medium">{travelPolicy.mealPolicy}</p>
             </div>
-            <div className="bg-slate-50 rounded-xl border border-[#F1F5F9] p-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Loyalty Program</p>
-              <p className="text-sm text-slate-900 font-medium">{travelPolicy.loyaltyProgram}</p>
+            <div className="bg-[#F7F7F7] rounded-xl p-4">
+              <p className="text-xs text-[#717171] mb-1">Loyalty Program</p>
+              <p className="text-sm text-[#222] font-medium">{travelPolicy.loyaltyProgram}</p>
             </div>
-            <div className="bg-slate-50 rounded-xl border border-[#F1F5F9] p-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Negotiation Timeout</p>
-              <p className="text-sm text-slate-900 font-medium">30 seconds max per round</p>
+            <div className="bg-[#F7F7F7] rounded-xl p-4">
+              <p className="text-xs text-[#717171] mb-1">Negotiation Timeout</p>
+              <p className="text-sm text-[#222] font-medium">30 seconds max per round</p>
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

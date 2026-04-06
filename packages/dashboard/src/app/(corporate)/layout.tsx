@@ -1,12 +1,10 @@
-import { CorporateSidebar } from "@/components/corporate-sidebar";
+import { CorporateNavbar } from "@/components/corporate-navbar";
 
 export default function CorporateLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-[#FAFBFC]">
-      <CorporateSidebar />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {children}
-      </div>
+    <div className="min-h-screen bg-white">
+      <CorporateNavbar />
+      <main>{children}</main>
     </div>
   );
 }
