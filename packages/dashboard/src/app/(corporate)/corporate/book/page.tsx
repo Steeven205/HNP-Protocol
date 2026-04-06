@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { travelPolicy } from "@/lib/demo-data";
 
 const steps = [
@@ -21,6 +22,7 @@ const travelers = [
 const roomTypes = ["Standard", "Superior", "Suite"];
 
 export default function BookTripDetailsPage() {
+  const router = useRouter();
   const [traveler, setTraveler] = useState("");
   const [destination, setDestination] = useState("");
   const [checkIn, setCheckIn] = useState("");
@@ -33,6 +35,24 @@ export default function BookTripDetailsPage() {
   const maxRate = (travelPolicy.maxRates as Record<string, number>)[destinationLower] ?? travelPolicy.maxRates.default;
 
   const isFormValid = traveler && destination && checkIn && checkOut;
+
+  function handleNext() {
+    const searchParams = new URLSearchParams({
+      traveler,
+      destination,
+      check_in: checkIn,
+      check_out: checkOut,
+      rooms: String(rooms),
+      room_type: roomType,
+      purpose,
+      budget: String(maxRate),
+    });
+    sessionStorage.setItem(
+      "bookingRequest",
+      JSON.stringify({ traveler, destination, checkIn, checkOut, rooms, roomType, purpose, budget: maxRate })
+    );
+    router.push(`/corporate/book/search?${searchParams}`);
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
@@ -250,7 +270,9 @@ export default function BookTripDetailsPage() {
             </div>
 
             <button
+              type="button"
               disabled={!isFormValid}
+              onClick={handleNext}
               className={`mt-6 w-full py-3 rounded-lg text-sm font-semibold transition-all ${
                 isFormValid
                   ? "bg-[#222] text-white hover:bg-black"

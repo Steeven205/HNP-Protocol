@@ -1,29 +1,140 @@
 "use client";
 
-import { hotelKPIs, hotelProperties, hotelNegotiations } from "@/lib/demo-data";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+interface Hotel {
+  id: string;
+  hotel_id: string;
+  name: string;
+  city: string | null;
+  stars: number;
+  rooms_count: number | null;
+  base_rate_standard: number | null;
+  rating_google: number | null;
+  esg_tier: string | null;
+  status: string | null;
+}
+
+interface Booking {
+  id: string;
+  booking_ref: string;
+  traveler: string;
+  destination: string;
+  hotel_name: string;
+  check_in: string;
+  check_out: string;
+  nights: number;
+  room_type: string | null;
+  negotiated_rate: number;
+  total_cost: number;
+  status: string | null;
+  savings_eur: number | null;
+  savings_pct: number | null;
+  created_at: string | null;
+}
 
 const statusColor: Record<string, string> = {
-  in_progress: "badge-amber",
+  upcoming: "badge-amber",
   confirmed: "badge-emerald",
+  completed: "badge-emerald",
   escalated: "badge-red",
+  cancelled: "badge-slate",
   timeout: "badge-slate",
 };
 
 export default function HotelDashboardPage() {
-  const kpis: Array<{
-    value: string;
-    trend: string;
-    trendUp: boolean;
-    label: string;
-    icon: string;
-    showCircle?: boolean;
-    warning?: boolean;
-  }> = [
-    { ...hotelKPIs.revpar, icon: "fa-chart-line" },
-    { ...hotelKPIs.occupancy, icon: "fa-building", showCircle: true },
-    { ...hotelKPIs.adr, icon: "fa-coins" },
-    { ...hotelKPIs.corporateRevenue, icon: "fa-briefcase", warning: true },
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [hotelsRes, bookingsRes] = await Promise.all([
+        supabase.from("hotels").select("*").eq("status", "active"),
+        supabase
+          .from("bookings")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
+
+      if (hotelsRes.data) setHotels(hotelsRes.data);
+      if (bookingsRes.data) setBookings(bookingsRes.data);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  // Compute KPIs from real data
+  const totalProperties = hotels.length;
+
+  const avgRate =
+    hotels.length > 0
+      ? hotels.reduce((sum, h) => sum + (Number(h.base_rate_standard) || 0), 0) / hotels.length
+      : 0;
+
+  const totalBookings = bookings.length;
+
+  const totalRevenue = bookings.reduce((sum, b) => sum + Number(b.total_cost), 0);
+
+  const kpis = [
+    {
+      value: String(totalProperties),
+      trend: `${totalProperties} active`,
+      trendUp: true,
+      label: "Total Properties",
+      icon: "fa-building",
+    },
+    {
+      value: `\u20AC${avgRate.toFixed(0)}`,
+      trend: "avg standard",
+      trendUp: true,
+      label: "Avg Rate",
+      icon: "fa-coins",
+    },
+    {
+      value: String(totalBookings),
+      trend: "recent",
+      trendUp: true,
+      label: "Total Bookings",
+      icon: "fa-calendar-check",
+    },
+    {
+      value: `\u20AC${totalRevenue.toLocaleString("fr-FR", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`,
+      trend: "total cost",
+      trendUp: true,
+      label: "Revenue",
+      icon: "fa-chart-line",
+    },
   ];
+
+  if (loading) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-[#222]">Dashboard</h1>
+          <p className="text-[#717171] mt-1">Overview & Performance</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl border border-[#EBEBEB] p-6 animate-pulse"
+            >
+              <div className="h-3 bg-[#F7F7F7] rounded w-1/2 mb-3" />
+              <div className="h-8 bg-[#F7F7F7] rounded w-2/3 mb-3" />
+              <div className="h-3 bg-[#F7F7F7] rounded w-1/3" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 animate-pulse h-64" />
+          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 animate-pulse h-64" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
@@ -49,44 +160,22 @@ export default function HotelDashboardPage() {
           {kpis.map((kpi) => (
             <div
               key={kpi.label}
-              className={`bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow ${kpi.warning && !kpi.trendUp ? "border-l-4 border-l-amber" : ""}`}
+              className="bg-white rounded-xl border border-[#EBEBEB] p-6 hover:shadow-md transition-shadow"
             >
-              <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">{kpi.label}</p>
+              <p className="text-xs font-medium text-[#717171] uppercase tracking-wide">
+                <i className={`fa-solid ${kpi.icon} text-emerald mr-1.5`} />
+                {kpi.label}
+              </p>
               <p className="text-3xl font-semibold text-[#222] font-mono mt-2">{kpi.value}</p>
               <div className="flex items-center justify-between mt-3">
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    kpi.trendUp
-                      ? "bg-emerald/10 text-emerald"
-                      : kpi.warning
-                      ? "bg-amber/10 text-amber"
-                      : "bg-emerald/10 text-emerald"
+                    kpi.trendUp ? "bg-emerald/10 text-emerald" : "bg-amber/10 text-amber"
                   }`}
                 >
                   {kpi.trend}
                 </span>
               </div>
-
-              {/* Circular occupancy indicator */}
-              {kpi.showCircle && (
-                <div className="mt-3 flex items-center gap-2">
-                  <svg width="36" height="36" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="#EBEBEB" strokeWidth="3" />
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="15"
-                      fill="none"
-                      stroke="#10B981"
-                      strokeWidth="3"
-                      strokeDasharray={`${78.2 * 0.942} ${100 * 0.942}`}
-                      strokeLinecap="round"
-                      transform="rotate(-90 18 18)"
-                    />
-                  </svg>
-                  <span className="text-xs text-[#717171]">of 100% capacity</span>
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -126,14 +215,14 @@ export default function HotelDashboardPage() {
           </div>
         </div>
 
-        {/* Two columns: Performance + Active Negotiations */}
+        {/* Two columns: Performance + Recent Bookings */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Performance Table */}
+          {/* Hotels Performance Table */}
           <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#EBEBEB]">
               <h2 className="text-lg font-semibold text-[#222]">
                 <i className="fa-solid fa-ranking-star text-emerald mr-2" />
-                Property Performance
+                Hotels Performance
               </h2>
             </div>
             <div className="overflow-x-auto">
@@ -141,31 +230,42 @@ export default function HotelDashboardPage() {
                 <thead>
                   <tr>
                     <th>Property</th>
-                    <th>Occupancy</th>
-                    <th>ADR</th>
-                    <th>RevPAR</th>
+                    <th>Stars</th>
+                    <th>Rating</th>
+                    <th>Std Rate</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {hotelProperties.map((p) => (
-                    <tr key={p.id}>
+                  {hotels.slice(0, 8).map((h) => (
+                    <tr key={h.id}>
                       <td>
-                        <div className="text-[#222] font-medium">{p.name}</div>
-                        <div className="text-xs text-[#717171]">{p.city}</div>
+                        <div className="text-[#222] font-medium">{h.name}</div>
+                        <div className="text-xs text-[#717171]">{h.city || "Paris"}</div>
                       </td>
                       <td>
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-1.5 rounded-full bg-[#F7F7F7] overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-emerald"
-                              style={{ width: `${p.occupancy}%` }}
-                            />
+                        <span className="text-amber">
+                          {Array.from({ length: h.stars }, (_, i) => (
+                            <i key={i} className="fa-solid fa-star text-[10px]" />
+                          ))}
+                        </span>
+                      </td>
+                      <td>
+                        {h.rating_google ? (
+                          <div className="flex items-center gap-1">
+                            <i className="fa-solid fa-star text-amber text-[10px]" />
+                            <span className="text-sm text-[#222]">
+                              {Number(h.rating_google).toFixed(1)}
+                            </span>
                           </div>
-                          <span className="text-sm text-[#222]">{p.occupancy}%</span>
-                        </div>
+                        ) : (
+                          <span className="text-xs text-[#B0B0B0]">-</span>
+                        )}
                       </td>
-                      <td className="text-[#222] font-mono">{p.adr}</td>
-                      <td className="text-[#222] font-mono">{p.revpar}</td>
+                      <td className="text-[#222] font-mono">
+                        {h.base_rate_standard
+                          ? `\u20AC${Number(h.base_rate_standard)}`
+                          : "-"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -173,44 +273,52 @@ export default function HotelDashboardPage() {
             </div>
           </div>
 
-          {/* Active Negotiations */}
+          {/* Recent Bookings */}
           <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
             <div className="px-6 py-4 border-b border-[#EBEBEB] flex items-center justify-between">
               <h2 className="text-lg font-semibold text-[#222]">
                 <i className="fa-solid fa-bolt text-emerald mr-2" />
-                Active Negotiations
+                Recent Bookings
               </h2>
-              <a href="/hotel/negotiations" className="text-sm text-emerald hover:underline">
-                View all
-              </a>
+              <span className="text-xs text-[#717171]">{bookings.length} shown</span>
             </div>
             <div className="p-6 space-y-4">
-              {hotelNegotiations.slice(0, 4).map((n) => (
-                <a
-                  key={n.id}
-                  href={`/hotel/negotiations/${n.id}`}
-                  className="block bg-white rounded-xl border border-[#EBEBEB] p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-mono text-emerald">{n.id}</span>
-                    <span className={`badge ${statusColor[n.status] || "badge-slate"}`}>
-                      {n.status.replace("_", " ")}
-                    </span>
+              {bookings.length === 0 ? (
+                <p className="text-sm text-[#717171] text-center py-8">No bookings yet</p>
+              ) : (
+                bookings.slice(0, 6).map((b) => (
+                  <div
+                    key={b.id}
+                    className="block bg-white rounded-xl border border-[#EBEBEB] p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-mono text-emerald">{b.booking_ref}</span>
+                      <span className={`badge ${statusColor[b.status || ""] || "badge-slate"}`}>
+                        {(b.status || "unknown").replace("_", " ")}
+                      </span>
+                    </div>
+                    <div className="text-sm text-[#222] font-medium">{b.hotel_name}</div>
+                    <div className="text-xs text-[#717171] mt-1">
+                      {b.traveler} &middot; {b.destination} &middot; {b.check_in} &rarr; {b.check_out}
+                    </div>
+                    <div className="flex items-center justify-between mt-2 text-xs">
+                      <span className="text-[#717171]">
+                        {b.nights} night{b.nights !== 1 ? "s" : ""} &middot; {b.room_type || "Standard"}
+                      </span>
+                      <span className="text-[#222] font-mono">
+                        {`\u20AC${Number(b.negotiated_rate)}/n`} &middot; Total {`\u20AC${Number(b.total_cost)}`}
+                      </span>
+                    </div>
+                    {b.savings_eur && Number(b.savings_eur) > 0 && (
+                      <div className="mt-2">
+                        <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald/10 text-emerald">
+                          Saved {`\u20AC${Number(b.savings_eur)}`} ({b.savings_pct}%)
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm text-[#222] font-medium">{n.corporate}</div>
-                  <div className="text-xs text-[#717171] mt-1">
-                    {n.traveler} &middot; {n.destination} &middot; {n.checkIn} &rarr; {n.checkOut}
-                  </div>
-                  <div className="flex items-center justify-between mt-2 text-xs">
-                    <span className="text-[#717171]">
-                      Round {n.round}/{n.maxRounds}
-                    </span>
-                    <span className="text-[#222] font-mono">
-                      {n.initialRate} &rarr; {n.currentRate}
-                    </span>
-                  </div>
-                </a>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>
