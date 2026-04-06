@@ -1,6 +1,6 @@
 "use client";
 
-import { corporateKPIs, recentBookings } from "@/lib/demo-data";
+import { corporateKPIs, recentBookings, spendingByMonth } from "@/lib/demo-data";
 
 const kpiCards = [
   { ...corporateKPIs.totalSpend, icon: "fa-solid fa-wallet" },
@@ -68,8 +68,38 @@ export default function CorporateDashboardPage() {
               </span>
             </div>
           </div>
-          <div className="h-48 rounded-xl bg-[#F7F7F7] border border-[#EBEBEB] flex items-center justify-center">
-            <p className="text-sm text-[#717171]">Chart placeholder</p>
+          {/* Bar chart */}
+          <div className="h-48 flex items-end gap-4 px-2">
+            {spendingByMonth.map((m) => {
+              const maxVal = Math.max(...spendingByMonth.map((d) => Math.max(d.spend, d.budget)));
+              const spendH = (m.spend / maxVal) * 100;
+              const budgetH = (m.budget / maxVal) * 100;
+              return (
+                <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                  <div className="w-full flex items-end justify-center gap-1.5" style={{ height: "140px" }}>
+                    <div
+                      className="w-5 rounded-t bg-emerald transition-all hover:opacity-80"
+                      style={{ height: `${spendH}%` }}
+                      title={`€${m.spend.toLocaleString()}`}
+                    />
+                    <div
+                      className="w-5 rounded-t bg-[#EBEBEB] transition-all hover:opacity-80"
+                      style={{ height: `${budgetH}%` }}
+                      title={`€${m.budget.toLocaleString()}`}
+                    />
+                  </div>
+                  <span className="text-[11px] text-[#717171] font-medium">{m.month}</span>
+                </div>
+              );
+            })}
+          </div>
+          {/* Values below */}
+          <div className="flex gap-4 px-2 mt-2">
+            {spendingByMonth.map((m) => (
+              <div key={m.month} className="flex-1 text-center">
+                <span className="text-[10px] text-[#B0B0B0]">&euro;{(m.spend / 1000).toFixed(1)}k</span>
+              </div>
+            ))}
           </div>
         </div>
 
