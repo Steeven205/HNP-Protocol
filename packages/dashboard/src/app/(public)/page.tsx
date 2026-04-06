@@ -70,6 +70,12 @@ export default function LandingPage() {
               FR
             </button>
           </div>
+          <Link
+            href="/signin"
+            className="text-sm font-medium text-navy-800 px-4 py-2 rounded-lg hover:bg-[#F0F2F7] transition-all no-underline"
+          >
+            Sign In
+          </Link>
           <a
             href="#cta"
             className="hidden sm:inline-flex items-center gap-2 bg-navy-800 text-white text-sm font-medium px-5 py-2.5 rounded-xl border-none cursor-pointer no-underline hover:bg-navy-dark hover:-translate-y-px transition-all"
