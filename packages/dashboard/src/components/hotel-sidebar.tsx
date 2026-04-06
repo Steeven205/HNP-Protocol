@@ -7,7 +7,6 @@ const navItems = [
   { label: "Dashboard", icon: "fa-chart-pie", href: "/hotel/dashboard" },
   { label: "Hotels", icon: "fa-hotel", href: "/hotel/hotels" },
   { label: "Negotiations", icon: "fa-handshake", href: "/hotel/negotiations" },
-  { label: "Analytics", icon: "fa-chart-line", href: "/hotel/analytics" },
   { label: "Audit Trail", icon: "fa-clock-rotate-left", href: "/hotel/audit" },
 ];
 
@@ -22,80 +21,64 @@ const settingsItems = [
 export function HotelSidebar() {
   const pathname = usePathname();
 
-  return (
-    <aside className="w-64 h-screen bg-[#0F172A] border-r border-white/10 flex flex-col flex-shrink-0 hidden md:flex">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-white/10">
-        <div className="w-8 h-8 rounded-lg bg-emerald flex items-center justify-center text-white font-bold text-sm mr-3">
-          <i className="fa-solid fa-chart-line" />
-        </div>
-        <div>
-          <span className="font-semibold text-white text-sm tracking-wide">Rateflow</span>
-          <span className="block text-[10px] text-emerald font-medium -mt-0.5">Hotel Agent</span>
-        </div>
-      </div>
+  function NavLink({ item }: { item: { label: string; icon: string; href: string } }) {
+    const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+    return (
+      <Link
+        href={item.href}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium no-underline transition-all ${
+          isActive
+            ? "bg-white text-[#222] shadow-sm"
+            : "text-[#717171] hover:bg-white/70 hover:text-[#222]"
+        }`}
+      >
+        <i className={`fa-solid ${item.icon} w-4 text-center text-[12px] ${isActive ? "text-emerald" : "text-[#B0B0B0]"}`} />
+        <span>{item.label}</span>
+      </Link>
+    );
+  }
 
-      {/* Search */}
-      <div className="p-4">
-        <div className="relative">
-          <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald/50 transition-colors"
-          />
-        </div>
+  return (
+    <aside className="w-[240px] h-screen bg-[#F7F7F7] border-r border-[#EBEBEB] flex flex-col flex-shrink-0 hidden md:flex">
+      {/* Logo */}
+      <div className="h-16 flex items-center px-5 mb-2">
+        <Link href="/" className="flex items-center gap-2.5 no-underline">
+          <div className="w-8 h-8 bg-[#222] rounded-lg flex items-center justify-center text-white">
+            <i className="fa-solid fa-chart-line text-sm" />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-display font-bold text-[17px] text-[#222]">Rateflow</span>
+            <span className="text-[10px] text-emerald font-semibold bg-emerald/10 px-1.5 py-0.5 rounded">Hotel</span>
+          </div>
+        </Link>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                isActive
-                  ? "bg-[#1E293B] text-white"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-              }`}
-            >
-              <i className={`fa-solid ${item.icon} w-5 text-center text-sm ${isActive ? "text-emerald" : ""}`} />
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-3 overflow-y-auto">
+        <div className="space-y-0.5">
+          {navItems.map((item) => (
+            <NavLink key={item.href} item={item} />
+          ))}
+        </div>
 
-        <div className="pt-4 mt-4 border-t border-white/10">
-          <div className="px-3 mb-2 text-[10px] font-semibold text-slate-600 uppercase tracking-wider">Settings</div>
-          {settingsItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  isActive
-                    ? "bg-[#1E293B] text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                }`}
-              >
-                <i className={`fa-solid ${item.icon} w-5 text-center text-sm ${isActive ? "text-emerald" : ""}`} />
-                <span className="font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
+        {/* Settings section */}
+        <div className="mt-6 pt-4 border-t border-[#EBEBEB]">
+          <div className="px-3 mb-2 text-[10px] font-semibold text-[#B0B0B0] uppercase tracking-wider">Settings</div>
+          <div className="space-y-0.5">
+            {settingsItems.map((item) => (
+              <NavLink key={item.href} item={item} />
+            ))}
+          </div>
         </div>
       </nav>
 
       {/* User Profile */}
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-[#EBEBEB]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-emerald/20 flex items-center justify-center text-emerald font-bold text-xs">MD</div>
-          <div>
-            <div className="text-sm font-medium text-white">Marie Dupont</div>
-            <div className="text-xs text-slate-500">Le Marais Group</div>
+          <div className="w-8 h-8 rounded-full bg-emerald text-white flex items-center justify-center text-[11px] font-semibold">MD</div>
+          <div className="min-w-0">
+            <div className="text-[13px] font-medium text-[#222] truncate">Marie Dupont</div>
+            <div className="text-[11px] text-[#717171] truncate">Le Marais Group</div>
           </div>
         </div>
       </div>
