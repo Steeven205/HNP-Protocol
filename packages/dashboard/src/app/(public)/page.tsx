@@ -22,7 +22,7 @@ export default function LandingPage() {
       ================================================================ */}
       <nav className="fixed top-0 left-0 right-0 z-[100] h-[68px] flex items-center justify-between px-6 bg-white/90 backdrop-blur-[20px] border-b border-[#E2E6F0]">
         <Link href="/" className="flex items-center gap-2.5 no-underline">
-          <div className="w-9 h-9 bg-navy-800 rounded-[10px] flex items-center justify-center text-white font-display font-extrabold text-lg">R</div>
+          <img src="/logo.svg" alt="Rateflow" className="w-9 h-9" />
           <span className="font-display font-bold text-lg text-navy-800">Rateflow.ai</span>
         </Link>
 

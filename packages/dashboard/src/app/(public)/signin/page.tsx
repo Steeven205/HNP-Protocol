@@ -55,9 +55,7 @@ export default function SignInPage() {
               href="/"
               className="inline-flex items-center gap-2.5 no-underline"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald text-white">
-                <i className="fa-solid fa-bolt text-lg" />
-              </div>
+              <img src="/logo.svg" alt="Rateflow" className="w-9 h-9" />
               <span className="text-xl font-semibold text-[#222]">
                 Rateflow
               </span>

@@ -22,9 +22,7 @@ export function CorporateNavbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 no-underline">
-            <div className="w-8 h-8 bg-emerald rounded-lg flex items-center justify-center text-white font-bold text-sm">
-              <i className="fa-solid fa-bolt" />
-            </div>
+            <img src="/logo.svg" alt="Rateflow" className="w-8 h-8" />
             <span className="font-display font-bold text-lg text-[#222]">Rateflow</span>
           </Link>
 

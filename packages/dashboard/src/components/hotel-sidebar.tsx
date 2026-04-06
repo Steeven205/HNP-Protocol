@@ -43,9 +43,7 @@ export function HotelSidebar() {
       {/* Logo */}
       <div className="h-16 flex items-center px-5 mb-2">
         <Link href="/" className="flex items-center gap-2.5 no-underline">
-          <div className="w-8 h-8 bg-[#222] rounded-lg flex items-center justify-center text-white">
-            <i className="fa-solid fa-chart-line text-sm" />
-          </div>
+          <img src="/logo.svg" alt="Rateflow" className="w-8 h-8" />
           <div className="flex items-center gap-1.5">
             <span className="font-display font-bold text-[17px] text-[#222]">Rateflow</span>
             <span className="text-[10px] text-emerald font-semibold bg-emerald/10 px-1.5 py-0.5 rounded">Hotel</span>
