@@ -22,12 +22,12 @@ const settingsItems = [
 export function CorporateSidebar() {
   const pathname = usePathname();
 
-  function NavLink({ item }: { item: { label: string; icon: string; href: string } }) {
+  function NavLink({ item, small }: { item: { label: string; icon: string; href: string }; small?: boolean }) {
     const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
     return (
       <Link
         href={item.href}
-        className={`flex items-center gap-3 -mx-3 px-6 py-2.5 text-[13px] font-medium no-underline transition-all ${
+        className={`flex items-center gap-3 -mx-3 px-6 ${small ? "py-2" : "py-2.5"} text-[13px] font-medium no-underline transition-all ${
           isActive
             ? "bg-emerald text-white"
             : "text-[#717171] hover:bg-[#EEEEEE] hover:text-[#222]"
@@ -49,41 +49,26 @@ export function CorporateSidebar() {
         </Link>
       </div>
 
-      {/* Main Navigation */}
-      <nav className="flex-1 px-3 overflow-y-auto flex flex-col">
+      {/* Navigation */}
+      <nav className="flex-1 px-3 overflow-y-auto">
+        {/* Main section */}
+        <div className="px-3 mb-2 text-[10px] font-semibold text-[#B0B0B0] uppercase tracking-wider">Travel</div>
         <div className="space-y-0.5">
           {navItems.map((item) => (
             <NavLink key={item.href} item={item} />
           ))}
         </div>
 
-        {/* Flexible spacer */}
-        <div className="flex-1" />
-      </nav>
-
-      {/* Settings — directly above profile */}
-      <div className="px-3 pt-3 pb-2 border-t border-[#E5E7EB]">
-        <div className="px-3 mb-2 text-[10px] font-semibold text-[#B0B0B0] uppercase tracking-wider">Settings</div>
-        <div className="space-y-0.5">
-          {settingsItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 -mx-3 px-6 py-2 text-[12px] font-medium no-underline transition-all ${
-                  isActive
-                    ? "bg-emerald text-white"
-                    : "text-[#717171] hover:bg-[#EEEEEE] hover:text-[#222]"
-                }`}
-              >
-                <i className={`fa-solid ${item.icon} w-4 text-center text-[11px] ${isActive ? "text-white" : "text-[#B0B0B0]"}`} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        {/* Settings section */}
+        <div className="mt-6 pt-4 border-t border-[#E5E7EB]">
+          <div className="px-3 mb-2 text-[10px] font-semibold text-[#B0B0B0] uppercase tracking-wider">Settings</div>
+          <div className="space-y-0.5">
+            {settingsItems.map((item) => (
+              <NavLink key={item.href} item={item} small />
+            ))}
+          </div>
         </div>
-      </div>
+      </nav>
 
       {/* User Profile */}
       <div className="p-5 border-t border-[#EBEBEB]">
