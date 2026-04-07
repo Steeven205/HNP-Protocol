@@ -1,5 +1,6 @@
 import { HotelSidebar } from "@/components/hotel-sidebar";
 import { TopHeader } from "@/components/top-header";
+import { PageTitle } from "@/components/page-title";
 
 export default function HotelPortalLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,7 +8,8 @@ export default function HotelPortalLayout({ children }: { children: React.ReactN
       <HotelSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <TopHeader user={{ name: "Marie Dupont", initials: "MD", company: "Le Marais Group" }} />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <PageTitle />
+        <main className="flex-1 overflow-y-auto bg-[#F9FAFB]">{children}</main>
       </div>
     </div>
   );
