@@ -5,40 +5,44 @@ import { useRouter } from "next/navigation";
 import { travelPolicy } from "@/lib/demo-data";
 
 const steps = [
-  { label: "Trip Details", icon: "fa-suitcase" },
-  { label: "AI Negotiation", icon: "fa-robot" },
-  { label: "Compare Offers", icon: "fa-scale-balanced" },
-  { label: "Confirm", icon: "fa-circle-check" },
+  { label: "Trip Details", status: "active" },
+  { label: "AI Negotiation", status: "pending" },
+  { label: "Compare Offers", status: "pending" },
+  { label: "Confirm", status: "pending" },
 ];
 
 const travelers = [
-  "Sophie Martin",
-  "Thomas Bernard",
-  "Julie Petit",
-  "Marc Lefevre",
-  "Claire Moreau",
+  "Sophie Martin (Me)",
+  "Someone else",
+  "Multiple travelers",
 ];
 
 const roomTypes = ["Standard", "Superior", "Suite"];
 
 export default function BookTripDetailsPage() {
   const router = useRouter();
-  const [traveler, setTraveler] = useState("");
-  const [destination, setDestination] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [traveler, setTraveler] = useState("Sophie Martin (Me)");
+  const [destination, setDestination] = useState("Paris");
+  const [checkIn, setCheckIn] = useState("2026-05-12");
+  const [checkOut, setCheckOut] = useState("2026-05-15");
   const [rooms, setRooms] = useState(1);
-  const [roomType, setRoomType] = useState("Standard");
-  const [purpose, setPurpose] = useState("");
+  const [roomType, setRoomType] = useState("Superior");
+  const [purpose, setPurpose] = useState("Client meeting");
 
   const destinationLower = destination.toLowerCase();
   const maxRate = (travelPolicy.maxRates as Record<string, number>)[destinationLower] ?? travelPolicy.maxRates.default;
 
+  // Calculate nights
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+  const nights = checkIn && checkOut ? Math.max(0, Math.round((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+
   const isFormValid = traveler && destination && checkIn && checkOut;
 
   function handleNext() {
+    const actualTraveler = traveler === "Sophie Martin (Me)" ? "Sophie Martin" : traveler;
     const searchParams = new URLSearchParams({
-      traveler,
+      traveler: actualTraveler,
       destination,
       check_in: checkIn,
       check_out: checkOut,
@@ -49,239 +53,225 @@ export default function BookTripDetailsPage() {
     });
     sessionStorage.setItem(
       "bookingRequest",
-      JSON.stringify({ traveler, destination, checkIn, checkOut, rooms, roomType, purpose, budget: maxRate })
+      JSON.stringify({ traveler: actualTraveler, destination, checkIn, checkOut, rooms, roomType, purpose, budget: maxRate })
     );
     router.push(`/corporate/book/search?${searchParams}`);
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      {/* Page Title */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-[#222]">Book Travel</h1>
-        <p className="text-[#717171] mt-1">Step 1 of 4 — Trip Details</p>
-      </div>
-
-      {/* Step Progress Bar */}
-      <div className="flex items-center justify-center gap-0 mb-10">
-        {steps.map((s, i) => (
-          <div key={s.label} className="flex items-center">
-            <div className="flex items-center gap-2.5">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                i === 0
-                  ? "bg-[#222] text-white"
-                  : "bg-[#F7F7F7] text-[#B0B0B0] border border-[#EBEBEB]"
-              }`}>
-                {i + 1}
-              </div>
-              <span className={`text-sm font-medium hidden sm:inline ${
-                i === 0 ? "text-[#222]" : "text-[#B0B0B0]"
-              }`}>
-                {s.label}
-              </span>
-            </div>
-            {i < steps.length - 1 && (
-              <div className={`w-12 h-px mx-3 ${i === 0 ? "bg-[#222]" : "bg-[#EBEBEB]"}`} />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {/* Left: Form (2/3) */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-[#EBEBEB] p-6">
-          <h2 className="text-lg font-semibold text-[#222] mb-6">Trip Details</h2>
-
-          <div className="space-y-5">
-            {/* Traveler */}
-            <div>
-              <label className="block text-sm font-medium text-[#222] mb-1.5">
-                Who is traveling?
-              </label>
-              <select
-                value={traveler}
-                onChange={(e) => setTraveler(e.target.value)}
-                className="form-input w-full rounded-lg px-4 py-3 text-sm"
-              >
-                <option value="">Select traveler...</option>
-                {travelers.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Destination */}
-            <div>
-              <label className="block text-sm font-medium text-[#222] mb-1.5">
-                Destination
-              </label>
-              <div className="relative">
-                <i className="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-[#717171] text-sm" />
-                <input
-                  type="text"
-                  placeholder="Paris, Lyon, Berlin..."
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="form-input w-full rounded-lg pl-11 pr-4 py-3 text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Dates */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1.5">
-                  Check-in
-                </label>
-                <input
-                  type="date"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  className="form-input w-full rounded-lg px-4 py-3 text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1.5">
-                  Check-out
-                </label>
-                <input
-                  type="date"
-                  value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
-                  className="form-input w-full rounded-lg px-4 py-3 text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Rooms & Type */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1.5">
-                  Rooms
-                </label>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setRooms(Math.max(1, rooms - 1))}
-                    className="w-10 h-10 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#222] hover:border-[#222] transition-colors"
-                  >
-                    <i className="fa-solid fa-minus text-xs" />
-                  </button>
-                  <span className="text-lg font-semibold text-[#222] w-8 text-center">{rooms}</span>
-                  <button
-                    onClick={() => setRooms(rooms + 1)}
-                    className="w-10 h-10 rounded-full border border-[#EBEBEB] flex items-center justify-center text-[#222] hover:border-[#222] transition-colors"
-                  >
-                    <i className="fa-solid fa-plus text-xs" />
-                  </button>
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      {/* Wizard Progress Header */}
+      <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 flex items-center justify-between">
+        <div className="flex items-center gap-4 flex-1">
+          {steps.map((s, i) => (
+            <div key={s.label} className="flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 ${
+                  s.status === "active"
+                    ? "bg-emerald-500 text-white border-emerald-500"
+                    : "bg-[#F9FAFB] text-[#9CA3AF] border-[#E5E7EB]"
+                }`}>
+                  {i + 1}
+                </div>
+                <div className="hidden sm:block">
+                  <div className={`text-sm font-semibold ${s.status === "active" ? "text-[#111827]" : "text-[#9CA3AF]"}`}>{s.label}</div>
+                  <div className={`text-xs ${s.status === "active" ? "text-emerald-600" : "text-[#9CA3AF]"}`}>
+                    {s.status === "active" ? "Current Step" : "Pending"}
+                  </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-[#222] mb-1.5">
-                  Room Type
-                </label>
-                <select
-                  value={roomType}
-                  onChange={(e) => setRoomType(e.target.value)}
-                  className="form-input w-full rounded-lg px-4 py-3 text-sm"
-                >
-                  {roomTypes.map((rt) => (
-                    <option key={rt} value={rt}>{rt}</option>
-                  ))}
-                </select>
-              </div>
+              {i < steps.length - 1 && (
+                <div className="flex-1 h-px bg-[#E5E7EB] mx-2 hidden sm:block" />
+              )}
             </div>
+          ))}
+        </div>
+      </div>
 
-            {/* Trip Purpose */}
-            <div>
-              <label className="block text-sm font-medium text-[#222] mb-1.5">
-                Trip Purpose
-              </label>
-              <input
-                type="text"
-                placeholder="Client meeting, conference, team offsite..."
-                value={purpose}
-                onChange={(e) => setPurpose(e.target.value)}
-                className="form-input w-full rounded-lg px-4 py-3 text-sm"
-              />
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Form Section (Left 2/3) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6">
+            <h2 className="text-2xl font-bold text-[#111827] mb-6 pb-4 border-b border-[#E5E7EB]">Trip Basics</h2>
+
+            <div className="space-y-6">
+              {/* Traveler */}
+              <div>
+                <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Who is traveling?</label>
+                <div className="relative">
+                  <select
+                    value={traveler}
+                    onChange={(e) => setTraveler(e.target.value)}
+                    className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 pl-4 pr-10 text-sm text-[#111827] appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  >
+                    {travelers.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                  <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none text-xs" />
+                </div>
+              </div>
+
+              {/* Destination */}
+              <div>
+                <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Destination</label>
+                <div className="relative">
+                  <i className="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Paris, France"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 pl-11 pr-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Dates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Check-in</label>
+                  <div className="relative">
+                    <i className="fa-regular fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                    <input
+                      type="date"
+                      value={checkIn}
+                      onChange={(e) => setCheckIn(e.target.value)}
+                      className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 pl-11 pr-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Check-out</label>
+                  <div className="relative">
+                    <i className="fa-regular fa-calendar absolute left-4 top-1/2 -translate-y-1/2 text-[#9CA3AF]" />
+                    <input
+                      type="date"
+                      value={checkOut}
+                      onChange={(e) => setCheckOut(e.target.value)}
+                      className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 pl-11 pr-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                  {nights > 0 && (
+                    <div className="text-xs text-emerald-600 mt-2 text-right">{nights} night{nights > 1 ? "s" : ""}</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Room Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Rooms</label>
+                  <div className="flex items-center bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setRooms(Math.max(1, rooms - 1))}
+                      className="w-12 h-12 flex items-center justify-center hover:bg-[#F3F4F6] transition-colors text-[#374151]"
+                    >
+                      <i className="fa-solid fa-minus text-xs" />
+                    </button>
+                    <input type="text" value={rooms} readOnly className="flex-1 text-center bg-transparent border-none text-[#111827] font-medium focus:ring-0 focus:outline-none" />
+                    <button
+                      type="button"
+                      onClick={() => setRooms(rooms + 1)}
+                      className="w-12 h-12 flex items-center justify-center hover:bg-[#F3F4F6] transition-colors text-[#374151]"
+                    >
+                      <i className="fa-solid fa-plus text-xs" />
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Room Type</label>
+                  <div className="relative">
+                    <select
+                      value={roomType}
+                      onChange={(e) => setRoomType(e.target.value)}
+                      className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 pl-4 pr-10 text-sm text-[#111827] appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    >
+                      {roomTypes.map((rt) => (
+                        <option key={rt} value={rt}>{rt}</option>
+                      ))}
+                    </select>
+                    <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none text-xs" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Purpose */}
+              <div>
+                <label className="block text-xs font-semibold text-[#6B7280] uppercase tracking-wider mb-2">Trip Purpose (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Client meeting"
+                  value={purpose}
+                  onChange={(e) => setPurpose(e.target.value)}
+                  className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-xl py-3 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Policy Preview (1/3) */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 sticky top-8">
-            <h3 className="text-base font-semibold text-[#222] mb-5">
-              <i className="fa-solid fa-shield-halved text-emerald mr-2" />
-              Policy Preview
-            </h3>
+        {/* Side Panel (Right 1/3) */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm p-6 sticky top-6">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#E5E7EB]">
+              <h3 className="text-xl font-bold text-[#111827]">Policy Preview</h3>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-medium border border-emerald-200">
+                <i className="fa-solid fa-check text-[10px]" /> Compliant
+              </span>
+            </div>
 
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i className="fa-solid fa-check text-emerald text-[8px]" />
+                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i className="fa-solid fa-check text-xs" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#717171]">Budget</p>
-                  <p className="text-sm text-[#222] font-medium">
-                    Max &euro;{maxRate}/night for {destination || "destination"}
-                  </p>
+                  <div className="text-sm font-medium text-[#111827]">Budget OK</div>
+                  <div className="text-xs text-[#6B7280]">{destination || "City"} max: &euro;{maxRate}/night</div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i className="fa-solid fa-check text-emerald text-[8px]" />
+                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i className="fa-solid fa-check text-xs" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#717171]">Category</p>
-                  <p className="text-sm text-[#222] font-medium">Min. 3-star required</p>
+                  <div className="text-sm font-medium text-[#111827]">Category limits</div>
+                  <div className="text-xs text-[#6B7280]">Min 3-star required</div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i className="fa-solid fa-check text-emerald text-[8px]" />
+                <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i className="fa-solid fa-check text-xs" />
                 </div>
                 <div>
-                  <p className="text-xs text-[#717171]">Cancellation</p>
-                  <p className="text-sm text-[#222] font-medium">24h free cancellation required</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i className="fa-solid fa-check text-emerald text-[8px]" />
-                </div>
-                <div>
-                  <p className="text-xs text-[#717171]">Max stay</p>
-                  <p className="text-sm text-[#222] font-medium">{travelPolicy.maxNights} nights max</p>
+                  <div className="text-sm font-medium text-[#111827]">Trip length</div>
+                  <div className="text-xs text-[#6B7280]">{nights > 0 ? `${nights} night${nights > 1 ? "s" : ""}` : "N/A"} (Max {travelPolicy.maxNights} allowed)</div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 pt-5 border-t border-[#EBEBEB]">
-              <p className="text-xs text-[#717171] mb-2">Preferred chains</p>
-              <div className="flex flex-wrap gap-1.5">
-                {travelPolicy.preferredChains.map((c) => (
-                  <span key={c} className="badge-emerald badge text-[10px]">{c}</span>
-                ))}
-              </div>
+            <div className="mt-8 pt-6 border-t border-[#E5E7EB]">
+              <button
+                type="button"
+                disabled={!isFormValid}
+                onClick={handleNext}
+                className={`w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+                  isFormValid
+                    ? "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg hover:shadow-emerald-500/20"
+                    : "bg-[#F3F4F6] text-[#9CA3AF] cursor-not-allowed"
+                }`}
+              >
+                Next: Find Hotels <i className="fa-solid fa-arrow-right" />
+              </button>
+              <button className="w-full mt-3 py-2 text-[#6B7280] hover:text-[#111827] text-xs font-medium transition-colors">
+                Cancel Booking
+              </button>
             </div>
-
-            <button
-              type="button"
-              disabled={!isFormValid}
-              onClick={handleNext}
-              className={`mt-6 w-full py-3 rounded-lg text-sm font-semibold transition-all ${
-                isFormValid
-                  ? "bg-[#222] text-white hover:bg-black"
-                  : "bg-[#F7F7F7] text-[#B0B0B0] cursor-not-allowed"
-              }`}
-            >
-              Next: Find Hotels
-              <i className="fa-solid fa-arrow-right ml-2" />
-            </button>
           </div>
         </div>
       </div>

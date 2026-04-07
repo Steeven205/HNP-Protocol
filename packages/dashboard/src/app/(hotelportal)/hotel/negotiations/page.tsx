@@ -1,140 +1,127 @@
 "use client";
 
 import Link from "next/link";
-import { hotelNegotiations, hotelProperties } from "@/lib/demo-data";
 
-const statusColor: Record<string, string> = {
-  in_progress: "badge-amber",
-  confirmed: "badge-emerald",
-  escalated: "badge-red",
-  timeout: "badge-slate",
+const negotiations = [
+  { status: "in-progress", id: "REQ-8924", hotel: "Le Marais Boutique", corporate: "TechCorp SAS", dates: "12 May - 15 May", rooms: "3x Superior", rate: "€152", badge: "Round 2/2", badgeClass: "bg-amber-100 text-amber-700 border-amber-200", timer: "18:42 left", timerClass: "text-amber-600" },
+  { status: "confirmed", id: "REQ-8923", hotel: "Brussels Central", corporate: "Pharma Co", dates: "18 Jun - 20 Jun", rooms: "2x Standard", rate: "€138", badge: "Confirmed", badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200", timer: "--", timerClass: "text-[#9CA3AF]" },
+  { status: "escalated", id: "REQ-8922", hotel: "Lyon Confluence", corporate: "Consulting XY", dates: "22 Jul - 25 Jul", rooms: "5x Suite", rate: "€245", badge: "Escalated", badgeClass: "bg-red-100 text-red-600 border-red-200", timer: "--", timerClass: "text-[#9CA3AF]" },
+  { status: "timeout", id: "REQ-8921", hotel: "Amsterdam Centrum", corporate: "Tech StartupY", dates: "01 Aug - 03 Aug", rooms: "1x Superior", rate: "--", badge: "Timeout", badgeClass: "bg-slate-100 text-slate-600 border-slate-200", timer: "--", timerClass: "text-[#9CA3AF]" },
+  { status: "confirmed", id: "REQ-8920", hotel: "Madrid Sol", corporate: "Pharma Co", dates: "15 May - 18 May", rooms: "2x Superior", rate: "€158", badge: "Confirmed", badgeClass: "bg-emerald-100 text-emerald-700 border-emerald-200", timer: "--", timerClass: "text-[#9CA3AF]" },
+  { status: "in-progress", id: "REQ-8919", hotel: "Le Marais Boutique", corporate: "TechCorp SAS", dates: "20 May - 22 May", rooms: "1x Standard", rate: "€142", badge: "Round 1/2", badgeClass: "bg-amber-100 text-amber-700 border-amber-200", timer: "24:15 left", timerClass: "text-amber-600" },
+];
+
+const statusDotClass: Record<string, string> = {
+  "in-progress": "bg-amber-500",
+  confirmed: "bg-emerald-500",
+  escalated: "bg-red-500",
+  timeout: "bg-slate-400",
 };
 
 export default function NegotiationsListPage() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-[#222]">Negotiations Tracker</h1>
-          <p className="text-[#717171] mt-1">Real-time AI negotiation monitoring</p>
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      {/* Filters Bar */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm p-5">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+          <div className="flex flex-wrap items-center gap-3 flex-1 w-full">
+            <div className="relative flex-1 min-w-[280px]">
+              <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] text-xs" />
+              <input type="text" placeholder="Request ID, Corporate name, Hotel..." className="w-full border border-[#E5E7EB] rounded-lg py-2.5 pl-9 pr-3 text-sm text-[#111827] focus:outline-none focus:border-emerald-500" />
+            </div>
+            <select className="border border-[#E5E7EB] rounded-lg py-2.5 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 min-w-[160px]">
+              <option>Property: All</option>
+              <option>Le Marais Boutique</option>
+              <option>Brussels Central</option>
+              <option>Lyon Confluence</option>
+              <option>Amsterdam Centrum</option>
+              <option>Madrid Sol</option>
+            </select>
+            <select className="border border-[#E5E7EB] rounded-lg py-2.5 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 min-w-[160px]">
+              <option>Status: All</option>
+              <option>In Progress</option>
+              <option>Confirmed</option>
+              <option>Escalated</option>
+              <option>Timeout</option>
+            </select>
+            <select className="border border-[#E5E7EB] rounded-lg py-2.5 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 min-w-[140px]">
+              <option>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>Last 90 days</option>
+            </select>
+            <select className="border border-[#E5E7EB] rounded-lg py-2.5 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 min-w-[140px]">
+              <option>Sort: Newest</option>
+              <option>Oldest</option>
+              <option>Highest value</option>
+              <option>Status</option>
+            </select>
+          </div>
         </div>
-        <span className="text-sm text-[#717171] font-mono">
-          {hotelNegotiations.length} total
-        </span>
       </div>
 
-      <div className="space-y-8">
-        {/* Filter Bar */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[#B0B0B0] text-sm" />
-            <input
-              type="text"
-              placeholder="Search by ID, corporate, traveler..."
-              className="form-input w-full rounded-lg py-2 pl-9 pr-3 text-sm"
-            />
-          </div>
-          <select className="form-input rounded-lg py-2 px-3 text-sm min-w-[160px]">
-            <option value="">All Properties</option>
-            {hotelProperties.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-          <select className="form-input rounded-lg py-2 px-3 text-sm min-w-[140px]">
-            <option value="">All Statuses</option>
-            <option value="in_progress">In Progress</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="escalated">Escalated</option>
-            <option value="timeout">Timeout</option>
-          </select>
-          <input
-            type="date"
-            className="form-input rounded-lg py-2 px-3 text-sm"
-          />
-          <span className="text-[#717171]">to</span>
-          <input
-            type="date"
-            className="form-input rounded-lg py-2 px-3 text-sm"
-          />
-          <button className="btn-outline px-4 py-2 rounded-lg text-sm">
-            <i className="fa-solid fa-file-export mr-2" />
-            Export
-          </button>
-        </div>
-
-        {/* Data Table */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="data-table w-full text-left">
-              <thead>
-                <tr>
-                  <th>Request ID</th>
-                  <th>Corporate</th>
-                  <th>Traveler</th>
-                  <th>Property</th>
-                  <th>Dates</th>
-                  <th>Rooms</th>
-                  <th>Initial</th>
-                  <th>Current</th>
-                  <th>Status</th>
-                  <th>Round</th>
-                  <th>Actions</th>
+      {/* Negotiations Table */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full data-table text-left border-collapse">
+            <thead>
+              <tr>
+                <th className="pl-6 pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                  <div className="flex items-center gap-2">Status <i className="fa-solid fa-sort text-[10px]" /></div>
+                </th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                  <div className="flex items-center gap-2">Request ID <i className="fa-solid fa-sort text-[10px]" /></div>
+                </th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                  <div className="flex items-center gap-2">Hotel <i className="fa-solid fa-sort text-[10px]" /></div>
+                </th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                  <div className="flex items-center gap-2">Corporate <i className="fa-solid fa-sort text-[10px]" /></div>
+                </th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">
+                  <div className="flex items-center gap-2">Dates <i className="fa-solid fa-sort text-[10px]" /></div>
+                </th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Rooms</th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Rate</th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Status</th>
+                <th className="pt-4 pb-3 text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Timer</th>
+                <th className="pr-6 pt-4 pb-3 text-right text-xs font-semibold text-[#6B7280] uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {negotiations.map((n) => (
+                <tr key={n.id} className="border-b border-[#F3F4F6] hover:bg-[#F9FAFB] transition-colors">
+                  <td className="pl-6 py-4">
+                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${statusDotClass[n.status]}`} />
+                  </td>
+                  <td className="py-4">
+                    <Link href={`/hotel/negotiations/${n.id.replace("REQ-", "")}`} className="font-mono text-emerald-600 hover:underline font-medium">
+                      {n.id}
+                    </Link>
+                  </td>
+                  <td className="py-4 text-sm text-[#111827]">{n.hotel}</td>
+                  <td className="py-4 text-sm text-[#111827]">{n.corporate}</td>
+                  <td className="py-4 text-sm text-[#111827] font-mono">{n.dates}</td>
+                  <td className="py-4 text-sm text-[#111827]">{n.rooms}</td>
+                  <td className="py-4 font-mono text-[#111827] font-medium">{n.rate}</td>
+                  <td className="py-4">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${n.badgeClass}`}>
+                      {n.badge.includes("Round") && <i className="fa-regular fa-clock" />}
+                      {n.badge === "Confirmed" && <i className="fa-solid fa-check" />}
+                      {n.badge === "Escalated" && <i className="fa-solid fa-triangle-exclamation" />}
+                      {n.badge === "Timeout" && <i className="fa-regular fa-clock" />}
+                      {n.badge}
+                    </span>
+                  </td>
+                  <td className={`py-4 text-sm font-mono ${n.timerClass}`}>{n.timer}</td>
+                  <td className="pr-6 py-4 text-right">
+                    <button className="text-[#9CA3AF] hover:text-[#111827]">
+                      <i className="fa-solid fa-ellipsis-vertical" />
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {hotelNegotiations.map((n) => (
-                  <tr key={n.id}>
-                    <td>
-                      <span className="font-mono text-emerald">{n.id}</span>
-                    </td>
-                    <td className="text-[#222]">{n.corporate}</td>
-                    <td className="text-[#484848]">{n.traveler}</td>
-                    <td>
-                      <div className="text-[#222]">{n.hotel}</div>
-                      <div className="text-xs text-[#717171]">{n.destination}</div>
-                    </td>
-                    <td>
-                      <div className="text-sm text-[#222]">{n.checkIn}</div>
-                      <div className="text-xs text-[#717171]">{n.checkOut}</div>
-                    </td>
-                    <td className="text-center text-[#222]">{n.rooms}</td>
-                    <td className="font-mono text-[#717171]">{n.initialRate}</td>
-                    <td className="font-mono text-[#222] font-bold">{n.currentRate}</td>
-                    <td>
-                      <span className={`badge ${statusColor[n.status] || "badge-slate"}`}>
-                        <i
-                          className={`fa-solid ${
-                            n.status === "confirmed"
-                              ? "fa-check"
-                              : n.status === "in_progress"
-                              ? "fa-spinner fa-spin"
-                              : n.status === "escalated"
-                              ? "fa-triangle-exclamation"
-                              : "fa-clock"
-                          } text-[10px]`}
-                        />
-                        {n.status.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="text-center text-[#484848]">
-                      {n.round}/{n.maxRounds}
-                    </td>
-                    <td>
-                      <Link
-                        href={`/hotel/negotiations/${n.id}`}
-                        className="btn-outline px-3 py-1.5 rounded-md text-xs inline-flex items-center gap-1"
-                      >
-                        <i className="fa-solid fa-eye text-[10px]" />
-                        View
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

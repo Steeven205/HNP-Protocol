@@ -1,296 +1,272 @@
 "use client";
 
-import { yieldConfig, hotelProperties } from "@/lib/demo-data";
+import { useState } from "react";
+
+const daySliders = [
+  { day: "Monday", value: 18 },
+  { day: "Tuesday", value: 18 },
+  { day: "Wednesday", value: 10 },
+  { day: "Thursday", value: 5 },
+  { day: "Friday", value: 5 },
+  { day: "Saturday", value: 0 },
+  { day: "Sunday", value: 8 },
+];
+
+const loyaltyTiers = [
+  { tier: "Gold", icon: "text-amber-500", threshold: "50+ nights/year", discount: "-12%", autoRule: "Accept non-refund" },
+  { tier: "Silver", icon: "text-[#9CA3AF]", threshold: "20-49 nights", discount: "-8%", autoRule: "Standard" },
+  { tier: "Bronze", icon: "text-amber-800", threshold: "<20 nights", discount: "-5%", autoRule: "24h cancel required" },
+];
 
 export default function YieldConfigPage() {
-  const cfg = yieldConfig;
+  const [dayValues, setDayValues] = useState(daySliders.map((d) => d.value));
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ "rule-1": true, "rule-2": true, "rule-3": true });
+
+  const toggleSection = (id: string) => {
+    setOpenSections((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-[#222]">AI-Powered Yield Configuration</h1>
-          <p className="text-[#717171] mt-1">Natural language strategy to automated rules</p>
-        </div>
-        <button className="btn-emerald px-4 py-2 rounded-lg text-sm font-medium">
-          <i className="fa-solid fa-save mr-2" />
-          Save Configuration
-        </button>
-      </div>
-
-      <div className="space-y-8">
-        {/* Property Selector */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6 flex items-center gap-4">
-          <label className="text-sm text-[#717171]">Property</label>
-          <select className="form-input rounded-lg py-2 px-3 text-sm flex-1 max-w-md">
-            {hotelProperties.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.city})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Two Column: NL Rules + Generated Preview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Natural Language Rules */}
-          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
-            <h2 className="text-lg font-semibold text-[#222] mb-4">
-              <i className="fa-solid fa-wand-magic-sparkles text-emerald mr-2" />
-              Natural Language Rules
-            </h2>
-            <p className="text-sm text-[#717171] mb-4">
-              Describe your pricing strategy in plain language. Claude AI will translate
-              into automated yield rules.
-            </p>
-            <textarea
-              className="form-input w-full rounded-xl border border-[#EBEBEB] p-4 text-sm h-32 resize-none focus:border-[#222] focus:ring-0 transition-colors"
-              placeholder="e.g. Fill Monday and Tuesday rooms as priority. Reward loyal corporate accounts with 50+ nights per year..."
-            />
-            <div className="mt-4 space-y-2">
-              {cfg.nlRules.map((rule, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between bg-white rounded-xl border border-[#EBEBEB] p-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <i className="fa-solid fa-robot text-emerald text-xs" />
-                    <span className="text-sm text-[#484848]">{rule}</span>
-                  </div>
-                  <button className="text-[#B0B0B0] hover:text-[#222] transition-colors">
-                    <i className="fa-solid fa-xmark text-xs" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <button className="btn-emerald px-4 py-2 rounded-lg text-sm font-medium mt-4">
-              <i className="fa-solid fa-bolt mr-2" />
-              Generate Rules
+    <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      {/* Property Selector */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm p-5">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-bold text-[#111827] mb-1">Configure Yield Rules</h3>
+            <p className="text-sm text-[#6B7280]">Apply rules to property or copy from existing</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <select className="border border-[#E5E7EB] rounded-lg py-2.5 px-4 text-sm text-[#111827] focus:outline-none focus:border-emerald-500 min-w-[200px]">
+              <option>All Properties</option>
+              <option>Le Marais Boutique</option>
+              <option>Brussels Central</option>
+              <option>Lyon Confluence</option>
+              <option>Amsterdam Centrum</option>
+              <option>Madrid Sol</option>
+            </select>
+            <button className="border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2">
+              <i className="fa-solid fa-copy" /> Copy Rules
             </button>
           </div>
+        </div>
+      </div>
 
-          {/* Right: Generated Rules Preview */}
-          <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
-            <h2 className="text-lg font-semibold text-[#222] mb-4">
-              <i className="fa-solid fa-code text-emerald mr-2" />
-              Generated Rules Preview
-            </h2>
-            <div className="space-y-3">
-              {[
-                { rule: "Monday/Tuesday priority fill", condition: "day_of_week IN (1,2)", action: "-10% on base rate", source: "NL Rule #1" },
-                { rule: "Loyalty volume bonus", condition: "nights_ytd >= 50", action: "-8% discount", source: "NL Rule #2" },
-                { rule: "New account protection", condition: "account_age < 90d", action: "Block non-refundable", source: "NL Rule #3" },
-              ].map((g, i) => (
-                <div key={i} className="bg-white rounded-xl border border-[#EBEBEB] p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[#222]">{g.rule}</span>
-                    <span className="badge badge-emerald text-[10px]">{g.source}</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span className="text-[#717171]">Condition:</span>
-                      <p className="text-[#484848] font-mono mt-0.5">{g.condition}</p>
-                    </div>
-                    <div>
-                      <span className="text-[#717171]">Action:</span>
-                      <p className="text-emerald font-mono mt-0.5">{g.action}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      {/* AI Input Panel */}
+      <div className="bg-white rounded-xl border-2 border-emerald-200 shadow-sm p-6">
+        <div className="flex items-start gap-4 mb-4">
+          <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+            <i className="fa-solid fa-wand-magic-sparkles text-emerald-600 text-xl" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-[#111827] mb-2">Describe Your Yield Strategy</h3>
+            <p className="text-sm text-[#6B7280]">AI will translate your strategy into structured, automated rules</p>
+          </div>
+        </div>
+        <textarea
+          className="w-full border border-[#E5E7EB] rounded-xl p-4 text-sm text-[#111827] resize-none h-40 mb-4 focus:outline-none focus:border-emerald-500"
+          defaultValue="Remplir mes lundis/mardis en priorite avec remises jusqu'a 18%. Fideliser les comptes Gold (50+ nuits/an) avec 12% automatique. Pas de non-remboursable pour nouveaux comptes. Maximiser RevPAR jeudis/vendredis (max 5% discount)."
+        />
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-[#6B7280]"><i className="fa-solid fa-info-circle text-emerald-500 mr-1" /> AI analyzes your strategy and generates optimized rules below</p>
+          <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg text-sm font-medium flex items-center gap-2">
+            <i className="fa-solid fa-robot" /> Generate Yield Rules
+          </button>
+        </div>
+      </div>
+
+      {/* AI Generated Banner */}
+      <div className="bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 border-l-4 border-l-blue-500 rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <i className="fa-solid fa-sparkles text-emerald-500 text-lg" />
+          <p className="text-sm text-[#374151]"><strong>Rules generated by AI.</strong> Review and adjust as needed. Changes auto-save.</p>
+        </div>
+      </div>
+
+      {/* Rule Cards */}
+      <div className="space-y-4">
+        {/* Day-of-Week Pricing */}
+        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="p-5 flex items-center justify-between cursor-pointer hover:bg-[#F9FAFB]" onClick={() => toggleSection("rule-1")}>
+            <div className="flex items-center gap-4 flex-1">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <i className="fa-solid fa-calendar-week text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-[#111827]">Day-of-Week Pricing</h4>
+                <p className="text-xs text-[#6B7280] mt-1">Variable discounts by day to optimize occupancy</p>
+              </div>
             </div>
+            <i className={`fa-solid fa-chevron-down text-[#6B7280] ml-4 transition-transform ${openSections["rule-1"] ? "rotate-180" : ""}`} />
           </div>
-        </div>
-
-        {/* Floor Rates */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
-          <h2 className="text-lg font-semibold text-[#222] mb-6">
-            <i className="fa-solid fa-shield text-emerald mr-2" />
-            Floor Rates (Minimum Thresholds)
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(Object.entries(cfg.floorRate) as [string, number][]).map(([type, rate]) => (
-              <div key={type} className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#484848] capitalize">{type}</span>
-                  <span className="text-lg font-mono font-semibold text-emerald">{rate}</span>
-                </div>
-                <input
-                  type="range"
-                  min={50}
-                  max={400}
-                  defaultValue={rate}
-                  className="w-full accent-emerald"
-                />
-                <div className="flex justify-between text-xs text-[#B0B0B0]">
-                  <span>50</span>
-                  <span>400</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Season Rules */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#EBEBEB]">
-            <h2 className="text-lg font-semibold text-[#222]">
-              <i className="fa-solid fa-calendar-days text-emerald mr-2" />
-              Season Rules
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="data-table w-full text-left">
-              <thead>
-                <tr>
-                  <th>Season</th>
-                  <th>Months</th>
-                  <th>Adjustment</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cfg.seasonRules.map((s) => {
-                  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                  return (
-                    <tr key={s.name}>
-                      <td>
-                        <span className="text-[#222] font-medium">{s.name}</span>
-                      </td>
-                      <td>
-                        <div className="flex gap-1 flex-wrap">
-                          {s.months.map((m) => (
-                            <span key={m} className="badge badge-slate text-[10px]">
-                              {monthNames[m - 1]}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td>
-                        <span
-                          className={`font-mono font-semibold ${
-                            s.adjustment.startsWith("+")
-                              ? "text-amber"
-                              : s.adjustment.startsWith("-")
-                              ? "text-emerald"
-                              : "text-[#484848]"
-                          }`}
-                        >
-                          {s.adjustment}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Volume Discounts */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] overflow-hidden">
-          <div className="px-6 py-4 border-b border-[#EBEBEB]">
-            <h2 className="text-lg font-semibold text-[#222]">
-              <i className="fa-solid fa-percent text-emerald mr-2" />
-              Volume Discounts
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="data-table w-full text-left">
-              <thead>
-                <tr>
-                  <th>Threshold (nights/year)</th>
-                  <th>Discount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cfg.volumeDiscounts.map((v) => (
-                  <tr key={v.threshold}>
-                    <td>
-                      <span className="text-[#222] font-mono">{v.threshold}+</span>
-                      <span className="text-[#717171] ml-1 text-xs">nights</span>
-                    </td>
-                    <td>
-                      <span className="text-emerald font-mono font-semibold">-{v.discount}%</span>
-                    </td>
-                  </tr>
+          {openSections["rule-1"] && (
+            <div className="px-6 pb-6 border-t border-[#E5E7EB]">
+              <div className="space-y-4 mt-4">
+                {daySliders.map((d, i) => (
+                  <div key={d.day} className="flex items-center gap-4">
+                    <div className="w-24 text-sm text-[#6B7280]">{d.day}</div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="30"
+                      value={dayValues[i]}
+                      onChange={(e) => {
+                        const newVals = [...dayValues];
+                        newVals[i] = Number(e.target.value);
+                        setDayValues(newVals);
+                      }}
+                      className="flex-1 accent-emerald-500"
+                    />
+                    <div className="w-16 text-right">
+                      <input
+                        type="number"
+                        value={dayValues[i]}
+                        min={0}
+                        max={30}
+                        onChange={(e) => {
+                          const newVals = [...dayValues];
+                          newVals[i] = Number(e.target.value);
+                          setDayValues(newVals);
+                        }}
+                        className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-full text-center focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                    <span className="text-sm text-[#6B7280]">%</span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Auto-inclusions */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
-          <h2 className="text-lg font-semibold text-[#222] mb-4">
-            <i className="fa-solid fa-gift text-emerald mr-2" />
-            Auto-Inclusions
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-            {(Object.entries(cfg.autoInclusions) as [string, boolean][]).map(([key, enabled]) => {
-              const labels: Record<string, { label: string; icon: string }> = {
-                wifi: { label: "WiFi", icon: "fa-wifi" },
-                breakfast: { label: "Breakfast", icon: "fa-utensils" },
-                parking: { label: "Parking", icon: "fa-square-parking" },
-                lateCheckout: { label: "Late Checkout", icon: "fa-clock" },
-                airportShuttle: { label: "Airport Shuttle", icon: "fa-van-shuttle" },
-              };
-              const info = labels[key] || { label: key, icon: "fa-box" };
-              return (
-                <label
-                  key={key}
-                  className={`bg-white rounded-xl border p-4 flex flex-col items-center gap-2 cursor-pointer hover:shadow-md transition-shadow ${
-                    enabled ? "border-emerald bg-emerald-50" : "border-[#EBEBEB]"
-                  }`}
-                >
-                  <i className={`fa-solid ${info.icon} text-xl ${enabled ? "text-emerald" : "text-[#717171]"}`} />
-                  <span className={`text-sm ${enabled ? "text-[#222]" : "text-[#717171]"}`}>
-                    {info.label}
-                  </span>
-                  <input
-                    type="checkbox"
-                    defaultChecked={enabled}
-                    className="w-4 h-4 accent-emerald"
-                  />
-                </label>
-              );
-            })}
+        {/* Loyalty Tiers */}
+        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="p-5 flex items-center justify-between cursor-pointer hover:bg-[#F9FAFB]" onClick={() => toggleSection("rule-2")}>
+            <div className="flex items-center gap-4 flex-1">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                <i className="fa-solid fa-trophy text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-[#111827]">Loyalty Tiers</h4>
+                <p className="text-xs text-[#6B7280] mt-1">Automatic discounts and benefits by traveler tier</p>
+              </div>
+            </div>
+            <i className={`fa-solid fa-chevron-down text-[#6B7280] ml-4 transition-transform ${openSections["rule-2"] ? "rotate-180" : ""}`} />
           </div>
+          {openSections["rule-2"] && (
+            <div className="px-6 pb-6 border-t border-[#E5E7EB]">
+              <div className="overflow-x-auto mt-4">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[#E5E7EB]">
+                      <th className="text-left py-3 text-[#6B7280] font-semibold">Tier</th>
+                      <th className="text-left py-3 text-[#6B7280] font-semibold">Threshold</th>
+                      <th className="text-left py-3 text-[#6B7280] font-semibold">Discount</th>
+                      <th className="text-left py-3 text-[#6B7280] font-semibold">Auto-Rules</th>
+                      <th className="py-3" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loyaltyTiers.map((t) => (
+                      <tr key={t.tier} className="border-b border-[#F3F4F6]">
+                        <td className="py-3">
+                          <div className="flex items-center gap-2">
+                            <i className={`fa-solid fa-medal ${t.icon}`} />
+                            <span className="text-[#111827] font-medium">{t.tier}</span>
+                          </div>
+                        </td>
+                        <td className="py-3">
+                          <input type="text" defaultValue={t.threshold} className="border border-[#E5E7EB] rounded px-2 py-1 text-xs w-32 focus:outline-none focus:border-emerald-500" />
+                        </td>
+                        <td className="py-3">
+                          <input type="text" defaultValue={t.discount} className="border border-[#E5E7EB] rounded px-2 py-1 text-xs w-20 focus:outline-none focus:border-emerald-500" />
+                        </td>
+                        <td className="py-3 text-xs text-[#6B7280]">{t.autoRule}</td>
+                        <td className="py-3 text-right">
+                          <button className="text-[#9CA3AF] hover:text-red-500 text-xs"><i className="fa-solid fa-trash" /></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <button className="border border-[#E5E7EB] text-[#374151] hover:bg-[#F9FAFB] px-4 py-2 rounded-lg text-sm font-medium mt-4 flex items-center gap-2">
+                <i className="fa-solid fa-plus" /> Add Tier
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Occupancy-based Rules */}
-        <div className="bg-white rounded-xl border border-[#EBEBEB] p-6">
-          <h2 className="text-lg font-semibold text-[#222] mb-4">
-            <i className="fa-solid fa-building text-emerald mr-2" />
-            Occupancy-based Rules
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {cfg.occupancyRules.map((r, i) => (
-              <div key={i} className="bg-white rounded-xl border border-[#EBEBEB] p-4 text-center hover:shadow-md transition-shadow">
-                <div className="text-xs text-[#717171] mb-1">
-                  {"above" in r ? `Above ${r.above}%` : `Below ${r.below}%`}
+        {/* Occupancy-Based Pricing */}
+        <div className="bg-white rounded-xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+          <div className="p-5 flex items-center justify-between cursor-pointer hover:bg-[#F9FAFB]" onClick={() => toggleSection("rule-3")}>
+            <div className="flex items-center gap-4 flex-1">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                <i className="fa-solid fa-chart-line text-emerald-600" />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-lg font-bold text-[#111827]">Occupancy-Based Pricing</h4>
+                <p className="text-xs text-[#6B7280] mt-1">Dynamic discounts based on current occupancy levels</p>
+              </div>
+            </div>
+            <i className={`fa-solid fa-chevron-down text-[#6B7280] ml-4 transition-transform ${openSections["rule-3"] ? "rotate-180" : ""}`} />
+          </div>
+          {openSections["rule-3"] && (
+            <div className="px-6 pb-6 border-t border-[#E5E7EB]">
+              <div className="mb-6 mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-[#6B7280]">0%</span>
+                  <span className="text-xs text-[#6B7280]">100%</span>
                 </div>
-                <div
-                  className={`text-lg font-mono font-semibold ${
-                    r.adjustment.startsWith("+")
-                      ? "text-amber"
-                      : r.adjustment.startsWith("-")
-                      ? "text-emerald"
-                      : "text-[#484848]"
-                  }`}
-                >
-                  {r.adjustment}
+                <div className="h-12 rounded-lg overflow-hidden flex">
+                  <div className="flex-1 bg-emerald-100 flex items-center justify-center text-xs font-medium text-emerald-700 border-r border-white">
+                    Aggressive<br />-20% max
+                  </div>
+                  <div className="flex-1 bg-[#F3F4F6] flex items-center justify-center text-xs font-medium text-[#374151] border-r border-white">
+                    Moderate<br />-10 to -15%
+                  </div>
+                  <div className="flex-1 bg-amber-100 flex items-center justify-center text-xs font-medium text-amber-700">
+                    Minimal<br />-5% max
+                  </div>
                 </div>
-                <div className="mt-2 w-full h-2 rounded-full bg-[#F7F7F7] overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${
-                      r.adjustment.startsWith("+") ? "bg-amber" : r.adjustment.startsWith("-") ? "bg-emerald" : "bg-[#DDDDDD]"
-                    }`}
-                    style={{ width: `${"above" in r ? r.above : r.below}%` }}
-                  />
+                <div className="flex items-center justify-between mt-2">
+                  <div className="text-center">
+                    <div className="text-xs text-[#6B7280] mb-1">&lt;60%</div>
+                    <input type="number" defaultValue={60} className="border border-[#E5E7EB] rounded px-2 py-1 text-xs w-16 text-center focus:outline-none focus:border-emerald-500" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-[#6B7280] mb-1">60-80%</div>
+                    <input type="number" defaultValue={80} className="border border-[#E5E7EB] rounded px-2 py-1 text-xs w-16 text-center focus:outline-none focus:border-emerald-500" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-[#6B7280] mb-1">&gt;80%</div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="bg-[#F9FAFB] rounded-lg p-4 border border-[#E5E7EB]">
+                  <div className="text-xs text-[#6B7280] mb-2">Low Occupancy</div>
+                  <div className="flex items-center gap-2">
+                    <input type="number" defaultValue={-20} className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-16 focus:outline-none focus:border-emerald-500" />
+                    <span className="text-sm text-[#6B7280]">%</span>
+                  </div>
+                </div>
+                <div className="bg-[#F9FAFB] rounded-lg p-4 border border-[#E5E7EB]">
+                  <div className="text-xs text-[#6B7280] mb-2">Mid Occupancy</div>
+                  <div className="flex items-center gap-2">
+                    <input type="number" defaultValue={-10} className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-16 focus:outline-none focus:border-emerald-500" />
+                    <span className="text-sm text-[#6B7280]">%</span>
+                  </div>
+                </div>
+                <div className="bg-[#F9FAFB] rounded-lg p-4 border border-[#E5E7EB]">
+                  <div className="text-xs text-[#6B7280] mb-2">High Occupancy</div>
+                  <div className="flex items-center gap-2">
+                    <input type="number" defaultValue={-5} className="border border-[#E5E7EB] rounded px-2 py-1 text-sm w-16 focus:outline-none focus:border-emerald-500" />
+                    <span className="text-sm text-[#6B7280]">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
