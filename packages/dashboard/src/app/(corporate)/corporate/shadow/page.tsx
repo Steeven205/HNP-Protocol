@@ -46,7 +46,7 @@ export default function ShadowReportsPage() {
           <h3 className="text-sm font-semibold text-[#111827] mb-1">Shadow Mode Active</h3>
           <p className="text-xs text-[#374151]">
             Shadow Mode simulates Rateflow negotiations on your existing RFP bookings without disrupting contracts. Use this to validate savings before switching to production.{" "}
-            <a href="#" className="text-emerald-600 hover:underline">Learn more</a>
+            <span className="text-emerald-600 cursor-pointer hover:underline">Learn more</span>
           </p>
         </div>
       </div>

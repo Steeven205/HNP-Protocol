@@ -203,9 +203,14 @@ function BookSearchInner() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
       {/* Page Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#222]">Book Travel</h1>
-        <p className="text-[#717171] mt-1">Step 2 of 4 — AI Negotiation</p>
+      <div className="mb-6 flex items-center gap-4">
+        <button onClick={() => router.push("/corporate/book")} className="w-8 h-8 rounded-lg border border-[#E5E7EB] flex items-center justify-center text-[#6B7280] hover:text-[#111827] hover:border-[#111827] transition-colors">
+          <i className="fa-solid fa-arrow-left text-xs" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-semibold text-[#222]">Book Travel</h1>
+          <p className="text-[#717171] mt-1">Step 2 of 4 — AI Negotiation</p>
+        </div>
       </div>
 
       {/* Step Progress Bar */}

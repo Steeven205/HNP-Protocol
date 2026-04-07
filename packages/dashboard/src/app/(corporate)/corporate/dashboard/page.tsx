@@ -56,7 +56,7 @@ export default function CorporateDashboardPage() {
           <div>
             <h4 className="text-sm font-semibold text-[#111827] mb-1">Policy Update</h4>
             <p className="text-xs text-[#6B7280] mb-2">New max rate for Paris is &euro;180/night starting June 1st.</p>
-            <a href="#" className="text-xs text-emerald-600 hover:underline">View Details</a>
+            <a href="/corporate/policy" className="text-xs text-emerald-600 hover:underline no-underline">View Details</a>
           </div>
         </div>
 
@@ -241,7 +241,7 @@ export default function CorporateDashboardPage() {
           <div>
             <h3 className="text-sm font-semibold text-[#111827] mb-4 flex justify-between">
               Top Destinations
-              <a href="#" className="text-xs text-emerald-600 font-normal">View All</a>
+              <a href="/corporate/bookings" className="text-xs text-emerald-600 font-normal">View All</a>
             </h3>
             <div className="space-y-4">
               {topDestinations.map((d, i) => (
